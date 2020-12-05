@@ -388,6 +388,6 @@ export default {
   }
 }
 </script>
-<style lang="scss">
- @import "@/scss/login/login.scss";
+<style lang="less">
+ @import "@/less/login/login.less";
 </style>

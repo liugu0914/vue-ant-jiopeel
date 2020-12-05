@@ -27,9 +27,6 @@
     "eslint-plugin-vue": "^6.2.2",
     "less": "^3.12.2",
     "less-loader": "^7.1.0",
-    "node-sass": "^4.14.1",
-    "sass": "^1.19.0",
-    "sass-loader": "^10.0.4",
     "style-loader": "^2.0.0",
     "vue-template-compiler": "^2.6.11"
   },
