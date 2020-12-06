@@ -1,5 +1,5 @@
 <template>
-  <a-layout id="components-layout-demo-custom-trigger">
+  <a-layout class="h-100">
     <div class="admin-side-parent">
       <a-layout-sider v-model="collapsed" class="admin-side" breakpoint="lg" :trigger="null" collapsible>
         <div class="logo" />
@@ -81,17 +81,41 @@
                 <a-icon class="icon-size" type="bell" />
               </a-badge>
             </div>
-            <div class="header-child-item">
-              <a-avatar size="default" shape="circle" src="https://gw.alipayobjects.com/zos/rmsportal/WhxKECPNujWoWEFNdnJE.png" />
-              <span class="ml-1 item-name">系统管理员</span>
-            </div>
+            <a-dropdown>
+              <div class="header-child-item">
+                <a-avatar size="default" shape="circle" src="https://gw.alipayobjects.com/zos/rmsportal/WhxKECPNujWoWEFNdnJE.png" />
+                <span class="ml-1 item-name">系统管理员</span>
+              </div>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a-icon type="user" />
+                  <span>个人中心</span>
+                </a-menu-item>
+                <a-menu-item>
+                  <a-icon type="setting" />
+                  <span>设置</span>
+                </a-menu-item>
+                <a-menu-divider />
+                <a-menu-item>
+                  <a-icon style="margin-right: 8px;" type="poweroff" />
+                  <span>退出登录</span>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
           </div>
         </div>
       </a-layout-header>
-      <a-layout-content
-        class="admin-content"
-      >
-        Content
+      <a-layout-content class="admin-content">
+        <div class="admin-content-tab">
+          <a-tabs :tab-bar-gutter="4" type="editable-card" hide-add closable>
+            <a-tab-pane v-for="i in 10" :key="i">
+              <span slot="tab"><a-icon v-if="i == 1" type="sync" />{{ `Tab-${i}` }}</span>
+            </a-tab-pane>
+          </a-tabs>
+        </div>
+        <div class="admin-content-body">
+          <router-view />
+        </div>
       </a-layout-content>
     </a-layout>
   </a-layout>
@@ -132,15 +156,43 @@ export default {
 }
 
 .admin-content{
-  margin: 10px;
-  padding: 24px;
-  background: #fff;
+  margin:0 10px 10px 10px;
   min-height : 280px;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px -2px rgba(85,85,85,.08),
-  0 2px 20px 0 rgba(85,85,85,.06),
-  0 1px 30px 0 rgba(85,85,85,.03);
+  .admin-content-tab{
+    .ant-tabs-bar{
+      border-bottom:none;
+    }
+    .ant-tabs.ant-tabs-card .ant-tabs-card-bar {
+      .ant-tabs-tab{
+        border :none;
+        border-radius :5px;
+        height: 30px;
+        padding: 0 10px;
+        line-height: 30px;
+        transition: all .2s;
+        &:hover{
+          box-shadow: 0 3px 8px -2px rgba(0,0,0,.12);
+          transform: translateY(-4px);
+        }
+      }
+      .ant-tabs-nav-container{
+        // height: 30px;
+        .ant-tabs-nav{
+          margin-top: 5px;
+          margin-bottom: 5px;
+          .ant-tabs-tab .anticon{
+            margin-right: 4px;
+          }
+        }
+      }
+    }
+  }
+  .admin-content-body{
+    height: calc(100% - 55px);
+    overflow: auto;
+  }
 }
+
 
 .admin-header{
   background: #fff;
@@ -208,11 +260,7 @@ export default {
 }
 
 
-#components-layout-demo-custom-trigger{
-  height: 100%;
-}
-
-#components-layout-demo-custom-trigger .logo {
+.logo {
   height: 32px;
   background: rgba(255, 255, 255, 0.2);
   margin: 16px;

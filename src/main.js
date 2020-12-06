@@ -4,9 +4,9 @@
 import App from './App.vue'
 import Lockr from 'lockr'
 import Vue from 'vue'
-import router from './router/index.js' // 路由器
+import router from './router' // 路由器
 import Antd from 'ant-design-vue'
-import 'ant-design-vue/dist/antd.css'
+import './theme/index.less'
 import Tool from './utils/tool'
 import './permission' // permission control
 

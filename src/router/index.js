@@ -5,6 +5,7 @@
  */
 import Router from 'vue-router'
 import Vue from 'vue'
+import modules from './modules'
 
 
 Vue.use(Router)
@@ -17,7 +18,8 @@ const common = [
   {
     path: '/main',
     name: 'main',
-    component: () => import('@/views/app/main.vue')
+    component: () => import('@/views/main/admin.vue'),
+    children: modules
   },
   {
     path: '/login',
@@ -39,7 +41,7 @@ const common = [
   },
   {
     path: '/404',
-    component: () => import('@/views/404.vue')
+    component: () => import('@/views/error/404.vue')
   },
   {
     path: '*',
@@ -52,6 +54,6 @@ const routes = [
   ...common
 ]
 export default new Router({
-  mode: 'history',
+  // mode: 'history',
   routes
 })

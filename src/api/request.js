@@ -99,6 +99,6 @@ request.interceptors.response.use(
   }
 )
 
-export { ContentType, Msg }
+export { ContentType }
 
 export default request

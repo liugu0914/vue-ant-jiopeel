@@ -1,13 +1,13 @@
 <template>
   <div class="standard-table">
     <div class="alert">
-      <a-alert type="info" :show-icon="true" v-if="selectedRows">
-        <div class="message" slot="message">
-          已选择&nbsp;<a>{{selectedRows.length}}</a>&nbsp;项 <a class="clear" @click="onClear">清空</a>
-          <template  v-for="(item, index) in needTotalList" >
+      <a-alert v-if="selectedRows" type="info" :show-icon="true">
+        <div slot="message" class="message">
+          已选择&nbsp;<a>{{ selectedRows.length }}</a>&nbsp;项 <a class="clear" @click="onClear">清空</a>
+          <template v-for="(item, index) in needTotalList">
             <div v-if="item.needTotal" :key="index">
-              {{item.title}}总计&nbsp;
-              <a>{{item.customRender ? item.customRender(item.total) : item.total}}</a>
+              {{ item.title }}总计&nbsp;
+              <a>{{ item.customRender ? item.customRender(item.total) : item.total }}</a>
             </div>
           </template>
         </div>
@@ -17,22 +17,22 @@
       :bordered="bordered"
       :loading="loading"
       :columns="columns"
-      :dataSource="dataSource"
-      :rowKey="rowKey"
+      :data-source="dataSource"
+      :row-key="rowKey"
       :pagination="pagination"
-      :expandedRowKeys="expandedRowKeys"
-      :expandedRowRender="expandedRowRender"
+      :expanded-row-keys="expandedRowKeys"
+      :expanded-row-render="expandedRowRender"
+      :row-selection="selectedRows ? {selectedRowKeys: selectedRowKeys, onChange: updateSelect} : undefined"
       @change="onChange"
-      :rowSelection="selectedRows ? {selectedRowKeys: selectedRowKeys, onChange: updateSelect} : undefined"
     >
-      <template slot-scope="text, record, index" :slot="slot" v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') ">
-        <slot :name="slot" v-bind="{text, record, index}"></slot>
+      <template v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') " :slot="slot" slot-scope="text, record, index">
+        <slot :name="slot" v-bind="{text, record, index}" />
       </template>
-      <template :slot="slot" v-for="slot in Object.keys($slots)">
-        <slot :name="slot"></slot>
+      <template v-for="slot in Object.keys($slots)" :slot="slot">
+        <slot :name="slot" />
       </template>
-      <template slot-scope="record, index, indent, expanded" :slot="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''">
-        <slot v-bind="{record, index, indent, expanded}" :name="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''"></slot>
+      <template :slot="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''" slot-scope="record, index, indent, expanded">
+        <slot v-bind="{record, index, indent, expanded}" :name="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''" />
       </template>
     </a-table>
   </div>
@@ -58,17 +58,17 @@ export default {
     expandedRowKeys: Array,
     expandedRowRender: Function
   },
-  data () {
+  data() {
     return {
       needTotalList: []
     }
   },
   methods: {
-    updateSelect (selectedRowKeys, selectedRows) {
+    updateSelect(selectedRowKeys, selectedRows) {
       this.$emit('update:selectedRows', selectedRows)
       this.$emit('selectedRowChange', selectedRowKeys, selectedRows)
     },
-    initTotalList (columns) {
+    initTotalList(columns) {
       const totalList = columns.filter(item => item.needTotal)
         .map(item => {
           return {
@@ -82,15 +82,15 @@ export default {
       this.updateSelect([], [])
       this.$emit('clear')
     },
-    onChange(pagination, filters, sorter, {currentDataSource}) {
-      this.$emit('change', pagination, filters, sorter, {currentDataSource})
+    onChange(pagination, filters, sorter, { currentDataSource }) {
+      this.$emit('change', pagination, filters, sorter, { currentDataSource })
     }
   },
-  created () {
+  created() {
     this.needTotalList = this.initTotalList(this.columns)
   },
   watch: {
-    selectedRows (selectedRows) {
+    selectedRows(selectedRows) {
       this.needTotalList = this.needTotalList.map(item => {
         return {
           ...item,
