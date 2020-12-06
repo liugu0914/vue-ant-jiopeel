@@ -3,12 +3,12 @@
  */
 
 // sys 路径
-const sys = 'views/pages/sys'
+const path = 'views/pages/sys'
 
 export default [
   {
     path: '/app',
     name: 'app',
-    component: () => import(`@/${sys}/app/main.vue`)
+    component: () => import(`@/${path}/app/main.vue`)
   }
 ]
