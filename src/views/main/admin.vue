@@ -156,16 +156,18 @@ export default {
 }
 
 .admin-content{
-  margin:0 10px 10px 10px;
+  margin:0 10px;
   min-height : 280px;
   .admin-content-tab{
     .ant-tabs-bar{
       border-bottom:none;
     }
     .ant-tabs.ant-tabs-card .ant-tabs-card-bar {
+      margin-bottom: 5px;
       .ant-tabs-tab{
         border :none;
         border-radius :5px;
+        background:#fff;
         height: 30px;
         padding: 0 10px;
         line-height: 30px;
@@ -188,7 +190,8 @@ export default {
     }
   }
   .admin-content-body{
-    height: calc(100% - 55px);
+    height: calc(100% - 45px);
+    max-height: 100%;
     overflow: auto;
   }
 }
@@ -203,7 +206,7 @@ export default {
 .admin-header-round{
   background: #fff;
   padding: 0;
-  margin: 10px;
+  margin: 10px 10px 5px 10px;
   border-radius: 10px;
   box-shadow: 0 3px 10px -2px rgba(85,85,85,.08),
   0 2px 20px 0 rgba(85,85,85,.06),

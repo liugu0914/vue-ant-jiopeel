@@ -1,5 +1,5 @@
 <template>
-  <a-card>
+  <a-card class="mb-2">
     <div :class="advanced ? 'search' : null">
       <a-form layout="horizontal">
         <div :class="advanced ? null: 'fold'">
