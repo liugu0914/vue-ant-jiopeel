@@ -1,10 +1,10 @@
 <template>
   <a-layout class="h-100">
-    <div class="admin-side-parent">
+    <div>
       <a-layout-sider v-model="collapsed" class="admin-side" breakpoint="lg" :trigger="null" collapsible>
         <div class="logo" />
         <a-menu
-          theme="dark" mode="inline"
+          mode="inline"
           :default-selected-keys="['1']"
           :default-open-keys="['sub1']"
         >
@@ -113,8 +113,10 @@
             </a-tab-pane>
           </a-tabs>
         </div>
-        <div class="admin-content-body">
-          <router-view />
+        <div class="admin-content-view">
+          <div class="admin-content-body">
+            <router-view />
+          </div>
         </div>
       </a-layout-content>
     </a-layout>
@@ -129,143 +131,4 @@ export default {
   }
 }
 </script>
-<style lang="less">
-.d-flex{
-  display: flex;
-}
-.float-left {
-    float: left !important;
-}
-.float-right {
-    float: right !important;
-}
-.float-none {
-    float: none !important;
-}
-.admin-side-parent{
-  .admin-side{
-    position: relative;
-    height: calc(100% - 20px);
-    overflow: auto;
-    left: 0;
-    top: 0;
-    padding: 0;
-    margin: 10px 10px;
-    border-radius: 10px;
-  }
-}
-
-.admin-content{
-  margin:0 10px;
-  min-height : 280px;
-  .admin-content-tab{
-    .ant-tabs-bar{
-      border-bottom:none;
-    }
-    .ant-tabs.ant-tabs-card .ant-tabs-card-bar {
-      margin-bottom: 5px;
-      .ant-tabs-tab{
-        border :none;
-        border-radius :5px;
-        background:#fff;
-        height: 30px;
-        padding: 0 10px;
-        line-height: 30px;
-        transition: all .2s;
-        &:hover{
-          box-shadow: 0 3px 8px -2px rgba(0,0,0,.12);
-          transform: translateY(-4px);
-        }
-      }
-      .ant-tabs-nav-container{
-        // height: 30px;
-        .ant-tabs-nav{
-          margin-top: 5px;
-          margin-bottom: 5px;
-          .ant-tabs-tab .anticon{
-            margin-right: 4px;
-          }
-        }
-      }
-    }
-  }
-  .admin-content-body{
-    height: calc(100% - 45px);
-    max-height: 100%;
-    overflow: auto;
-  }
-}
-
-
-.admin-header{
-  background: #fff;
-  padding: 0;
-  margin: 0;
-}
-
-.admin-header-round{
-  background: #fff;
-  padding: 0;
-  margin: 10px 10px 5px 10px;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px -2px rgba(85,85,85,.08),
-  0 2px 20px 0 rgba(85,85,85,.06),
-   0 1px 30px 0 rgba(85,85,85,.03);
-  .header-child.float-left .header-child-item:first-child{
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-  }
-  .header-child.float-right .header-child-item:last-child{
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-}
-
-
-.header-main{
-
-  .icon-size{
-    font-size: 18px;
-  }
-
-  .header-child{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    &>*{
-      cursor: pointer;
-      height: 64px;
-    }
-    &>*:hover{
-      background-color: rgba(0, 0, 0, 0.03);
-    }
-
-    .header-child-item{
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s;
-      padding-left: 14px;
-      padding-right: 14px;
-      .item-name{
-        max-width:100px;
-        text-overflow :ellipsis;
-        white-space :nowrap;
-        overflow : hidden;
-        @media (max-width: 600px) {
-          &{
-            display: none;
-          }
-        }
-      }
-    }
-  }
-}
-
-
-.logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
-}
-</style>
+<style lang="less" src="@/less/admin/index.less"/>

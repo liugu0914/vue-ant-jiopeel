@@ -1,0 +1,152 @@
+@import "../index";
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.admin-side {
+  background: #fff;
+  height: calc(100% - 20px);
+  overflow: auto;
+  left: 0;
+  top: 0;
+  padding: 0;
+  margin: 10px 10px;
+  border-radius: @border-radius-lg;
+  box-shadow: @card-shadow;
+}
+
+.admin-content {
+  min-height: 280px;
+
+  .admin-content-tab {
+    margin: 0 10px;
+
+    .ant-tabs-bar {
+      border-bottom: none;
+    }
+
+    .ant-tabs.ant-tabs-card .ant-tabs-card-bar {
+      margin-bottom: 5px;
+
+      .ant-tabs-tab {
+        border: none;
+        border-radius: 5px;
+        background: #fff;
+        height: 30px;
+        padding: 0 10px;
+        line-height: 30px;
+        transition: all .2s;
+
+        &:hover {
+          box-shadow: 0 3px 8px -2px rgba(0, 0, 0, .12);
+          transform: translateY(-4px);
+        }
+      }
+
+      .ant-tabs-nav-container {
+
+        // height: 30px;
+        .ant-tabs-nav {
+          margin-top: 5px;
+          margin-bottom: 5px;
+
+          .ant-tabs-tab .anticon {
+            margin-right: 4px;
+          }
+        }
+      }
+    }
+  }
+
+  .admin-content-view {
+    height: calc(100% - 45px);
+    max-height: 100%;
+    overflow: auto;
+
+    .admin-content-body {
+      margin: 10px;
+    }
+  }
+}
+
+
+.admin-header {
+  background: #fff;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-header-round {
+  background: #fff;
+  padding: 0;
+  margin: 10px 10px 5px 10px;
+  border-radius: @border-radius-lg;
+  box-shadow: @card-shadow;
+
+  .header-child.float-left .header-child-item:first-child {
+    border-top-left-radius: @border-radius-lg;
+    border-bottom-left-radius: @border-radius-lg;
+  }
+
+  .header-child.float-right .header-child-item:last-child {
+    border-top-right-radius: @border-radius-lg;
+    border-bottom-right-radius: @border-radius-lg;
+  }
+}
+
+
+.header-main {
+
+  .icon-size {
+    font-size: 18px;
+  }
+
+  .header-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &>* {
+      cursor: pointer;
+      height: 64px;
+    }
+
+    &>*:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .header-child-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      padding-left: 14px;
+      padding-right: 14px;
+
+      .item-name {
+        max-width: 100px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+
+        @media (max-width: 600px) {
+          & {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+.logo {
+  height: 32px;
+  background: rgba(0, 0, 0, 0.219);
+  margin: 16px;
+}

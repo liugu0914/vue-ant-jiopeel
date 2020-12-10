@@ -1,3 +1,37 @@
-@import '~ant-design-vue/dist/antd.less';
+@import "~ant-design-vue/dist/antd.less";
 // @import "default/index";
 @import "antd/index";
+
+// -------- Colors -----------
+@primary-color: #1492ff;
+@info-color: @blue-6;
+@success-color: @green-6;
+@processing-color: @blue-6;
+@error-color: @red-6;
+@highlight-color: @red-6;
+@warning-color: @gold-6;
+@normal-color: #d9d9d9;
+@white: #fff;
+@black: #000;
+
+@border-radius-lg: 10px;
+@border-radius-md: 6px;
+@border-radius-base: 4px;
+@border-radius-sm: 2px;
+
+// Card
+// ---
+@card-shadow: 0 0 10px 0 rgba(154, 161, 171, 0.15);
+@card-radius: @border-radius-lg;
+
+.ant-card {
+  border: none;
+  box-shadow: @card-shadow;
+}
+
+//menu
+.ant-menu-inline,
+.ant-menu-vertical,
+.ant-menu-vertical-left {
+  border-right: none;
+}
