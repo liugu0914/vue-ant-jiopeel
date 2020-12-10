@@ -131,4 +131,6 @@ export default {
   }
 }
 </script>
-<style lang="less" src="@/less/admin/index.less"/>
+<style lang="less">
+@import "@/less/admin/index";
+</style>
