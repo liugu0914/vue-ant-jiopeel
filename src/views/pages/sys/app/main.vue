@@ -1,59 +1,49 @@
 <template>
-  <a-card>
-    <div :class="advanced ? 'search' : null">
-      <a-form layout="horizontal">
-        <div :class="advanced ? null: 'fold'">
-          <a-row>
-            <a-col :md="8" :sm="24">
-              <a-form-item
-                label="规则编号"
-                :label-col="{span: 5}"
-                :wrapper-col="{span: 18, offset: 1}"
-              >
-                <a-input placeholder="请输入" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item
-                label="使用状态"
-                :label-col="{span: 5}"
-                :wrapper-col="{span: 18, offset: 1}"
-              >
-                <a-select placeholder="请选择">
-                  <a-select-option value="1">
-                    关闭
-                  </a-select-option>
-                  <a-select-option value="2">
-                    运行中
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item
-                label="调用次数"
-                :label-col="{span: 5}"
-                :wrapper-col="{span: 18, offset: 1}"
-              >
-                <a-input-number style="width: 100%" placeholder="请输入" />
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row v-if="advanced">
-            <a-col :md="8" :sm="24">
+  <div>
+    <a-breadcrumb class="m-2">
+      <a-breadcrumb-item>系统配置</a-breadcrumb-item>
+      <a-breadcrumb-item>菜单管理</a-breadcrumb-item>
+    </a-breadcrumb>
+    <a-card>
+      <a-form layout="vertical">
+        <a-row :gutter="[16,0]">
+          <a-col :lg="6" :md="8" :sm="24">
+            <a-form-item label="规则编号">
+              <a-input placeholder="请输入" />
+            </a-form-item>
+          </a-col>
+          <a-col :lg="6" :md="8" :sm="24">
+            <a-form-item
+              label="使用状态"
+            >
+              <a-select placeholder="请选择">
+                <a-select-option value="1">
+                  关闭
+                </a-select-option>
+                <a-select-option value="2">
+                  运行中
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="6" :md="8" :sm="24">
+            <a-form-item
+              label="调用次数"
+            >
+              <a-input-number style="width: 100%" placeholder="请输入" />
+            </a-form-item>
+          </a-col>
+          <template v-if="advanced">
+            <a-col :lg="6" :md="8" :sm="24">
               <a-form-item
                 label="更新日期"
-                :label-col="{span: 5}"
-                :wrapper-col="{span: 18, offset: 1}"
               >
                 <a-date-picker style="width: 100%" placeholder="请输入更新日期" />
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col :lg="6" :md="8" :sm="24">
               <a-form-item
                 label="使用状态"
-                :label-col="{span: 5}"
-                :wrapper-col="{span: 18, offset: 1}"
               >
                 <a-select placeholder="请选择">
                   <a-select-option value="1">
@@ -65,46 +55,59 @@
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col :lg="6" :md="8" :sm="24">
               <a-form-item
                 label="描述"
-                :label-col="{span: 5}"
-                :wrapper-col="{span: 18, offset: 1}"
               >
                 <a-input placeholder="请输入" />
               </a-form-item>
             </a-col>
-          </a-row>
-        </div>
-        <span style="float: right; margin-top: 3px;">
-          <a-button type="primary">查询</a-button>
-          <a-button style="margin-left: 8px">重置</a-button>
-          <a style="margin-left: 8px" @click="toggleAdvanced">
-            {{ advanced ? '收起' : '展开' }}
-            <a-icon :type="advanced ? 'up' : 'down'" />
-          </a>
-        </span>
+          </template>
+        </a-row>
       </a-form>
-    </div>
-    <div>
-      <div class="operator">
-        <a-button type="primary" @click="addNew">
-          新建
-        </a-button>
-        <a-button>批量操作</a-button>
-        <a-dropdown>
-          <a-menu slot="overlay" @click="handleMenuClick">
-            <a-menu-item key="delete">
-              删除
-            </a-menu-item>
-            <a-menu-item key="audit">
-              审批
-            </a-menu-item>
-          </a-menu>
-          <a-button>
-            更多操作 <a-icon type="down" />
-          </a-button>
-        </a-dropdown>
+      <div class="my-2">
+        <a-row :gutter="[0,16]">
+          <a-col :md="12" :sm="24">
+            <a-button-group>
+              <a-button type="primary" @click="visible = true">
+                <a-icon type="plus" />新建
+              </a-button>
+              <a-button @click="visible = true">
+                <a-icon type="edit" />编辑
+              </a-button>
+              <a-button>
+                <a-icon type="delete" />删除
+              </a-button>
+              <a-dropdown>
+                <a-menu slot="overlay" @click="handleMenuClick">
+                  <a-menu-item key="delete">
+                    删除
+                  </a-menu-item>
+                  <a-menu-item key="audit">
+                    审批
+                  </a-menu-item>
+                </a-menu>
+                <a-button>
+                  更多<a-icon type="down" />
+                </a-button>
+              </a-dropdown>
+            </a-button-group>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <div class="float-right">
+              <a-button class="mr-2" type="primary">
+                查询
+              </a-button>
+              <a-button class="mr-2">
+                重置
+              </a-button>
+              <a @click="toggleAdvanced">
+                {{ advanced ? '收起' : '展开' }}
+                <a-icon :type="advanced ? 'up' : 'down'" />
+              </a>
+            </div>
+          </a-col>
+        </a-row>
       </div>
       <standard-table
         :columns="columns"
@@ -118,33 +121,72 @@
           {{ text }}
         </div>
         <div slot="action" slot-scope="{record}">
-          <a style="margin-right: 8px">
-            <a-icon type="plus" />新增
-          </a>
-          <a style="margin-right: 8px">
-            <a-icon type="edit" />编辑
-          </a>
-          <a @click="deleteRecord(record.key)">
-            <a-icon type="delete" />删除1
-          </a>
-          <a @click="deleteRecord(record.key)">
-            <a-icon type="delete" />删除2
-          </a>
+          <a-tooltip>
+            <template slot="title">
+              编辑
+            </template>
+            <a class="mr-1" @click="edit(record)">
+              <a-icon type="edit" />
+            </a>
+          </a-tooltip>
+          <a-tooltip>
+            <template slot="title">
+              删除
+            </template>
+            <a @click="deleteRecord(record.key)">
+              <a-icon type="delete" />
+            </a>
+          </a-tooltip>
         </div>
         <template slot="statusTitle">
           <a-icon type="info-circle" @click.native="onStatusTitleClick" />
         </template>
       </standard-table>
-    </div>
-  </a-card>
+    </a-card>
+    <a-modal
+      v-model="visible"
+      :confirm-loading="confirmLoading"
+      centered
+      ok-text="确认" cancel-text="取消" title="新增"
+      @ok="handleOk"
+      @cancel="handleCancel">
+      <a-form-model ref="ruleForm" :model="dataForm" layout="vertical">
+        <a-row>
+          <a-col :sm="24">
+            <a-form-model-item
+              :rules=" { required: true, message: '描述不能为空', trigger: 'blur' }"
+              label="描述" prop="description">
+              <a-input v-model="dataForm.description" class="w-100" :max-length="255" autocomplete="off" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              :rules=" { required: true, message: '服务调用次数不能为空', trigger: 'blur' }"
+              label="服务调用次数" prop="callNo">
+              <a-input-number v-model.number="dataForm.callNo" class="w-100" :min="0" :max="1000000" autocomplete="off" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              :rules=" { required: true, message: '更新时间不能为空', trigger: ['change', 'blur'] }"
+              label="更新时间" prop="updatedAt">
+              <a-date-picker v-model="dataForm.updatedAt" class="w-100" @change="(m,str)=>dataForm.updatedAt=str" />
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+      </a-form-model>
+    </a-modal>
+  </div>
 </template>
 
 <script>
 import StandardTable from '@/components/table/StandardTable'
+import moment from 'moment'
+import 'moment/locale/zh-cn'
 const columns = [
   {
-    title: '规则编号',
-    dataIndex: 'no'
+    title: '序号',
+    dataIndex: 'index'
   },
   {
     title: '描述',
@@ -170,6 +212,7 @@ const columns = [
   },
   {
     title: '操作',
+    dataIndex: 'ops',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -179,20 +222,32 @@ const dataSource = []
 for (let i = 0; i < 100; i++) {
   dataSource.push({
     key: i,
-    no: 'NO ' + i,
+    id: i,
+    index: i + 1,
     description: '这是一段描述',
     callNo: Math.floor(Math.random() * 1000),
     status: Math.floor(Math.random() * 10) % 4,
     updatedAt: '2018-07-26'
   })
 }
+const DefaultForm = {
+  id: '',
+  description: '',
+  callNo: '',
+  updatedAt: ''
+}
+const dataForm = JSON.parse(JSON.stringify(DefaultForm))
 
 export default {
   name: 'QueryList',
   components: { StandardTable },
   data() {
     return {
+      moment,
       advanced: true,
+      visible: false,
+      confirmLoading: false,
+      dataForm: dataForm,
       columns: columns,
       dataSource: dataSource,
       selectedRows: []
@@ -202,6 +257,42 @@ export default {
     deleteRecord: 'delete'
   },
   methods: {
+    submitForm(formName, callback) {
+      this.$refs[formName].validate(valid => {
+        if (!valid) return
+        console.log('error submit!!')
+        return callback()
+      })
+    },
+    resetForm(formName) {
+      console.log(DefaultForm)
+      this.$refs[formName].resetFields()
+      this.dataForm = JSON.parse(JSON.stringify(DefaultForm))
+    },
+    edit(record) {
+      const data = JSON.parse(JSON.stringify(record))
+      data.updatedAt = moment(data.updatedAt)
+      this.dataForm = data
+      this.visible = true
+    },
+    handleOk(e) {
+      this.$refs['ruleForm'].validate(valid => {
+        if (!valid) return
+        this.confirmLoading = true
+        console.log(JSON.stringify(this.dataForm))
+        setTimeout(() => {
+          this.visible = false
+          this.confirmLoading = false
+          this.resetForm('ruleForm')
+        }, 2000)
+      })
+    },
+    handleCancel(e) {
+      console.log('Clicked cancel button')
+      this.visible = false
+      this.resetForm('ruleForm')
+      console.log(JSON.stringify(this.dataForm))
+    },
     deleteRecord(key) {
       this.dataSource = this.dataSource.filter(item => item.key !== key)
       this.selectedRows = this.selectedRows.filter(item => item.key !== key)
@@ -228,7 +319,7 @@ export default {
     addNew() {
       this.dataSource.unshift({
         key: this.dataSource.length,
-        no: 'NO ' + this.dataSource.length,
+        index: this.dataSource.length,
         description: '这是一段描述',
         callNo: Math.floor(Math.random() * 1000),
         status: Math.floor(Math.random() * 10) % 4,
@@ -245,19 +336,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .search{
-    margin-bottom: 54px;
-  }
-  .fold{
-    width: calc(100% - 216px);
-    display: inline-block
-  }
-  .operator{
-    margin-bottom: 18px;
-  }
-  @media screen and (max-width: 900px) {
-    .fold {
-      width: 100%;
-    }
-  }
+
 </style>

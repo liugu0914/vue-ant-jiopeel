@@ -1,6 +1,6 @@
 <template>
   <div class="standard-table">
-    <div class="alert">
+    <!-- <div class="alert">
       <a-alert v-if="selectedRows" type="info" :show-icon="true">
         <div slot="message" class="message">
           已选择&nbsp;<a>{{ selectedRows.length }}</a>&nbsp;项 <a class="clear" @click="onClear">清空</a>
@@ -12,7 +12,7 @@
           </template>
         </div>
       </a-alert>
-    </div>
+    </div> -->
     <a-table
       :bordered="bordered"
       :loading="loading"
