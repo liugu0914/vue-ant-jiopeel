@@ -1,73 +1,92 @@
 <template>
   <div>
-    <a-breadcrumb class="m-2">
+    <!-- 面包屑 -->
+    <!-- <a-breadcrumb class="m-2">
       <a-breadcrumb-item>系统配置</a-breadcrumb-item>
       <a-breadcrumb-item>菜单管理</a-breadcrumb-item>
-    </a-breadcrumb>
+    </a-breadcrumb> -->
     <a-card>
-      <a-form layout="vertical">
-        <a-row :gutter="[16,0]">
-          <a-col :lg="6" :md="8" :sm="24">
-            <a-form-item label="规则编号">
-              <a-input placeholder="请输入" />
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6" :md="8" :sm="24">
-            <a-form-item
-              label="使用状态"
-            >
-              <a-select placeholder="请选择">
-                <a-select-option value="1">
-                  关闭
-                </a-select-option>
-                <a-select-option value="2">
-                  运行中
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6" :md="8" :sm="24">
-            <a-form-item
-              label="调用次数"
-            >
-              <a-input-number style="width: 100%" placeholder="请输入" />
-            </a-form-item>
-          </a-col>
-          <template v-if="advanced">
-            <a-col :lg="6" :md="8" :sm="24">
-              <a-form-item
-                label="更新日期"
-              >
-                <a-date-picker style="width: 100%" placeholder="请输入更新日期" />
-              </a-form-item>
-            </a-col>
-            <a-col :lg="6" :md="8" :sm="24">
-              <a-form-item
-                label="使用状态"
-              >
-                <a-select placeholder="请选择">
-                  <a-select-option value="1">
-                    关闭
-                  </a-select-option>
-                  <a-select-option value="2">
-                    运行中
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :lg="6" :md="8" :sm="24">
-              <a-form-item
-                label="描述"
-              >
-                <a-input placeholder="请输入" />
-              </a-form-item>
-            </a-col>
-          </template>
-        </a-row>
-      </a-form>
+      <!-- 搜索 -->
+      <a-row type="flex" align="middle">
+        <a-col :xl="18" :lg="16" :md="24" :sm="24" :xs="24">
+          <a-form layout="vertical">
+            <a-row :class="['search',advanced?'search-advanced':null]" :gutter="[16,0]">
+              <a-col :xl="6" :lg="8" :md="12" :sm="24">
+                <a-form-item label="规则编号">
+                  <a-input placeholder="请输入" />
+                </a-form-item>
+              </a-col>
+              <a-col :xl="6" :lg="8" :md="12" :sm="24">
+                <a-form-item
+                  label="使用状态"
+                >
+                  <a-select placeholder="请选择">
+                    <a-select-option value="1">
+                      关闭
+                    </a-select-option>
+                    <a-select-option value="2">
+                      运行中
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :xl="6" :lg="8" :md="12" :sm="24">
+                <a-form-item
+                  label="调用次数"
+                >
+                  <a-input-number style="width: 100%" placeholder="请输入" />
+                </a-form-item>
+              </a-col>
+              <a-col :xl="6" :lg="8" :md="12" :sm="24">
+                <a-form-item
+                  label="更新日期"
+                >
+                  <a-date-picker style="width: 100%" placeholder="请输入更新日期" />
+                </a-form-item>
+              </a-col>
+              <a-col :xl="6" :lg="8" :md="12" :sm="24">
+                <a-form-item
+                  label="使用状态"
+                >
+                  <a-select placeholder="请选择">
+                    <a-select-option value="1">
+                      关闭
+                    </a-select-option>
+                    <a-select-option value="2">
+                      运行中
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :xl="6" :lg="8" :md="12" :sm="24">
+                <a-form-item
+                  label="描述"
+                >
+                  <a-input placeholder="请输入" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-form>
+        </a-col>
+        <a-col :xl="6" :lg="8" :md="24" :sm="24" :xs="24">
+          <div class="float-right">
+            <a-button class="mr-2" type="primary">
+              查询
+            </a-button>
+            <a-button class="mr-2">
+              重置
+            </a-button>
+            <a @click="toggleAdvanced">
+              {{ advanced ?'展开': '收起' }}
+              <a-icon :type="advanced ? 'down' : 'up'" />
+            </a>
+          </div>
+        </a-col>
+      </a-row>
+      <!-- 操作按钮 -->
       <div class="my-2">
         <a-row :gutter="[0,16]">
-          <a-col :md="12" :sm="24">
+          <a-col>
             <a-button-group>
               <a-button type="primary" @click="visible = true">
                 <a-icon type="plus" />新建
@@ -93,22 +112,9 @@
               </a-dropdown>
             </a-button-group>
           </a-col>
-          <a-col :md="12" :sm="24">
-            <div class="float-right">
-              <a-button class="mr-2" type="primary">
-                查询
-              </a-button>
-              <a-button class="mr-2">
-                重置
-              </a-button>
-              <a @click="toggleAdvanced">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'" />
-              </a>
-            </div>
-          </a-col>
         </a-row>
       </div>
+      <!-- 表格 -->
       <standard-table
         :columns="columns"
         :data-source="dataSource"
@@ -143,6 +149,7 @@
         </template>
       </standard-table>
     </a-card>
+    <!-- 弹窗 -->
     <a-modal
       v-model="visible"
       :confirm-loading="confirmLoading"
@@ -170,7 +177,7 @@
             <a-form-model-item
               :rules=" { required: true, message: '更新时间不能为空', trigger: ['change', 'blur'] }"
               label="更新时间" prop="updatedAt">
-              <a-date-picker v-model="dataForm.updatedAt" class="w-100" @change="(m,str)=>dataForm.updatedAt=str" />
+              <a-date-picker v-model="dataForm.updatedAt" input-read-only value-format="YYYY-MM-DD" class="w-100" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -181,8 +188,7 @@
 
 <script>
 import StandardTable from '@/components/table/StandardTable'
-import moment from 'moment'
-import 'moment/locale/zh-cn'
+import _ from 'lodash'
 const columns = [
   {
     title: '序号',
@@ -216,10 +222,9 @@ const columns = [
     scopedSlots: { customRender: 'action' }
   }
 ]
-
 const dataSource = []
 
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 95; i++) {
   dataSource.push({
     key: i,
     id: i,
@@ -236,14 +241,12 @@ const DefaultForm = {
   callNo: '',
   updatedAt: ''
 }
-const dataForm = JSON.parse(JSON.stringify(DefaultForm))
-
+const dataForm = _.cloneDeep(DefaultForm)
 export default {
   name: 'QueryList',
   components: { StandardTable },
   data() {
     return {
-      moment,
       advanced: true,
       visible: false,
       confirmLoading: false,
@@ -265,21 +268,18 @@ export default {
       })
     },
     resetForm(formName) {
-      console.log(DefaultForm)
       this.$refs[formName].resetFields()
-      this.dataForm = JSON.parse(JSON.stringify(DefaultForm))
+      this.dataForm = _.cloneDeep(DefaultForm)
+      console.log(DefaultForm)
     },
     edit(record) {
-      const data = JSON.parse(JSON.stringify(record))
-      data.updatedAt = moment(data.updatedAt)
-      this.dataForm = data
+      this.dataForm = _.cloneDeep(record)
       this.visible = true
     },
     handleOk(e) {
       this.$refs['ruleForm'].validate(valid => {
         if (!valid) return
         this.confirmLoading = true
-        console.log(JSON.stringify(this.dataForm))
         setTimeout(() => {
           this.visible = false
           this.confirmLoading = false
@@ -291,7 +291,6 @@ export default {
       console.log('Clicked cancel button')
       this.visible = false
       this.resetForm('ruleForm')
-      console.log(JSON.stringify(this.dataForm))
     },
     deleteRecord(key) {
       this.dataSource = this.dataSource.filter(item => item.key !== key)
@@ -336,5 +335,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+.search-advanced{
+  height: @ant-form-item-bottom + 69px;
+  overflow: hidden;
+}
 </style>

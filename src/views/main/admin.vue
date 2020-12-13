@@ -1,9 +1,9 @@
 <template>
   <a-layout class="h-100">
-    <a-layout-sider v-model="collapsed" class="admin-side" breakpoint="lg" :trigger="null" collapsible>
+    <a-layout-sider v-model="collapsed" class="admin-side" theme="light" breakpoint="lg" :trigger="null" collapsible>
       <div class="logo" />
       <a-menu
-        mode="inline"
+        mode="inline" theme="light"
         :default-selected-keys="['1']"
         :default-open-keys="['sub1']"
       >
@@ -68,6 +68,12 @@
                 class="icon-size"
                 :type="collapsed ? 'menu-unfold' : 'menu-fold'"
               />
+            </div>
+            <div class="header-child-item normal">
+              <a-breadcrumb class="item-breadcrumb">
+                <a-breadcrumb-item>系统配置</a-breadcrumb-item>
+                <a-breadcrumb-item>菜单管理</a-breadcrumb-item>
+              </a-breadcrumb>
             </div>
           </div>
           <div class="header-child ">

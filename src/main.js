@@ -11,7 +11,6 @@ import Tool from './utils/tool'
 import './permission' // permission control
 
 
-
 Vue.config.productionTip = false
 // 工具类
 Vue.prototype.$tool = Tool

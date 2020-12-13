@@ -52,7 +52,13 @@ export default {
     },
     pagination: {
       type: [Object, Boolean],
-      default: true
+      default: () => (
+        { pageSizeOptions: ['10', '20', '30', '40', '50'],
+          showSizeChanger: true,
+          defaultPageSize: 10,
+          hideOnSinglePage: true
+        }
+      )
     },
     selectedRows: Array,
     expandedRowKeys: Array,

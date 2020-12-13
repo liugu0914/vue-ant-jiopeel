@@ -5,6 +5,7 @@
         <a-col :span="24">
           <div class="login-logo">
             <img height="60" width="60" :src="require('@/assets/img/login.svg')">
+            <!-- <i class="cs cs-login primary" /> -->
           </div>
           <a-card class="login-main" :bordered="false">
             <div class="login-title">

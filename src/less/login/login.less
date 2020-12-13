@@ -1,8 +1,7 @@
 // 登陆界面
-@color-primary: #006dc9;
-@color-grey: #44a0b30f;
-@color-dark: #44a0b380;
-@color-semidark: #07d0e8;
+@color-primary: @primary-7;
+@color-grey: #f2f5f8;
+@color-semidark: @primary-color;
 
 .login-app {
   height: 100vh;
@@ -32,7 +31,7 @@
 
   .login-main {
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08) !important;
-    border-radius: 0.5em;
+    border-radius: @border-radius-xl;
     // &::after{
     //   content: ' ';
     //   box-shadow: 0 0 25px rgba(0, 0, 0, .1);
@@ -63,15 +62,11 @@
   input {
     border-color: @color-grey;
     background: @color-grey  !important;
-    color: @color-dark;
     padding-top: 10px;
     padding-bottom: 10px;
     height: 50px;
   }
 
-  input::-webkit-input-placeholder {
-    color: @color-dark;
-  }
 
   .ant-input-affix-wrapper .ant-input:not(:last-child) {
     padding-right: 40px;

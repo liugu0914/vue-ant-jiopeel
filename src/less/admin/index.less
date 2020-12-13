@@ -11,15 +11,12 @@
 }
 
 .admin-side {
-  background: #fff;
   height: calc(100% - 20px);
   overflow-x: hidden;
   overflow-y: auto;
-  left: 0;
-  top: 0;
   padding: 0;
   margin: 10px 10px;
-  border-radius: @border-radius-lg;
+  border-radius: @border-radius-xl;
   box-shadow: @card-shadow;
 }
 
@@ -35,7 +32,7 @@
 
     .ant-tabs-tab {
       border: none;
-      border-radius: 5px;
+      border-radius: @border-radius-md;
       background: #fff;
       height: 30px;
       padding: 0 10px;
@@ -88,17 +85,17 @@
   background: #fff;
   padding: 0;
   margin: 10px 10px 5px 10px;
-  border-radius: @border-radius-lg;
+  border-radius: @border-radius-xl;
   box-shadow: @card-shadow;
 
   .header-child:first-child .header-child-item:first-child {
-    border-top-left-radius: @border-radius-lg;
-    border-bottom-left-radius: @border-radius-lg;
+    border-top-left-radius: @border-radius-xl;
+    border-bottom-left-radius: @border-radius-xl;
   }
 
   .header-child:last-child .header-child-item:last-child {
-    border-top-right-radius: @border-radius-lg;
-    border-bottom-right-radius: @border-radius-lg;
+    border-top-right-radius: @border-radius-xl;
+    border-bottom-right-radius: @border-radius-xl;
   }
 }
 
@@ -116,10 +113,7 @@
     align-items: center;
     justify-content: center;
 
-
-
     .header-child-item {
-      cursor: pointer;
       height: 64px;
       display: flex;
       align-items: center;
@@ -128,8 +122,17 @@
       padding-left: 14px;
       padding-right: 14px;
 
-      &:hover {
+      &:not(.normal):hover {
+        cursor: pointer;
         background-color: @primary-1;
+      }
+
+      .item-breadcrumb {
+        @media (max-width: 600px) {
+          & {
+            display: none;
+          }
+        }
       }
 
       .item-name {
@@ -153,4 +156,8 @@
   height: 32px;
   background: rgba(0, 0, 0, 0.219);
   margin: 16px;
+}
+
+.ant-layout-sider-dark .logo {
+  background: #fafafa;
 }
