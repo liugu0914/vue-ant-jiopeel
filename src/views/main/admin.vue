@@ -69,8 +69,8 @@
                 :type="collapsed ? 'menu-unfold' : 'menu-fold'"
               />
             </div>
-            <div class="header-child-item normal">
-              <a-breadcrumb class="item-breadcrumb">
+            <div class="header-child-item normal d-none">
+              <a-breadcrumb>
                 <a-breadcrumb-item>系统配置</a-breadcrumb-item>
                 <a-breadcrumb-item>菜单管理</a-breadcrumb-item>
               </a-breadcrumb>
@@ -88,7 +88,7 @@
             <a-dropdown>
               <div class="header-child-item">
                 <a-avatar size="default" shape="circle" src="https://gw.alipayobjects.com/zos/rmsportal/WhxKECPNujWoWEFNdnJE.png" />
-                <span class="ml-1 item-name">系统管理员</span>
+                <span class="ml-1 item-name d-none">系统管理员</span>
               </div>
               <a-menu slot="overlay">
                 <a-menu-item>

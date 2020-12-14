@@ -128,26 +128,21 @@
         background-color: @primary-1;
       }
 
-      .item-breadcrumb {
-        @media (max-width: 600px) {
-          & {
-            display: none;
-          }
-        }
-      }
-
       .item-name {
         max-width: 100px;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
-
-        @media (max-width: 600px) {
-          & {
-            display: none;
-          }
-        }
       }
+    }
+  }
+}
+
+
+.d-none {
+  @media (max-width: 600px) {
+    & {
+      display: none !important;
     }
   }
 }

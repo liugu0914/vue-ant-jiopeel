@@ -1,4 +1,5 @@
 const path = require('path')
+const { modifyVars } = require('./src/utils/themeUtil.js')
 
 module.exports = {
   configureWebpack: {
@@ -14,11 +15,7 @@ module.exports = {
     loaderOptions: {
       less: {
         lessOptions: {
-          // modifyVars: {
-          //   'primary-color': '#FFF',
-          //   'link-color': '#1DA57A',
-          //   'border-radius-base': '2px'
-          // },
+          modifyVars: modifyVars(),
           javascriptEnabled: true
         }
       }
