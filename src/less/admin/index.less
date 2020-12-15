@@ -18,6 +18,10 @@
   margin: 10px 10px;
   border-radius: @border-radius-xl;
   box-shadow: @card-shadow;
+
+  &.hidden{
+    margin: 10px 0;
+  }
 }
 
 .admin-content-tab {
@@ -64,10 +68,12 @@
   min-height: 280px;
 
   .admin-content-view {
-    height: calc(100% - 45px);
-    max-height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    &.fixed{
+      height: calc(100% - 45px);
+      max-height: 100%;
+    }
 
     .admin-content-body {
       margin: 10px;
@@ -156,4 +162,14 @@
 
 .ant-layout-sider-dark .logo {
   background: #fafafa;
+}
+
+.ant-drawer-content{
+
+  background-color:@layout-body-background;
+}
+
+.ant-drawer-body{
+  height: 100%;
+  padding:10px;
 }

@@ -1,6 +1,74 @@
 <template>
   <a-layout class="h-100">
-    <a-layout-sider v-model="collapsed" class="admin-side" theme="light" breakpoint="lg" :trigger="null" collapsible>
+    <a-drawer
+      v-if="isMobile"
+      placement="left"
+      :closable="false"
+      :visible="sideMenuShow"
+      :width="240"
+      @close="()=> sideMenuShow = false"
+    >
+      <a-layout-sider :class="['admin-side']" theme="light">
+        <div class="logo" />
+        <a-menu
+          mode="inline" theme="light"
+          :default-selected-keys="['1']"
+          :default-open-keys="['sub1']"
+        >
+          <a-sub-menu key="sub1">
+            <span slot="title">
+              <a-icon type="user" />
+              <span>subnav 1</span>
+            </span>
+            <a-menu-item key="1">
+              option1
+            </a-menu-item>
+            <a-menu-item key="2">
+              option2
+            </a-menu-item>
+            <a-menu-item key="3">
+              option3
+            </a-menu-item>
+            <a-menu-item key="4">
+              option4
+            </a-menu-item>
+          </a-sub-menu>
+          <a-sub-menu key="sub2">
+            <span slot="title"><a-icon type="laptop" /><span>subnav 2</span>
+            </span>
+            <a-menu-item key="5">
+              option5
+            </a-menu-item>
+            <a-menu-item key="6">
+              option6
+            </a-menu-item>
+            <a-menu-item key="7">
+              option7
+            </a-menu-item>
+            <a-menu-item key="8">
+              option8
+            </a-menu-item>
+          </a-sub-menu>
+          <a-sub-menu key="sub3">
+            <span slot="title"><a-icon type="notification" /><span>subnav 3</span>
+            </span>
+            <a-menu-item key="9">
+              option9
+            </a-menu-item>
+            <a-menu-item key="10">
+              option10
+            </a-menu-item>
+            <a-menu-item key="11">
+              option11
+            </a-menu-item>
+            <a-menu-item key="12">
+              option12
+            </a-menu-item>
+          </a-sub-menu>
+        </a-menu>
+      </a-layout-sider>
+    </a-drawer>
+    <a-layout-sider v-model="collapsed" :class="['admin-side',isMobile?'hidden':null]" theme="light" breakpoint="md" :collapsed-width="collapsedWidth" collapsible @breakpoint="changeBreakpoint">
       <div class="logo" />
       <a-menu
         mode="inline" theme="light"
@@ -63,7 +131,14 @@
       <a-layout-header class="admin-header-round">
         <div class="header-main">
           <div class="header-child ">
-            <div class="header-child-item px-3" @click="() => (collapsed = !collapsed)">
+            <!-- 折叠按钮 -->
+            <div v-if="isMobile" class="header-child-item px-3" @click="() =>(sideMenuShow = !sideMenuShow)">
+              <a-icon
+                class="icon-size"
+                :type="collapsed ? 'menu-unfold' : 'menu-fold'"
+              />
+            </div>
+            <div v-else class="header-child-item px-3" @click="() => (collapsed = !collapsed)">
               <a-icon
                 class="icon-size"
                 :type="collapsed ? 'menu-unfold' : 'menu-fold'"
@@ -117,7 +192,7 @@
             </a-tab-pane>
           </a-tabs>
         </div>
-        <div class="admin-content-view">
+        <div class="admin-content-view fixed">
           <div class="admin-content-body">
             <router-view />
           </div>
@@ -130,7 +205,17 @@
 export default {
   data() {
     return {
-      collapsed: false
+      collapsed: false,
+      sideMenuShow: false,
+      isMobile: false,
+      collapsedWidth: 80
+    }
+  },
+  methods: {
+    changeBreakpoint(broken) {
+      this.isMobile = broken
+      this.collapsedWidth = broken ? 0 : 80
+      console.log('broken :' + broken)
     }
   }
 }

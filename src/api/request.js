@@ -4,7 +4,7 @@ import { message } from 'ant-design-vue'
 import Lockr from 'lockr'
 import router from '@/router/index.js'
 import qs from 'qs'
-import '@/utils/promise'
+import '@/utils/promise-plugs'
 
 // 消息提示
 const Msg = message
