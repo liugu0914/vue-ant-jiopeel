@@ -68,7 +68,7 @@
         </a-menu>
       </a-layout-sider>
     </a-drawer>
-    <a-layout-sider v-model="collapsed" :class="['admin-side',isMobile?'hidden':null]" theme="light" breakpoint="md" :collapsed-width="collapsedWidth" collapsible @breakpoint="changeBreakpoint">
+    <a-layout-sider v-model="collapsed" :class="['admin-side',isMobile?'hidden':null]" :trigger="null" theme="light" breakpoint="md" :collapsed-width="collapsedWidth" collapsible @breakpoint="changeBreakpoint">
       <div class="logo" />
       <a-menu
         mode="inline" theme="light"
