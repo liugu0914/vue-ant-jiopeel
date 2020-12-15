@@ -9,7 +9,12 @@
       @close="()=> sideMenuShow = false"
     >
       <a-layout-sider :class="['admin-side']" theme="light">
-        <div class="logo" />
+        <div class="admin-side-header">
+          <div class="logo" />
+          <h1>
+            {{ 'white ice' }}
+          </h1>
+        </div>
         <a-menu
           mode="inline" theme="light"
           :default-selected-keys="['1']"
@@ -69,7 +74,12 @@
       </a-layout-sider>
     </a-drawer>
     <a-layout-sider v-model="collapsed" :class="['admin-side',isMobile?'hidden':null]" :trigger="null" theme="light" breakpoint="md" :collapsed-width="collapsedWidth" collapsible @breakpoint="changeBreakpoint">
-      <div class="logo" />
+      <div class="admin-side-header">
+        <div class="logo" />
+        <h1 v-if="!collapsed">
+          {{ 'white ice' }}
+        </h1>
+      </div>
       <a-menu
         mode="inline" theme="light"
         :default-selected-keys="['1']"

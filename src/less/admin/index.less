@@ -22,7 +22,27 @@
   &.hidden{
     margin: 10px 0;
   }
+  .admin-side-header {
+    height: 64px;
+    position: relative;
+    line-height: 64px;
+    -webkit-transition: all .3s;
+    transition: all .3s;
+    overflow: hidden;
+    display: flex;
+    padding-left: 8px;
+
+    .logo {
+      height: 32px;
+      width: 32px;
+      vertical-align: middle;
+      background: rgba(0, 0, 0, 0.219);
+      margin: 16px;
+    }
+  }
 }
+
+
 
 .admin-content-tab {
   margin: 0 10px;
@@ -91,7 +111,7 @@
 .admin-header-round {
   background: #fff;
   padding: 0;
-  margin: 10px 10px 5px 10px;
+  margin: 10px 10px 10px 10px;
   border-radius: @border-radius-xl;
   box-shadow: @card-shadow;
 
@@ -154,11 +174,6 @@
 }
 
 
-.logo {
-  height: 32px;
-  background: rgba(0, 0, 0, 0.219);
-  margin: 16px;
-}
 
 .ant-layout-sider-dark .logo {
   background: #fafafa;
