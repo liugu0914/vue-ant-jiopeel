@@ -11,11 +11,14 @@
     "ant-design-vue": "^1.7.2",
     "axios": "^0.21.0",
     "core-js": "^3.6.5",
+    "enquire.js": "^2.1.6",
     "lockr": "^0.8.5",
     "lodash": "^4.17.20",
+    "nprogress": "^0.2.0",
     "qs.js": "^0.1.12",
     "vue": "^2.6.11",
-    "vue-router": "^3.4.8"
+    "vue-router": "^3.4.8",
+    "vuex": "^3.6.0"
   },
   "devDependencies": {
     "@ant-design/colors": "^5.0.1",

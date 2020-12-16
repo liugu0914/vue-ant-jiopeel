@@ -1,22 +1,36 @@
+import enquireJs from 'enquire.js'
+
+const _toString = Object.prototype.toString
+
+
+export function isDef(v) {
+  return v !== undefined && v !== null
+}
+
 /**
- * ------------------------------------------------------------------------
- *  工具类
- *  @author lyc
- *  @date 2020年06月04日17:48:50
- * ------------------------------------------------------------------------
+ * Remove an item from an array.
  */
-class Utils {
-  /**
-     * 数组中是否包含item
-     * @param {*} arr
-     * @param {String} item
-     */
-  static contains(arr, item) {
-    return !!item && (
-      (arr instanceof Array && arr.some(value => item.startsWith(value))) ||
-      (typeof arr === 'string' && item.startsWith(arr))
-    )
+export function remove(arr, item) {
+  if (arr.length) {
+    const index = arr.indexOf(item)
+    if (index > -1) {
+      return arr.splice(index, 1)
+    }
   }
 }
 
-export default Utils
+export function isRegExp(v) {
+  return _toString.call(v) === '[object RegExp]'
+}
+
+export function enquireScreen(call) {
+  const handler = {
+    match: function() {
+      call && call(true)
+    },
+    unmatch: function() {
+      call && call(false)
+    }
+  }
+  enquireJs.register('only screen and (max-width: 767.99px)', handler)
+}

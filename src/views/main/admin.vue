@@ -215,7 +215,7 @@
 export default {
   data() {
     return {
-      collapsed: false,
+      collapsed: true,
       sideMenuShow: false,
       isMobile: false,
       collapsedWidth: 80

@@ -4,6 +4,7 @@
 import App from './App.vue'
 import Lockr from 'lockr'
 import Vue from 'vue'
+import store from './store'
 import router from './router' // 路由器
 import Antd from 'ant-design-vue'
 import './theme/index.less'
@@ -28,5 +29,6 @@ console.log('app start')
  */
 new Vue({
   router,
+  store,
   render: (h) => h(App)
 }).$mount('#app')

@@ -1,10 +1,17 @@
 import router from '@/router/index.js'
 import Lockr from 'lockr'
-import Utils from '@/utils/utils'
+import Tool from '@/utils/tool'
+import NProgress from 'nprogress'
+
+NProgress.configure({ showSpinner: false })
 
 // 不重定向白名单
 const whiteList = ['/login']
 router.beforeEach((to, from, next) => {
+  if (!NProgress.isStarted()) {
+    NProgress.start()
+  }
+
   console.log('to : ')
   console.log(to)
   console.log('from : ')
@@ -12,7 +19,7 @@ router.beforeEach((to, from, next) => {
   /** 全局路由触发这个方法  如果有缓存暂时在这里交与 */
   const token = Lockr.get('access_token') || '123'
   // 拥有token之后 不允许访问/login
-  // if (token && Utils.contains('/login', to.path)) {
+  // if (token && Tool.contains('/login', to.path)) {
   //   return next('/')
   // }
   // 放行不需要认证的路由
@@ -21,12 +28,16 @@ router.beforeEach((to, from, next) => {
   }
 
   if (!token) {
-    if (Utils.contains(whiteList, to.path)) {
+    if (Tool.contains(whiteList, to.path)) {
       return next()
     }
     return next('/login')
   }
   return next()
+})
+
+router.afterEach(() => {
+  NProgress.done()
 })
 
 router.onError((error) => {

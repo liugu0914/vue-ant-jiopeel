@@ -262,6 +262,13 @@ class Tool {
     // 返回验证结果，校验码和格式同时正确才算是合法的身份证号码
     return last === lastNo && format
   }
+
+  static contains(arr, item) {
+    return !!item && (
+      (arr instanceof Array && arr.some(value => item.startsWith(value))) ||
+      (typeof arr === 'string' && item.startsWith(arr))
+    )
+  }
 }
 
 export default Tool
