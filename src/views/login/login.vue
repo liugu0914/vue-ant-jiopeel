@@ -380,11 +380,12 @@ export default {
      * 授权登录
      */
     OauthLogin(grantType) {
+      this.$message.loading('开始授权...', 0)
       Oauth.getAuthUrl(grantType).then(res => {
         const auth = res.data
         console.log(auth)
         window.location.href = auth.url
-      })
+      }).done()
     }
   }
 }

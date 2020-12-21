@@ -1,26 +1,6 @@
 import axios from 'axios'
 import Lockr from 'lockr'
 
-// 跨域认证信息 header 名
-const xsrfHeaderName = 'Authorization'
-const Authorization = 'access_token'
-
-axios.defaults.timeout = 15000
-axios.defaults.baseURL = process.env.VUE_APP_BASE_API
-axios.defaults.withCredentials = true
-axios.defaults.Authorization = Authorization
-axios.defaults.xsrfHeaderName = xsrfHeaderName
-axios.defaults.xsrfCookieName = xsrfHeaderName
-axios.defaults.headers.post['Content-Type'] = CONTENT_TYPE.FORM
-
-// 认证类型
-const AUTH_TYPE = {
-  BEARER: 'Bearer',
-  BASIC: 'basic',
-  AUTH1: 'auth1',
-  AUTH2: 'auth2'
-}
-
 /**
  * 请求类型
  */
@@ -36,6 +16,18 @@ const METHOD = {
   POST: 'post'
 }
 
+
+// 跨域认证信息 header 名
+const Authorization = 'access_token'
+
+axios.defaults.timeout = 15000
+axios.defaults.baseURL = process.env.VUE_APP_BASE_API
+axios.defaults.withCredentials = true
+axios.defaults.Authorization = Authorization
+axios.defaults.xsrfHeaderName = Authorization
+axios.defaults.xsrfCookieName = Authorization
+axios.defaults.headers.post['Content-Type'] = CONTENT_TYPE.FORM
+
 /**
  * axios请求
  * @param url 请求地址
@@ -44,6 +36,10 @@ const METHOD = {
  * @returns {Promise<AxiosResponse<T>>}
  */
 async function request(url, method, params) {
+  // 兼容axios.request (不推荐)
+  if (arguments.length === 1 && Object.prototype.toString.call(arguments[0]) === '[object Object]') {
+    return axios.request(arguments[0])
+  }
   switch (method) {
     case METHOD.GET:
       return axios.get(url, { params })
@@ -56,16 +52,14 @@ async function request(url, method, params) {
 
 /**
  * 设置认证信息
- * @param auth {Object}
- * @param authType {AUTH_TYPE} 认证类型，默认：{AUTH_TYPE.BEARER}
+ * @param token {Object}
  */
-function setAuthorization(auth) {
-  Lockr.set(Authorization, auth.token)
+function setAuthorization(token) {
+  Lockr.set(Authorization, token)
 }
 
 /**
  * 移出认证信息
- * @param authType {AUTH_TYPE} 认证类型
  */
 function removeAuthorization() {
   Lockr.rm(Authorization)
@@ -142,7 +136,6 @@ function parseUrlParams(url) {
 
 export {
   METHOD,
-  AUTH_TYPE,
   CONTENT_TYPE,
   request,
   setAuthorization,

@@ -1,7 +1,8 @@
-import { loadRoutes, loadGuards, setAppOptions } from '@/utils/routerUtil'
+import { loadGuards, setAppOptions } from '@/utils/routerUtil'
 import { loadInterceptors } from '@/utils/request'
 import guards from '@/router/guards'
 import interceptors from '@/utils/axios-interceptors'
+
 
 /**
  * 启动引导方法
@@ -14,7 +15,7 @@ import interceptors from '@/utils/axios-interceptors'
 function bootstrap({ router, store, i18n, message }) {
   // 配置message
   message.config({
-    top: `100px`,
+    top: '50px',
     duration: 2,
     maxCount: 3
   })
@@ -23,7 +24,7 @@ function bootstrap({ router, store, i18n, message }) {
   // 加载 axios 拦截器
   loadInterceptors(interceptors, { router, store, i18n, message })
   // 加载路由
-  loadRoutes()
+  // loadRoutes()
   // 加载路由守卫
   loadGuards(guards, { router, store, i18n, message })
 }

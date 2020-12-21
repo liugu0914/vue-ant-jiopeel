@@ -3,25 +3,20 @@
  */
 import Vue from 'vue'
 import Antd from 'ant-design-vue'
-// import Lockr from 'lockr'
 import App from '@/App.vue'
 import '@/theme/index.less'
 import store from '@/store'
 import router from '@/router' // 路由器
-// import Tool from './utils/tool'
-// import './permission' // permission control
 import { initI18n } from '@/utils/i18n'
+import Plugins from '@/plugins'
 import bootstrap from '@/bootstrap'
 
 Vue.config.productionTip = false
-// 工具类
-// Vue.prototype.$tool = Tool
-// // 本地存储
-// Vue.prototype.$lockr = Lockr
 
 const i18n = initI18n('CN', 'US')
 
 Vue.use(Antd)
+Vue.use(Plugins)
 
 console.log('api ：' + process.env.VUE_APP_BASE_API)
 console.log('app start')

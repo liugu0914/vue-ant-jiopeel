@@ -1,4 +1,4 @@
-import request from '@/api/request.js'
+import { request, METHOD } from '@/utils/request.js'
 
 /**
  *  用户授权接口
@@ -10,60 +10,37 @@ class Oauth {
    * 获取授权地址
    */
   static async getAuthUrl(grantType) {
-    return await request({
-      url: '/oauth',
-      method: 'get',
-      params: { grantType }
-    })
+    return await request('/oauth', METHOD.GET, { grantType })
   }
   /**
    * 后端认证
    */
   static async authRedirect(grantType, code) {
-    return await request({
-      url: `/oauth/redirect/${grantType}`,
-      method: 'get',
-      params: { code }
-    })
+    return await request(`/oauth/redirect/${grantType}`, METHOD.GET, { code })
   }
   /**
    * 登录
    */
   static async login(data) {
-    return await request({
-      url: '/login',
-      method: 'post',
-      data
-    })
+    return await request('/login', METHOD.POST, data)
   }
   /**
    * 注册
    */
   static async register(data) {
-    return await request({
-      url: '/register',
-      method: 'POST',
-      data
-    })
+    return await request('/register', METHOD.POST, data)
   }
   /**
    * 重置密码
    */
   static async resetPassword(data) {
-    return await request({
-      url: '/resetPassword',
-      method: 'POST',
-      data
-    })
+    return await request('/resetPassword', METHOD.POST, data)
   }
   /**
    * 退出
    */
   static async logout() {
-    return await request({
-      url: '/logout',
-      method: 'get'
-    })
+    return await request('/logout', METHOD.GET)
   }
 }
 

@@ -50,6 +50,20 @@ const common = [
 ]
 
 
+// 不需要登录拦截的路由配置
+export const whiteList = {
+  names: ['404', '403'], // 根据路由名称匹配
+  paths: ['/login'], // 根据路由Path匹配
+  /**
+   * 判断路由是否包含在该配置中
+   * @param route vue-router 的 route 对象
+   * @returns {boolean}
+   */
+  includes(route) {
+    return this.names.includes(route.name) || this.paths.includes(route.path)
+  }
+}
+
 const routes = [
   ...common
 ]
@@ -57,3 +71,4 @@ export default new Router({
   // mode: 'history',
   routes
 })
+

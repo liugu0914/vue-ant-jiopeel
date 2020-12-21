@@ -108,10 +108,6 @@ class Tool {
   // 判断是否为JSON
   // ----------------------------------------------------------------------
   static isJSON(value) {
-    if (!window.JSON || Object.prototype.toString.call(window.JSON) !== '[object JSON]') {
-      throw new ReferenceError('JSON is not exist in window')
-    }
-    const JSON = window.JSON
     value = typeof value === 'string' ? value : JSON.stringify(value)
     try {
       value = Object.prototype.toString.call(JSON.parse(value))
@@ -263,7 +259,10 @@ class Tool {
     return last === lastNo && format
   }
 
-  static contains(arr, item) {
+  // ----------------------------------------------------------------------
+  // 检测开头是否相等
+  // ----------------------------------------------------------------------
+  static startsWiths(arr, item) {
     return !!item && (
       (arr instanceof Array && arr.some(value => item.startsWith(value))) ||
       (typeof arr === 'string' && item.startsWith(arr))

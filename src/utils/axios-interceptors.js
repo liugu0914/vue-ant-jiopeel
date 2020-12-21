@@ -1,6 +1,7 @@
 // import Cookie from 'js-cookie'
 import Lockr from 'lockr'
 import qs from 'qs'
+// import { whiteList } from '@/router'
 
 // 请求前
 const reqCommon = {
@@ -11,14 +12,10 @@ const reqCommon = {
    * @returns {*}
    */
   onFulfilled(config, options) {
-    const { router, message } = options
-    const { Authorization } = config
-    if (Authorization && !Lockr.get(Authorization)) {
-      const errorMsg = '认证 token 已过期，请重新登录'
-      message.warning(errorMsg)
-      router.push('/login')
-      return Promise.reject(errorMsg)
-    }
+    // const { Authorization } = config
+    // const access_token = Lockr.get(Authorization) || '123'
+    // if (access_token) { config.headers[Authorization] = access_token }
+
     if (config.method === 'get') {
       config.params = { ...(config.data || {}), ...config.params }
       return config

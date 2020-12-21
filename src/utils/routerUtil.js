@@ -1,8 +1,8 @@
-import routerMap from '@/router/async/router.map'
-import { mergeI18nFromRoutes } from '@/utils/i18n'
-import Router from 'vue-router'
+// import routerMap from '@/router/async/router.map'
+// import { mergeI18nFromRoutes } from '@/utils/i18n'
+// import Router from 'vue-router'
 import deepMerge from 'deepmerge'
-import basicOptions from '@/router/async/config.async'
+// import basicOptions from '@/router/async/config.async'
 
 // 应用配置
 const appOptions = {
@@ -71,49 +71,49 @@ function parseRoutes(routesConfig, routerMap) {
  * 加载路由
  * @param routesConfig {RouteConfig[]} 路由配置
  */
-function loadRoutes(routesConfig) {
-  // 兼容 0.6.1 以下版本
-  /** ************* 兼容 version < v0.6.1 *****************/
-  if (arguments.length > 0) {
-    const arg0 = arguments[0]
-    if (arg0.router || arg0.i18n || arg0.store) {
-      routesConfig = arguments[1]
-      console.error('the usage of signature loadRoutes({router, store, i18n}, routesConfig) is out of date, please use the new signature: loadRoutes(routesConfig).')
-      console.error('方法签名 loadRoutes({router, store, i18n}, routesConfig) 的用法已过时, 请使用新的方法签名 loadRoutes(routesConfig)。')
-    }
-  }
-  /** ************* 兼容 version < v0.6.1 *****************/
+// function loadRoutes(routesConfig) {
+//   // 兼容 0.6.1 以下版本
+//   /** ************* 兼容 version < v0.6.1 *****************/
+//   if (arguments.length > 0) {
+//     const arg0 = arguments[0]
+//     if (arg0.router || arg0.i18n || arg0.store) {
+//       routesConfig = arguments[1]
+//       console.error('the usage of signature loadRoutes({router, store, i18n}, routesConfig) is out of date, please use the new signature: loadRoutes(routesConfig).')
+//       console.error('方法签名 loadRoutes({router, store, i18n}, routesConfig) 的用法已过时, 请使用新的方法签名 loadRoutes(routesConfig)。')
+//     }
+//   }
+//   /** ************* 兼容 version < v0.6.1 *****************/
 
-  // 应用配置
-  const { router, store, i18n } = appOptions
+//   // 应用配置
+//   const { router, store, i18n } = appOptions
 
-  // 如果 routesConfig 有值，则更新到本地，否则从本地获取
-  if (routesConfig) {
-    store.commit('account/setRoutesConfig', routesConfig)
-  } else {
-    routesConfig = store.getters['account/routesConfig']
-  }
-  // 如果开启了异步路由，则加载异步路由配置
-  const asyncRoutes = store.state.setting.asyncRoutes
-  if (asyncRoutes) {
-    if (routesConfig && routesConfig.length > 0) {
-      const routes = parseRoutes(routesConfig, routerMap)
-      const finalRoutes = mergeRoutes(basicOptions.routes, routes)
-      formatRoutes(finalRoutes)
-      router.options = { ...router.options, routes: finalRoutes }
-      router.matcher = new Router({ ...router.options, routes: [] }).matcher
-      router.addRoutes(finalRoutes)
-    }
-  }
-  // 提取路由国际化数据
-  mergeI18nFromRoutes(i18n, router.options.routes)
-  // 初始化Admin后台菜单数据
-  const rootRoute = router.options.routes.find(item => item.path === '/')
-  const menuRoutes = rootRoute && rootRoute.children
-  if (menuRoutes) {
-    store.commit('setting/setMenuData', menuRoutes)
-  }
-}
+//   // 如果 routesConfig 有值，则更新到本地，否则从本地获取
+//   if (routesConfig) {
+//     store.commit('account/setRoutesConfig', routesConfig)
+//   } else {
+//     routesConfig = store.getters['account/routesConfig']
+//   }
+//   // 如果开启了异步路由，则加载异步路由配置
+//   const asyncRoutes = store.state.setting.asyncRoutes
+//   if (asyncRoutes) {
+//     if (routesConfig && routesConfig.length > 0) {
+//       const routes = parseRoutes(routesConfig, routerMap)
+//       const finalRoutes = mergeRoutes(basicOptions.routes, routes)
+//       formatRoutes(finalRoutes)
+//       router.options = { ...router.options, routes: finalRoutes }
+//       router.matcher = new Router({ ...router.options, routes: [] }).matcher
+//       router.addRoutes(finalRoutes)
+//     }
+//   }
+//   // 提取路由国际化数据
+//   mergeI18nFromRoutes(i18n, router.options.routes)
+//   // 初始化Admin后台菜单数据
+//   const rootRoute = router.options.routes.find(item => item.path === '/')
+//   const menuRoutes = rootRoute && rootRoute.children
+//   if (menuRoutes) {
+//     store.commit('setting/setMenuData', menuRoutes)
+//   }
+// }
 
 /**
  * 合并路由
@@ -121,12 +121,12 @@ function loadRoutes(routesConfig) {
  * @param source {Route[]}
  * @returns {Route[]}
  */
-function mergeRoutes(target, source) {
-  const routesMap = {}
-  target.forEach(item => { routesMap[item.path] = item })
-  source.forEach(item => { routesMap[item.path] = item })
-  return Object.values(routesMap)
-}
+// function mergeRoutes(target, source) {
+//   const routesMap = {}
+//   target.forEach(item => { routesMap[item.path] = item })
+//   source.forEach(item => { routesMap[item.path] = item })
+//   return Object.values(routesMap)
+// }
 
 /**
  * 深度合并路由
@@ -248,4 +248,14 @@ function loadGuards(guards, options) {
   })
 }
 
-export { parseRoutes, loadRoutes, formatAuthority, getI18nKey, loadGuards, deepMergeRoutes, formatRoutes, setAppOptions }
+
+
+
+export {
+  parseRoutes,
+  // loadRoutes,
+  formatAuthority,
+  getI18nKey, loadGuards,
+  deepMergeRoutes,
+  formatRoutes,
+  setAppOptions }
