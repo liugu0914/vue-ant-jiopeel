@@ -5,6 +5,7 @@ module.exports = {
     mode: 'dark',
   },
   multiPage: true,
+  asyncRoutes: true,       //异步加载路由，true:开启，false:不开启
   animate: {
     name: 'lightSpeed',
     direction: 'left'

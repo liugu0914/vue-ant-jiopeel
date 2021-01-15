@@ -5,10 +5,10 @@
 // sys 路径
 const path = 'views/pages/sys'
 
-export default [
-  {
+export default {
+  app: {
     path: '/app',
     name: 'app',
     component: () => import(`@/${path}/app/main.vue`)
   }
-]
+}

@@ -6,13 +6,14 @@ import Antd from 'ant-design-vue'
 import App from '@/App.vue'
 import '@/theme/index.less'
 import store from '@/store'
-import router from '@/router' // 路由器
+import { initRouter } from '@/router' // 路由器
 import { initI18n } from '@/utils/i18n'
 import Plugins from '@/plugins'
 import bootstrap from '@/bootstrap'
 
 Vue.config.productionTip = false
 
+const router = initRouter()
 const i18n = initI18n('CN', 'US')
 
 Vue.use(Antd)

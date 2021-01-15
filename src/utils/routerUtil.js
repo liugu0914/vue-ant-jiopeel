@@ -1,8 +1,8 @@
-// import routerMap from '@/router/async/router.map'
+import routerMap from '@/router/map'
 // import { mergeI18nFromRoutes } from '@/utils/i18n'
-// import Router from 'vue-router'
+import VueRouter from 'vue-router'
 import deepMerge from 'deepmerge'
-// import basicOptions from '@/router/async/config.async'
+import baseRouter from '@/router/config/config.base'
 
 // 应用配置
 const appOptions = {
@@ -27,8 +27,7 @@ function setAppOptions(options) {
  * @param routesConfig 路由配置
  * @param routerMap 本地路由组件注册配置
  */
-function parseRoutes(routesConfig, routerMap) {
-  const routes = []
+function parseRoutes(routesConfig, routerMap, routes = []) {
   routesConfig.forEach(item => {
     // 获取注册在 routerMap 中的 router，初始化 routeCfg
     let router; let routeCfg = {}
@@ -40,29 +39,26 @@ function parseRoutes(routesConfig, routerMap) {
       routeCfg = item
     }
     if (!router) {
-      console.warn(`can't find register for router ${routeCfg.router}, please register it in advance.`)
       router = typeof item === 'string' ? { path: item, name: item } : item
     }
     // 从 router 和 routeCfg 解析路由
+    const { meta = {}} = router
     const route = {
       path: routeCfg.path || router.path || routeCfg.router,
       name: routeCfg.name || router.name,
       component: router.component,
       redirect: routeCfg.redirect || router.redirect,
       meta: {
-        authority: routeCfg.authority || router.authority || '*',
         icon: routeCfg.icon || router.icon,
-        page: routeCfg.page || router.page,
-        link: routeCfg.link || router.link
+        breadcrumb: meta.breadcrumb
       }
     }
-    if (routeCfg.invisible || router.invisible) {
-      route.meta.invisible = true
-    }
     if (routeCfg.children && routeCfg.children.length > 0) {
-      route.children = parseRoutes(routeCfg.children, routerMap)
+      route.children = parseRoutes(routeCfg.children, routerMap, routes)
     }
-    routes.push(route)
+    if (route.path) {
+      routes.push(route)
+    }
   })
   return routes
 }
@@ -71,62 +67,46 @@ function parseRoutes(routesConfig, routerMap) {
  * 加载路由
  * @param routesConfig {RouteConfig[]} 路由配置
  */
-// function loadRoutes(routesConfig) {
-//   // 兼容 0.6.1 以下版本
-//   /** ************* 兼容 version < v0.6.1 *****************/
-//   if (arguments.length > 0) {
-//     const arg0 = arguments[0]
-//     if (arg0.router || arg0.i18n || arg0.store) {
-//       routesConfig = arguments[1]
-//       console.error('the usage of signature loadRoutes({router, store, i18n}, routesConfig) is out of date, please use the new signature: loadRoutes(routesConfig).')
-//       console.error('方法签名 loadRoutes({router, store, i18n}, routesConfig) 的用法已过时, 请使用新的方法签名 loadRoutes(routesConfig)。')
-//     }
-//   }
-//   /** ************* 兼容 version < v0.6.1 *****************/
+function loadRoutes(routesConfig) {
+  // 应用配置
+  const { router, store } = appOptions
 
-//   // 应用配置
-//   const { router, store, i18n } = appOptions
+  const routerTmpMap = routerMap
 
-//   // 如果 routesConfig 有值，则更新到本地，否则从本地获取
-//   if (routesConfig) {
-//     store.commit('account/setRoutesConfig', routesConfig)
-//   } else {
-//     routesConfig = store.getters['account/routesConfig']
-//   }
-//   // 如果开启了异步路由，则加载异步路由配置
-//   const asyncRoutes = store.state.setting.asyncRoutes
-//   if (asyncRoutes) {
-//     if (routesConfig && routesConfig.length > 0) {
-//       const routes = parseRoutes(routesConfig, routerMap)
-//       const finalRoutes = mergeRoutes(basicOptions.routes, routes)
-//       formatRoutes(finalRoutes)
-//       router.options = { ...router.options, routes: finalRoutes }
-//       router.matcher = new Router({ ...router.options, routes: [] }).matcher
-//       router.addRoutes(finalRoutes)
-//     }
-//   }
-//   // 提取路由国际化数据
-//   mergeI18nFromRoutes(i18n, router.options.routes)
-//   // 初始化Admin后台菜单数据
-//   const rootRoute = router.options.routes.find(item => item.path === '/')
-//   const menuRoutes = rootRoute && rootRoute.children
-//   if (menuRoutes) {
-//     store.commit('setting/setMenuData', menuRoutes)
-//   }
-// }
+  // 如果 routesConfig 有值，则更新到本地，否则从本地获取
+  if (!routesConfig || routesConfig.length === 0) { // 原路由数据
+    routesConfig = store.getters['account/routesConfig']
+  }
+  if (routesConfig && routesConfig.length > 0) {
+    routesConfig = boxMeta(routesConfig, routerTmpMap)
+    const routes = parseRoutes(routesConfig, routerTmpMap)
+    const finalRoutes = addMainRoutes(baseRouter, routes)
+    router.options = { ...router.options, routes: finalRoutes }
+    router.matcher = new VueRouter({ ...router.options, routes: [] }).matcher
+    router.addRoutes(finalRoutes)
+  }
+  if (routesConfig) {
+    store.commit('account/setRoutesConfig', routesConfig)
+  }
+  // }
+  // 提取路由国际化数据
+  // mergeI18nFromRoutes(i18n, router.options.routes)
+}
 
 /**
- * 合并路由
+ * 加入菜单子路由
  * @param target {Route[]}
  * @param source {Route[]}
  * @returns {Route[]}
  */
-// function mergeRoutes(target, source) {
-//   const routesMap = {}
-//   target.forEach(item => { routesMap[item.path] = item })
-//   source.forEach(item => { routesMap[item.path] = item })
-//   return Object.values(routesMap)
-// }
+function addMainRoutes(target, source) {
+  const routesMap = {}
+  target.forEach(item => {
+    if (item.path === '/main') { item.children = source }
+    routesMap[item.path] = item
+  })
+  return Object.values(routesMap)
+}
 
 /**
  * 深度合并路由
@@ -177,7 +157,41 @@ function formatRoutes(routes) {
       route.path = '/' + path
     }
   })
-  formatAuthority(routes)
+}
+
+
+
+/**
+ * 组装子路由菜单的mete数据
+ * @param menus 菜单数据
+ * @param routeMap 路由组件
+ * @param breadcrumb 面包屑数据
+ */
+function boxMeta(menus, routeMap, breadcrumb = []) {
+  if (menus == null || menus.length == 0) {
+    return menus
+  }
+  menus.forEach(menu => {
+    const route = routeMap[menu.router] // 获取Map中对应的路由信息
+    if (menu.menuName) {
+      breadcrumb.push(menu.menuName)
+    }
+    if (route) { // 菜单是否存在路由信息
+      const { meta = {}} = route
+      menu.path = route.path
+      meta.breadcrumb = meta.breadcrumb && meta.breadcrumb.length > 0 ? meta.breadcrumb : [...breadcrumb]
+      meta.icon = menu.icon
+      route.meta = meta
+    }
+    if (menu.children && menu.children.length > 0) { // 存在子菜单
+      boxMeta(menu.children, routeMap, breadcrumb)
+    } else {
+      if (breadcrumb.length > 0) {
+        breadcrumb.pop()
+      }
+    }
+  })
+  return menus
 }
 
 /**
@@ -253,7 +267,7 @@ function loadGuards(guards, options) {
 
 export {
   parseRoutes,
-  // loadRoutes,
+  loadRoutes,
   formatAuthority,
   getI18nKey, loadGuards,
   deepMergeRoutes,
