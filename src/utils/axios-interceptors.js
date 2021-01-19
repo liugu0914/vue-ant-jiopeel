@@ -3,6 +3,10 @@ import Lockr from 'lockr'
 import qs from 'qs'
 // import { whiteList } from '@/router'
 
+
+const SUCCESS_KEY = 200
+
+
 // 请求前
 const reqCommon = {
   /**
@@ -12,17 +16,14 @@ const reqCommon = {
    * @returns {*}
    */
   onFulfilled(config, options) {
-    // const { Authorization } = config
-    // const access_token = Lockr.get(Authorization) || '123'
-    // if (access_token) { config.headers[Authorization] = access_token }
-
     if (config.method === 'get') {
       config.params = { ...(config.data || {}), ...config.params }
       return config
     }
-    const flag = config.headers['Content-Type'] && config.headers['Content-Type'].indexOf('application/json') >= 0
+    const contentType = config.headers.post['Content-Type']
+    const flag = contentType && contentType.indexOf('application/json') >= 0
     if (!flag) {
-      const form = config.headers['Content-Type'] && config.headers['Content-Type'].indexOf('application/x-www-form-urlencoded') >= 0
+      const form = contentType && contentType.indexOf('application/x-www-form-urlencoded') >= 0
       if (form) {
         config.data = qs.stringify(config.data)
       }
@@ -103,15 +104,13 @@ const respCommon = {
    * @returns {*}
    */
   onFulfilled(response, options) {
-    const { message } = options
     const DefaultMsg = '操作失败'
     const res = response.data
     if (response.status === 200) {
-      if (res.status === 200) {
+      if (res.status === SUCCESS_KEY) {
         return Promise.resolve(res)
       } else {
         const msg = res.message || DefaultMsg
-        message.error(msg)
         return Promise.reject(msg)
       }
     } else {

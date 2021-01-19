@@ -30,7 +30,7 @@ const whiteList = {
  */
 function initRouter() {
   const options = {
-    // mode: 'history',
+    mode: 'history',
     routes: require('./config/config.base').default
   }
   return new VueRouter(options)

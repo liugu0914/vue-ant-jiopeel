@@ -69,7 +69,7 @@ function removeAuthorization() {
  * 检查认证信息
  */
 function checkAuthorization() {
-  const token = Lockr.get(Authorization) || '123'
+  const token = Lockr.get(Authorization)
   return !!token
 }
 

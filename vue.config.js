@@ -10,6 +10,9 @@ module.exports = {
       patterns: [path.resolve(__dirname, './src/theme/index.less')]
     }
   },
+  devServer: {
+    historyApiFallback: true
+  },
   configureWebpack: config => {
     if (!isProd) {
       config.devtool = 'source-map'

@@ -44,11 +44,13 @@ function parseRoutes(routesConfig, routerMap, routes = []) {
     // 从 router 和 routeCfg 解析路由
     const { meta = {}} = router
     const route = {
+      ...router,
       path: routeCfg.path || router.path || routeCfg.router,
       name: routeCfg.name || router.name,
       component: router.component,
       redirect: routeCfg.redirect || router.redirect,
       meta: {
+        ...meta,
         icon: routeCfg.icon || router.icon,
         breadcrumb: meta.breadcrumb
       }

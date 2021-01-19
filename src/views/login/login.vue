@@ -215,6 +215,8 @@
 </template>
 <script>
 import Oauth from '@/api/login/oauth'
+import { setAuthorization } from '@/utils/request'
+// import { loadRoutes } from '@/utils/routerUtil'
 
 const ACTIVE_TYPE = {
   Login: 'login',
@@ -315,12 +317,13 @@ export default {
           return Oauth.authRedirect(grantType, res.data.code)
         }).then(res => {
           console.log('认证成功：' + JSON.stringify(res))
-          const access_token = res.data.access_token
+          const { data } = res
+          const access_token = data.access_token
           console.log('access_token==> ' + JSON.stringify(access_token))
-          this.$lockr.set('access_token', access_token)
+          setAuthorization(access_token)
           this.$message.success('登录成功')
           setTimeout(() => {
-            this.$router.push({ name: 'main' })
+            this.$router.push('/main')
           }, 800)
         }).done().finally(() => {
           setTimeout(() => {
