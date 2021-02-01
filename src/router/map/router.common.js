@@ -5,7 +5,7 @@ const common = {
     name: 'main',
     component: () => import('@/views/main/admin.vue'),
     meta: {
-      requiresAuth: false
+      // requiresAuth: false
     }
   },
   login: {

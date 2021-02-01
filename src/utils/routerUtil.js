@@ -50,9 +50,7 @@ function parseRoutes(routesConfig, routerMap, routes = []) {
       component: router.component,
       redirect: routeCfg.redirect || router.redirect,
       meta: {
-        ...meta,
-        icon: routeCfg.icon || router.icon,
-        breadcrumb: meta.breadcrumb
+        ...meta
       }
     }
     if (routeCfg.children && routeCfg.children.length > 0) {
