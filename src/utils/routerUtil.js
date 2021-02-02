@@ -65,28 +65,28 @@ function parseRoutes(routesConfig, routerMap, routes = []) {
 
 /**
  * 加载路由
- * @param routesConfig {RouteConfig[]} 路由配置
+ * @param menus  菜单配置
  */
-function loadRoutes(routesConfig) {
+function loadRoutes(menus) {
   // 应用配置
   const { router, store } = appOptions
 
   const routerTmpMap = routerMap
 
   // 如果 routesConfig 有值，则更新到本地，否则从本地获取
-  if (!routesConfig || routesConfig.length === 0) { // 原路由数据
-    routesConfig = store.getters['account/routesConfig']
+  if (!menus || menus.length === 0) { // 原路由数据
+    menus = store.getters['account/routesConfig']
   }
-  if (routesConfig && routesConfig.length > 0) {
-    routesConfig = boxMeta(routesConfig, routerTmpMap)
-    const routes = parseRoutes(routesConfig, routerTmpMap)
+  if (menus && menus.length > 0) {
+    menus = boxMeta(menus, routerTmpMap)
+    const routes = parseRoutes(menus, routerTmpMap)
     const finalRoutes = addMainRoutes(baseRouter, routes)
     router.options = { ...router.options, routes: finalRoutes }
     router.matcher = new VueRouter({ ...router.options, routes: [] }).matcher
     router.addRoutes(finalRoutes)
   }
-  if (routesConfig) {
-    store.commit('account/setRoutesConfig', routesConfig)
+  if (menus) {
+    store.commit('account/setMenus', menus)
   }
   // }
   // 提取路由国际化数据

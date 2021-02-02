@@ -216,7 +216,9 @@
 <script>
 import Oauth from '@/api/login/oauth'
 import { setAuthorization } from '@/utils/request'
-// import { loadRoutes } from '@/utils/routerUtil'
+import { reBliud } from '@/utils/tool'
+import { loadRoutes } from '@/utils/routerUtil'
+import { mapMutations } from 'vuex'
 
 const ACTIVE_TYPE = {
   Login: 'login',
@@ -293,6 +295,7 @@ export default {
     console.log('login')
   },
   methods: {
+    ...mapMutations('account', ['setUser', 'setPermissions', 'setRoles']),
     isSee() {
       this.see = !this.see
     },
@@ -316,15 +319,12 @@ export default {
           console.log(res.data)
           return Oauth.authRedirect(grantType, res.data.code)
         }).then(res => {
-          console.log('认证成功：' + JSON.stringify(res))
           const { data } = res
-          const access_token = data.access_token
-          console.log('access_token==> ' + JSON.stringify(access_token))
-          setAuthorization(access_token)
+          this.saveUserData(data)
           this.$message.success('登录成功')
-          setTimeout(() => {
+          this.$nextTick(() => {
             this.$router.push('/main')
-          }, 800)
+          })
         }).done().finally(() => {
           setTimeout(() => {
             this.loading = false
@@ -332,6 +332,19 @@ export default {
           }, 800)
         })
       })
+    },
+    /**
+     * 保存用户信息
+     */
+    saveUserData(data) {
+      const { access_token, user: userInfo } = data
+      console.log('access_token==> ' + JSON.stringify(access_token))
+      setAuthorization(access_token)
+      const { user, permissions, roleList, menus } = userInfo
+      this.setUser(user)
+      this.setPermissions(permissions)
+      this.setRoles(roleList)
+      loadRoutes(reBliud(menus, 'id', 'superId', 'children'))
     },
     /**
      * 注册

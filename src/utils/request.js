@@ -18,7 +18,7 @@ const METHOD = {
 
 
 // 跨域认证信息 header 名
-const Authorization = 'access_token'
+const Authorization = process.env.VUE_APP_ACCESS_TOKEN_KEY
 
 axios.defaults.timeout = 15000
 axios.defaults.baseURL = process.env.VUE_APP_BASE_API

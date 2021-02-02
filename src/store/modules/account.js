@@ -4,7 +4,7 @@ export default {
     user: undefined,
     permissions: null,
     roles: null,
-    routesConfig: null
+    menus: null
   },
   getters: {
     user: state => {
@@ -42,17 +42,17 @@ export default {
       }
       return state.roles
     },
-    routesConfig: state => {
-      if (!state.routesConfig) {
+    menus: state => {
+      if (!state.menus) {
         try {
-          const routesConfig = localStorage.getItem(process.env.VUE_APP_ROUTES_KEY)
-          state.routesConfig = JSON.parse(routesConfig)
-          state.routesConfig = state.routesConfig ? state.routesConfig : []
+          const menus = localStorage.getItem(process.env.VUE_APP_MENUS_KEY)
+          state.menus = JSON.parse(menus)
+          state.menus = state.menus ? state.menus : []
         } catch (e) {
           console.error(e.message)
         }
       }
-      return state.routesConfig
+      return state.menus
     }
   },
   mutations: {
@@ -68,9 +68,9 @@ export default {
       state.roles = roles
       localStorage.setItem(process.env.VUE_APP_ROLES_KEY, JSON.stringify(roles))
     },
-    setRoutesConfig(state, routesConfig) {
-      state.routesConfig = routesConfig
-      localStorage.setItem(process.env.VUE_APP_ROUTES_KEY, JSON.stringify(routesConfig))
+    setMenus(state, menus) {
+      state.menus = menus
+      localStorage.setItem(process.env.VUE_APP_MENUS_KEY, JSON.stringify(menus))
     }
   }
 }
