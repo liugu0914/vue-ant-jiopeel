@@ -8,92 +8,9 @@
       :width="240"
       @close="()=> sideMenuShow = false"
     >
-      <a-layout-sider :class="['admin-side']" theme="light">
-        <div class="admin-side-header">
-          <div class="logo" />
-          <h1>
-            {{ 'white ice' }}
-          </h1>
-        </div>
-        <a-menu
-          mode="inline" theme="light"
-          :default-selected-keys="['1']"
-          :default-open-keys="['sub1']"
-        >
-          <a-sub-menu key="sub1">
-            <span slot="title">
-              <a-icon type="user" />
-              <span>subnav 1</span>
-            </span>
-            <a-menu-item key="1">
-              option1
-            </a-menu-item>
-            <a-menu-item key="2">
-              option2
-            </a-menu-item>
-            <a-menu-item key="3">
-              option3
-            </a-menu-item>
-            <a-menu-item key="4">
-              option4
-            </a-menu-item>
-          </a-sub-menu>
-          <a-sub-menu key="sub2">
-            <span slot="title"><a-icon type="laptop" /><span>subnav 2</span>
-            </span>
-            <a-menu-item key="5">
-              option5
-            </a-menu-item>
-            <a-menu-item key="6">
-              option6
-            </a-menu-item>
-            <a-menu-item key="7">
-              option7
-            </a-menu-item>
-            <a-menu-item key="8">
-              option8
-            </a-menu-item>
-          </a-sub-menu>
-          <a-sub-menu key="sub3">
-            <span slot="title"><a-icon type="notification" /><span>subnav 3</span>
-            </span>
-            <a-menu-item key="9">
-              option9
-            </a-menu-item>
-            <a-menu-item key="10">
-              option10
-            </a-menu-item>
-            <a-menu-item key="11">
-              option11
-            </a-menu-item>
-            <a-menu-item key="12">
-              option12
-            </a-menu-item>
-          </a-sub-menu>
-        </a-menu>
-      </a-layout-sider>
+      <side-menu :theme="theme.mode" :menu-data="menus" :collapsed="false" :collapsible="false" />
     </a-drawer>
-    <a-layout-sider v-model="collapsed" :class="['admin-side',isMobile?'hidden':null]" :trigger="null" theme="light" breakpoint="md" :collapsed-width="collapsedWidth" collapsible @breakpoint="changeBreakpoint">
-      <div class="admin-side-header">
-        <div class="logo" />
-        <h1 v-if="!collapsed">
-          {{ 'white ice' }}
-        </h1>
-      </div>
-      <a-menu
-        mode="inline" theme="light"
-      >
-        <a-sub-menu v-for="menu in menus" :key="menu.id">
-          <span slot="title">
-            <a-icon type="user" />
-            <span>{{ menu.name }}</span>
-          </span>
-          <a-menu-item v-for="menuItem in menu.children" :key="menuItem.id">
-            {{ menuItem.name }}
-          </a-menu-item>
-        </a-sub-menu>
-      </a-menu>
-    </a-layout-sider>
+    <side-menu v-show="!isMobile" :theme="theme.mode" :menu-data="menus" :collapsed="collapsed" :collapsible="true" />
     <a-layout>
       <a-layout-header class="admin-header-round">
         <div class="header-main">
@@ -101,8 +18,7 @@
             <!-- 折叠按钮 -->
             <div v-if="isMobile" class="header-child-item px-3" @click="() =>(sideMenuShow = !sideMenuShow)">
               <a-icon
-                class="icon-size"
-                :type="collapsed ? 'menu-unfold' : 'menu-fold'"
+                class="icon-size" type="menu-unfold"
               />
             </div>
             <div v-else class="header-child-item px-3" @click="() => (collapsed = !collapsed)">
@@ -111,10 +27,11 @@
                 :type="collapsed ? 'menu-unfold' : 'menu-fold'"
               />
             </div>
-            <div class="header-child-item normal d-none">
+            <div v-if="breadcrumb && breadcrumb.length >0" class="header-child-item normal d-none">
               <a-breadcrumb>
-                <a-breadcrumb-item>系统配置</a-breadcrumb-item>
-                <a-breadcrumb-item>菜单管理</a-breadcrumb-item>
+                <a-breadcrumb-item v-for="item in breadcrumb" :key="item">
+                  {{ item }}
+                </a-breadcrumb-item>
               </a-breadcrumb>
             </div>
           </div>
@@ -170,27 +87,43 @@
 </template>
 <script>
 
-import { mapGetters } from 'vuex'
+import SideMenu from '@/components/menu/SideMenu'
+import { mapState, mapGetters } from 'vuex'
+
 export default {
+  components: {
+    SideMenu
+  },
   data() {
     return {
-      collapsed: true,
+      collapsed: false,
       sideMenuShow: false,
-      isMobile: false,
-      collapsedWidth: 80
+      breadcrumb: []
     }
   },
   created() {
     console.log(this.menus)
+    this.boxBreadcrumb(this.$route)
+  },
+  watch: {
+    $route(val) {
+      this.boxBreadcrumb(val)
+    },
+    isMobile(val) {
+      if (!val) {
+        this.sideMenuShow = false
+      }
+    }
   },
   computed: {
+    ...mapState('setting', ['isMobile', 'theme', 'layout', 'footerLinks', 'copyright', 'fixedHeader', 'fixedSideBar',
+      'fixedTabs', 'hideSetting', 'multiPage']),
     ...mapGetters('account', ['menus'])
   },
   methods: {
-    changeBreakpoint(broken) {
-      this.isMobile = broken
-      this.collapsedWidth = broken ? 0 : 80
-      console.log('broken :' + broken)
+    boxBreadcrumb(route) {
+      const { meta = {}} = route
+      this.breadcrumb = meta.breadcrumb
     }
   }
 }

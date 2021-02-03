@@ -75,7 +75,7 @@ function loadRoutes(menus) {
 
   // 如果 routesConfig 有值，则更新到本地，否则从本地获取
   if (!menus || menus.length === 0) { // 原路由数据
-    menus = store.getters['account/routesConfig']
+    menus = store.getters['account/menus']
   }
   if (menus && menus.length > 0) {
     menus = boxMeta(menus, routerTmpMap)
@@ -173,8 +173,8 @@ function boxMeta(menus, routeMap, breadcrumb = []) {
   }
   menus.forEach(menu => {
     const route = routeMap[menu.router] // 获取Map中对应的路由信息
-    if (menu.menuName) {
-      breadcrumb.push(menu.menuName)
+    if (menu.name) {
+      breadcrumb.push(menu.name)
     }
     if (route) { // 菜单是否存在路由信息
       const { meta = {}} = route

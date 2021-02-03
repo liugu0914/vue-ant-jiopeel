@@ -1,11 +1,19 @@
 <template>
-  <a-layout-sider v-model="collapsed" :theme="sideTheme" :class="['side-menu', 'beauty-scroll', isMobile ? null : 'shadow']" width="256px" :collapsible="collapsible" :trigger="null">
-    <div :class="['logo', theme]">
+  <a-layout-sider v-model="collapsed" :theme="sideTheme" :class="['admin-side-menu', 'beauty-scroll']" :collapsible="collapsible" :trigger="null">
+    <!-- <div :class="['logo', theme]">
       <router-link to="/dashboard/workplace">
         <img src="@/assets/img/logo.png">
         <h1>{{ systemName }}</h1>
       </router-link>
-    </div>
+    </div> -->
+    <router-link to="/dashboard/workplace">
+      <div class="admin-side-menu-header">
+        <div :class="['logo', theme]" />
+        <h1 v-show="!collapsed">
+          {{ 'white ice' }}
+        </h1>
+      </div>
+    </router-link>
     <i-menu :theme="theme" :collapsed="collapsed" :options="menuData" class="menu" @select="onSelect" />
   </a-layout-sider>
 </template>
@@ -34,7 +42,7 @@ export default {
     theme: {
       type: String,
       required: false,
-      default: 'dark'
+      default: 'light'
     }
   },
   computed: {

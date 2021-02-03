@@ -34,7 +34,7 @@
 import Menu from 'ant-design-vue/es/menu'
 import Icon from 'ant-design-vue/es/icon'
 import fastEqual from 'fast-deep-equal'
-import { getI18nKey } from '@/utils/routerUtil'
+// import { getI18nKey } from '@/utils/routerUtil'
 
 const { Item, SubMenu } = Menu
 
@@ -137,13 +137,18 @@ export default {
         tag = 'a'
         config = { attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;', href: menu.meta.link, target: '_blank' }}
       }
+      if (!menu.fullPath) { // 如果url为空则只显示名称
+        tag = 'a'
+        config = { attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;', href: 'javascript:void(0)' }}
+      }
       return h(
         Item, { key: menu.fullPath },
         [
           h(tag, config,
             [
-              this.renderIcon(h, menu.meta ? menu.meta.icon : 'none', menu.fullPath),
-              this.$t(getI18nKey(menu.fullPath))
+              this.renderIcon(h, menu.icon ? menu.icon : 'none', menu.fullPath),
+              menu.name
+              // this.$t(getI18nKey(menu.fullPath))
             ]
           )
         ]
@@ -153,8 +158,9 @@ export default {
       const this_ = this
       const subItem = [h('span', { slot: 'title', attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;' }},
         [
-          this.renderIcon(h, menu.meta ? menu.meta.icon : 'none', menu.fullPath),
-          this.$t(getI18nKey(menu.fullPath))
+          this.renderIcon(h, menu.icon ? menu.icon : 'none', menu.fullPath),
+          menu.name
+          // this.$t(getI18nKey(menu.fullPath))
         ]
       )]
       const itemArr = []
@@ -166,21 +172,18 @@ export default {
       )
     },
     renderItem: function(h, menu) {
-      const meta = menu.meta
-      if (!meta || !meta.invisible) {
-        let renderChildren = false
-        const children = menu.children
-        if (children != undefined) {
-          for (let i = 0; i < children.length; i++) {
-            const childMeta = children[i].meta
-            if (!childMeta || !childMeta.invisible) {
-              renderChildren = true
-              break
-            }
+      let renderChildren = false
+      const children = menu.children
+      if (children != undefined) {
+        for (let i = 0; i < children.length; i++) {
+          const childMeta = children[i].meta
+          if (!childMeta || !childMeta.invisible) {
+            renderChildren = true
+            break
           }
         }
-        return (menu.children && renderChildren) ? this.renderSubMenu(h, menu) : this.renderMenuItem(h, menu)
       }
+      return (children && renderChildren) ? this.renderSubMenu(h, menu) : this.renderMenuItem(h, menu)
     },
     renderMenu: function(h, menuTree) {
       const this_ = this
@@ -192,8 +195,11 @@ export default {
     },
     formatOptions(options, parentPath) {
       options.forEach(route => {
-        const isFullPath = route.path.substring(0, 1) == '/'
-        route.fullPath = isFullPath ? route.path : parentPath + '/' + route.path
+        const path = route.path
+        if (path) {
+          const isFullPath = route.path.substring(0, 1) == '/'
+          route.fullPath = isFullPath ? route.path : parentPath + '/' + route.path
+        }
         if (route.children) {
           this.formatOptions(route.children, route.fullPath)
         }

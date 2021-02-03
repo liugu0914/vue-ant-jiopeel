@@ -48,6 +48,7 @@ export default {
   },
   mutations: {
     setDevice(state, isMobile) {
+      console.log('isMobile', isMobile)
       state.isMobile = isMobile
     },
     setTheme(state, theme) {
