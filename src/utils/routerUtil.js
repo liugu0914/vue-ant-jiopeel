@@ -174,13 +174,14 @@ function boxMeta(menus, routeMap, breadcrumb = []) {
   menus.forEach(menu => {
     const route = routeMap[menu.router] // 获取Map中对应的路由信息
     if (menu.name) {
-      breadcrumb.push(menu.name)
+      breadcrumb.push({ id: menu.id, name: menu.name })
     }
     if (route) { // 菜单是否存在路由信息
       const { meta = {}} = route
       menu.path = route.path
       meta.breadcrumb = meta.breadcrumb && meta.breadcrumb.length > 0 ? meta.breadcrumb : [...breadcrumb]
       meta.icon = menu.icon
+      meta.key = menu.id
       route.meta = meta
     }
     if (menu.children && menu.children.length > 0) { // 存在子菜单

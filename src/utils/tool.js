@@ -122,7 +122,7 @@ export function isJSON(value) {
 // ----------------------------------------------------------------------
 //  ztree 简单数据 转 子孙节点数据
 // ----------------------------------------------------------------------
-export function reBliud(sNodes, key, parentKey, childKey) {
+export function simple2Tree(sNodes, key, parentKey, childKey) {
   if (!key) {
     key = 'id'
   }
@@ -269,4 +269,4 @@ export function startsWiths(arr, item) {
 }
 
 
-export default { toSerialize, toObject, evalString, isJSON, reBliud, chkQQ, chkPhone, chkTel, chkEmail, chkHttp, chkUrl, chkIdCard, startsWiths }
+export default { toSerialize, toObject, evalString, isJSON, simple2Tree, chkQQ, chkPhone, chkTel, chkEmail, chkHttp, chkUrl, chkIdCard, startsWiths }

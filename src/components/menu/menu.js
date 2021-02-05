@@ -60,6 +60,11 @@ export default {
       required: false,
       default: false
     },
+    showItemIcon: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     i18n: Object,
     openKeys: Array
   },
@@ -139,14 +144,14 @@ export default {
       }
       if (!menu.fullPath) { // 如果url为空则只显示名称
         tag = 'a'
-        config = { attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;', href: 'javascript:void(0)' }}
+        config = { attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;color:#bfbfbf;cursor:not-allowed;', href: 'javascript:void(0)' }}
       }
       return h(
-        Item, { key: menu.fullPath },
+        Item, { key: menu.id },
         [
           h(tag, config,
             [
-              this.renderIcon(h, menu.icon ? menu.icon : 'none', menu.fullPath),
+              this.showItemIcon ? this.renderIcon(h, menu.icon ? menu.icon : 'none', menu.id) : null,
               menu.name
               // this.$t(getI18nKey(menu.fullPath))
             ]
@@ -167,23 +172,12 @@ export default {
       menu.children.forEach(function(item) {
         itemArr.push(this_.renderItem(h, item))
       })
-      return h(SubMenu, { key: menu.fullPath },
+      return h(SubMenu, { key: menu.id },
         subItem.concat(itemArr)
       )
     },
     renderItem: function(h, menu) {
-      let renderChildren = false
-      const children = menu.children
-      if (children != undefined) {
-        for (let i = 0; i < children.length; i++) {
-          const childMeta = children[i].meta
-          if (!childMeta || !childMeta.invisible) {
-            renderChildren = true
-            break
-          }
-        }
-      }
-      return (children && renderChildren) ? this.renderSubMenu(h, menu) : this.renderMenuItem(h, menu)
+      return menu.children ? this.renderSubMenu(h, menu) : this.renderMenuItem(h, menu)
     },
     renderMenu: function(h, menuTree) {
       const this_ = this
@@ -206,15 +200,16 @@ export default {
       })
     },
     updateMenu() {
-      const menuRoutes = this.$route.matched.filter(item => item.path !== '')
-      this.selectedKeys = this.getSelectedKey(this.$route)
-      const openKeys = menuRoutes.map(item => item.path)
+      const menuRoutes = this.getSelectedKey(this.$route)
+      this.selectedKeys = menuRoutes
+      const openKeys = menuRoutes
       if (!fastEqual(openKeys, this.sOpenKeys)) {
         this.collapsed || this.mode === 'horizontal' ? this.cachedOpenKeys = openKeys : this.sOpenKeys = openKeys
       }
     },
     getSelectedKey(route) {
-      return route.matched.map(item => item.path)
+      const breadcrumb = route.meta.breadcrumb
+      return breadcrumb && breadcrumb.length > 0 ? breadcrumb.map(item => item.id) : []
     }
   },
   render(h) {

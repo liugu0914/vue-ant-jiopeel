@@ -31,7 +31,7 @@ const common = {
     name: '404',
     component: () => import('@/views/error/404.vue'),
     meta: {
-      requiresAuth: false
+      // requiresAuth: false
     }
   }
 }

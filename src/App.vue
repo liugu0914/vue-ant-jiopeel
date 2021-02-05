@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import { enquireScreen } from '@/utils/utils'
+import { enquireScreen } from '@/utils/util'
 import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'App',

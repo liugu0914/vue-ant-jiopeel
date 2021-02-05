@@ -216,7 +216,7 @@
 <script>
 import Oauth from '@/api/login/oauth'
 import { setAuthorization } from '@/utils/request'
-import { reBliud } from '@/utils/tool'
+import { simple2Tree } from '@/utils/tool'
 import { loadRoutes } from '@/utils/routerUtil'
 import { mapMutations } from 'vuex'
 
@@ -344,7 +344,7 @@ export default {
       this.setUser(user)
       this.setPermissions(permissions)
       this.setRoles(roleList)
-      loadRoutes(reBliud(menus, 'id', 'superId', 'children'))
+      loadRoutes(simple2Tree(menus, 'id', 'superId', 'children'))
     },
     /**
      * 注册

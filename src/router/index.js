@@ -11,7 +11,7 @@ Vue.use(VueRouter)
 
 // 不需要登录拦截的路由配置
 const whiteList = {
-  names: ['404', '403'], // 根据路由名称匹配
+  names: [], // 根据路由名称匹配
   paths: ['/login'], // 根据路由Path匹配
   /**
    * 判断路由是否包含在该配置中

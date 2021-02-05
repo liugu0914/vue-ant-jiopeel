@@ -9,12 +9,12 @@
     <router-link to="/dashboard/workplace">
       <div class="admin-side-menu-header">
         <div :class="['logo', theme]" />
-        <h1 v-show="!collapsed">
+        <h1 v-if="!collapsed">
           {{ 'white ice' }}
         </h1>
       </div>
     </router-link>
-    <i-menu :theme="theme" :collapsed="collapsed" :options="menuData" class="menu" @select="onSelect" />
+    <i-menu :theme="theme" :collapsed="collapsed" :options="menuData" :show-item-icon="false" class="menu" @select="onSelect" />
   </a-layout-sider>
 </template>
 
