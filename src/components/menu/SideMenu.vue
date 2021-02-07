@@ -1,21 +1,23 @@
 <template>
-  <a-layout-sider v-model="collapsed" :theme="sideTheme" :class="['admin-side-menu', 'beauty-scroll']" :collapsible="collapsible" :trigger="null">
-    <!-- <div :class="['logo', theme]">
+  <div class="admin-drawer-body">
+    <a-layout-sider v-model="collapsed" :theme="sideTheme" :class="['admin-side-menu', 'beauty-scroll']" width="220" :collapsible="collapsible" :trigger="null">
+      <!-- <div :class="['logo', theme]">
       <router-link to="/dashboard/workplace">
         <img src="@/assets/img/logo.png">
         <h1>{{ systemName }}</h1>
       </router-link>
     </div> -->
-    <router-link to="/dashboard/workplace">
-      <div class="admin-side-menu-header">
-        <div :class="['logo', theme]" />
-        <h1 v-if="!collapsed">
-          {{ 'white ice' }}
-        </h1>
-      </div>
-    </router-link>
-    <i-menu :theme="theme" :collapsed="collapsed" :options="menuData" :show-item-icon="false" class="menu" @select="onSelect" />
-  </a-layout-sider>
+      <router-link to="/dashboard/workplace">
+        <div class="admin-side-menu-header">
+          <div :class="['logo', theme]" />
+          <h1 v-if="!collapsed">
+            {{ 'white ice' }}
+          </h1>
+        </div>
+      </router-link>
+      <i-menu :theme="theme" :collapsed="collapsed" :options="menuData" :show-item-icon="false" class="menu" @select="onSelect" />
+    </a-layout-sider>
+  </div>
 </template>
 
 <script>

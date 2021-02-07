@@ -1,14 +1,14 @@
 <template>
-  <div >
-    <div :class="['mask', visible ? 'open' : 'close']" @click="close"></div>
+  <div class="">
+    <div :class="['mask', visible ? 'open' : 'close']" @click="close" />
     <div :class="['drawer', placement, visible ? 'open' : 'close']">
       <div ref="drawer" class="content beauty-scroll">
-        <slot></slot>
+        <slot />
       </div>
-      <div v-if="showHandler" :class="['handler-container', placement, visible ? 'open' : 'close']" ref="handler" @click="toggle">
-        <slot v-if="$slots.handler" name="handler"></slot>
+      <div v-if="showHandler" ref="handler" :class="['handler-container', placement, visible ? 'open' : 'close']" @click="toggle">
+        <slot v-if="$slots.handler" name="handler" />
         <div v-else class="handler">
-          <a-icon :type="visible ? 'close'  : 'bars'" />
+          <a-icon :type="visible ? 'close' : 'bars'" />
         </div>
       </div>
     </div>
@@ -18,7 +18,7 @@
 <script>
 export default {
   name: 'Drawer',
-  data () {
+  data() {
     return {
     }
   },
@@ -44,13 +44,13 @@ export default {
     }
   },
   methods: {
-    open () {
+    open() {
       this.$emit('change', true)
     },
-    close () {
+    close() {
       this.$emit('change', false)
     },
-    toggle () {
+    toggle() {
       this.$emit('change', !this.visible)
     }
   }
@@ -81,6 +81,7 @@ export default {
     z-index: 100;
     &.left{
       left: 0px;
+      top: 0px;
       &.open{
         .content{
           box-shadow: 2px 0 8px @shadow-color;
@@ -92,6 +93,7 @@ export default {
     }
     &.right{
       right: 0px;
+      top: 0px;
       .content{
         float: right;
       }

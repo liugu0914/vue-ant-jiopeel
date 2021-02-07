@@ -41,7 +41,7 @@
               <a-icon type="user" />
               <span>个人中心</span>
             </a-menu-item>
-            <a-menu-item>
+            <a-menu-item @click="showSetting =!showSetting">
               <a-icon type="setting" />
               <span>设置</span>
             </a-menu-item>
@@ -54,18 +54,29 @@
         </a-dropdown>
       </div>
     </div>
+    <drawer v-model="showSetting" placement="right">
+      <setting />
+    </drawer>
   </a-layout-header>
 </template>
 <script>
 
+import Drawer from '@/components/tool/Drawer'
+import Setting from '@/components/setting/Setting'
+
 export default {
   name: 'AdminHead',
+  components: {
+    Setting,
+    Drawer
+  },
   props: {
     isMobile: Boolean,
     collapsed: Boolean
   },
   data() {
     return {
+      showSetting: false,
       breadcrumb: []
     }
   },
@@ -93,5 +104,78 @@ export default {
   }
 }
 </script>
-<style lang="less">
+<style lang="less" scoped>
+
+.admin-header-round {
+
+  background: #fff;
+  padding: 0;
+  overflow: hidden;
+  margin: 10px 10px 0 10px;
+  border-radius: @border-radius-xl;
+  box-shadow: @card-shadow;
+  transition: all 0.2s;
+
+  &.fixed-tabs {
+    height: 0;
+    opacity: 0;
+    margin: 0 10px;
+  }
+
+  .header-main {
+    display: flex;
+    justify-content: space-between;
+
+    .icon-size {
+      font-size: 18px;
+    }
+
+    .header-child {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .header-child-item {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        padding-left: 14px;
+        padding-right: 14px;
+
+        &:not(.normal):hover {
+          cursor: pointer;
+          background-color: @primary-1;
+        }
+
+        .item-name {
+          max-width: 100px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+
+  .header-child:first-child .header-child-item:first-child {
+    border-top-left-radius: @border-radius-xl;
+    border-bottom-left-radius: @border-radius-xl;
+  }
+
+  .header-child:last-child .header-child-item:last-child {
+    border-top-right-radius: @border-radius-xl;
+    border-bottom-right-radius: @border-radius-xl;
+  }
+}
+
+.d-none {
+  @media (max-width: 600px) {
+    & {
+      display: none !important;
+    }
+  }
+}
+
 </style>

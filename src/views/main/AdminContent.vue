@@ -137,8 +137,14 @@ export default {
       const page = this.pageList.find(item => item.key === (meta.key || route.fullPath))
       page.unclose = route.meta && route.meta.page && (route.meta.page.closable === false)
       if (!page._init_) {
-        const vnode = undefined && this.$refs.tabContent.$vnode
-        page.cachedKey = vnode ? (vnode.key + vnode.componentOptions.Ctor.cid) : ''
+        let vnode
+        try {
+          vnode = this.$refs.tabContent.$vnode
+        } catch (e) {
+          console.warn(`[${page.fullPath}]路由没有的对应子页面,请检查!`)
+          console.warn(e)
+        }
+        page.cachedKey = vnode ? (vnode.key + vnode.componentOptions.Ctor.cid) : page.fullPath + '#' + new Date().getTime()
         page._init_ = true
       }
     },
@@ -221,7 +227,7 @@ export default {
   }
 }
 </script>
-<style lang="less">
+<style lang="less" scoped>
 
 .admin-content {
   min-height: 280px;

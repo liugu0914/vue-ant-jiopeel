@@ -1,63 +1,6 @@
 @import "~ant-design-vue/dist/antd.less";
-@import "default/index";
+
+@import "default/common.less";
+@import "default/nprogress.less";
+@import "default/style.less";
 @import "antd/index";
-
-// -------- Colors -----------
-//#1492ff;
-// @primary-color: #1492ff;
-
-@border-radius-xl: 10px;
-@border-radius-lg: 8px;
-@border-radius-md: 6px;
-@border-radius-base: 4px;
-@border-radius-sm: 2px;
-
-// Card
-// ---
-@card-shadow: 0 0 10px 0 rgba(154, 161, 171, 0.15);
-@card-radius: @border-radius-xl;
-
-
-
-.ant-card {
-  border: none;
-  box-shadow: @card-shadow;
-}
-
-//menu
-.ant-menu-inline,
-.ant-menu-vertical,
-.ant-menu-vertical-left {
-  border-right: none;
-}
-
-//form
-// default: 24px
-@ant-form-item-bottom : 16px;
-
-.search .ant-form-item {
-  margin-bottom: @ant-form-item-bottom;
-}
-
-//model
-.ant-modal-content {
-  border-radius: @border-radius-xl;
-}
-
-.ant-modal-header {
-  border-radius: @border-radius-xl @border-radius-xl 0 0;
-}
-
-.ant-modal-footer {
-  border-radius: 0 0 @border-radius-xl @border-radius-xl;
-}
-
-//dropdown
-
-.ant-dropdown-menu {
-  border-radius: @border-radius-xl;
-}
-
-.ant-select-dropdown {
-  border-radius: @border-radius-xl;
-}

@@ -2,6 +2,7 @@
   <a-layout class="h-100">
     <a-drawer
       v-if="isMobile"
+      class="admin-drawer"
       placement="left"
       :closable="false"
       :visible="sideMenuShow"

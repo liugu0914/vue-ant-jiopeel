@@ -1,5 +1,5 @@
 <template>
-  <div :class="['admin-content-tab']">
+  <div :class="['admin-tab']">
     <a-tabs
       type="editable-card"
       :active-key="active"
@@ -77,7 +77,7 @@ export default {
 </script>
 
 <style lang="less">
-.admin-content-tab {
+.admin-tab {
   margin: 0 10px;
   .header-lock{
     font-size: 18px;

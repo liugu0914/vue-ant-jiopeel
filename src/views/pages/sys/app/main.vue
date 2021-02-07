@@ -5,7 +5,7 @@
       <a-breadcrumb-item>系统配置</a-breadcrumb-item>
       <a-breadcrumb-item>菜单管理</a-breadcrumb-item>
     </a-breadcrumb> -->
-    <a-card>
+    <a-card :bordered="false">
       <!-- 搜索 -->
       <a-row type="flex" align="middle">
         <a-col :xl="18" :lg="16" :md="24" :sm="24" :xs="24">
