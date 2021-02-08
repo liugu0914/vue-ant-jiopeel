@@ -140,11 +140,11 @@ export default {
       let config = { props: { to: menu.fullPath }, attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;' }}
       if (menu.meta && menu.meta.link) {
         tag = 'a'
-        config = { attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;', href: menu.meta.link, target: '_blank' }}
+        config = { attrs: { class: 'ant-menu-item-link', href: menu.meta.link, target: '_blank' }}
       }
       if (!menu.fullPath) { // 如果url为空则只显示名称
         tag = 'a'
-        config = { attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;color:#bfbfbf;cursor:not-allowed;', href: 'javascript:void(0)' }}
+        config = { attrs: { class: 'ant-menu-item-not-allowed', href: 'javascript:void(0)' }}
       }
       return h(
         Item, { key: menu.id },

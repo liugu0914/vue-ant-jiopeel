@@ -136,6 +136,7 @@ import Clipboard from 'clipboard'
 import { mapState, mapMutations } from 'vuex'
 import { formatConfig } from '@/utils/formatter'
 import { setting } from '@/config/default'
+import Lockr from 'lockr'
 import sysConfig from '@/config/config'
 import fastEqual from 'fast-deep-equal'
 import deepMerge from 'deepmerge'
@@ -175,7 +176,7 @@ export default {
       const clipboard = new Clipboard('#copyBtn')
       clipboard.on('success', () => {
         this.$message.success(`复制成功，覆盖文件 src/config/config.js 然后重启项目即可生效`).then(() => {
-          const localConfig = localStorage.getItem(process.env.VUE_APP_SETTING_KEY)
+          const localConfig = Lockr.get(process.env.VUE_APP_SETTING_KEY)
           if (localConfig) {
             console.warn('检测到本地有历史保存的主题配置，想要要拷贝的配置代码生效，您可能需要先重置配置')
             this.$message.warn('检测到本地有历史保存的主题配置，想要要拷贝的配置代码生效，您可能需要先重置配置', 5)
@@ -187,14 +188,14 @@ export default {
     saveSetting() {
       const closeMessage = this.$message.loading('正在保存到本地，请稍后...', 0)
       const config = this.extractConfig(true)
-      localStorage.setItem(process.env.VUE_APP_SETTING_KEY, JSON.stringify(config))
+      Lockr.set(process.env.VUE_APP_SETTING_KEY, config)
       setTimeout(closeMessage, 800)
     },
     resetSetting() {
       this.$confirm({
         title: '重置主题会刷新页面，当前页面内容不会保留，确认重置？',
         onOk() {
-          localStorage.removeItem(process.env.VUE_APP_SETTING_KEY)
+          Lockr.rm(process.env.VUE_APP_SETTING_KEY)
           window.location.reload()
         }
       })

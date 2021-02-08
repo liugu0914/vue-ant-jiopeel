@@ -43,7 +43,7 @@
             </a-menu-item>
             <a-menu-item @click="showSetting =!showSetting">
               <a-icon type="setting" />
-              <span>设置</span>
+              <span>个性化设置</span>
             </a-menu-item>
             <a-menu-divider />
             <a-menu-item>
@@ -54,7 +54,7 @@
         </a-dropdown>
       </div>
     </div>
-    <drawer v-model="showSetting" placement="right">
+    <drawer v-model="showSetting" placement="right" :show-handler="false">
       <setting />
     </drawer>
   </a-layout-header>

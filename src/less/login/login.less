@@ -1,13 +1,13 @@
 // 登陆界面
 @color-primary: @primary-7;
-@color-grey: #f2f5f8;
+@color-grey: @gray-3;
 @color-semidark: @primary-color;
 
 .login-app {
   height: 100vh;
   display: flex;
   justify-content: center;
-  background-color: #f2f5f8;
+  background-color: @body-background;
 
   .primary {
     color: @color-semidark;
@@ -66,7 +66,7 @@
   }
 
   .login-btn {
-    color: #fff;
+    color: @component-background;
     box-shadow: 0 2px 7px @color-semidark;
     font-weight: 700;
     background-color: @color-primary  !important;
@@ -108,7 +108,7 @@
     border-radius: 50%;
     box-shadow: 0 4px 40px rgba(0, 0, 0, 0.07);
     padding: 20px;
-    background-color: #fff;
+    background-color: @component-background;
     z-index: 3;
     position: relative;
   }
@@ -124,6 +124,10 @@
   .cs-svg {
     width: 30px;
     height: 30px;
+  }
+  .ant-btn-link:hover,
+  .ant-btn-link:focus{
+    border:none;
   }
 }
 

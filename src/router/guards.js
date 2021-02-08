@@ -17,10 +17,8 @@ const progressStart = (to, from, next) => {
   if (!NProgress.isStarted()) {
     NProgress.start()
   }
-  console.log('to : ')
-  console.log(to)
-  console.log('from : ')
-  console.log(from)
+  console.log('from: ', from)
+  console.log('to  : ', to)
   next()
 }
 

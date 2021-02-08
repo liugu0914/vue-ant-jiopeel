@@ -198,7 +198,7 @@ export default {
         keyPath: route.matched[route.matched.length - 1].path,
         fullPath: route.fullPath,
         loading: false,
-        title: route.name,
+        title: meta.name,
         unclose: route.meta && route.meta.page && (route.meta.page.closable === false)
       }
     },

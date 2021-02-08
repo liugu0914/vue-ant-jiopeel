@@ -1,9 +1,11 @@
-const client = require('webpack-theme-color-replacer/client')
-const { theme } = require('../config')
-const { getMenuColors, getAntdColors, getThemeToggleColors, getFunctionalColors } = require('../utils/colors')
-const { ANTD } = require('../config/default')
+import client from 'webpack-theme-color-replacer/client'
+import { theme } from '../config'
+import { getMenuColors, getAntdColors, getThemeToggleColors, getFunctionalColors } from '../utils/colors'
+import ANTD from '../config/default'
+import Lockr from 'lockr'
 
-function getThemeColors(color, $theme) {
+
+export function getThemeColors(color, $theme) {
   const _color = color || theme.color
   const mode = $theme || theme.mode
   const replaceColors = getThemeToggleColors(_color, mode)
@@ -20,12 +22,12 @@ function getThemeColors(color, $theme) {
   return themeColors
 }
 
-function changeThemeColor(newColor, $theme) {
+export function changeThemeColor(newColor, $theme) {
   const promise = client.changer.changeColor({ newColors: getThemeColors(newColor, $theme) })
   return promise
 }
 
-function modifyVars(color) {
+export function modifyVars(color) {
   const _color = color || theme.color
   const palettes = getAntdColors(_color, theme.mode)
   const menuColors = getMenuColors(_color, theme.mode)
@@ -65,7 +67,7 @@ function modifyVars(color) {
   }
 }
 
-function loadLocalTheme(localSetting) {
+export function loadLocalTheme(localSetting) {
   if (localSetting && localSetting.theme) {
     let { color, mode } = localSetting.theme
     color = color || theme.color
@@ -79,11 +81,10 @@ function loadLocalTheme(localSetting) {
  * @param load {boolean} 是否加载配置中的主题
  * @returns {Object}
  */
-function getLocalSetting(loadTheme) {
+export function getLocalSetting(loadTheme) {
   let localSetting = {}
   try {
-    const localSettingStr = localStorage.getItem(process.env.VUE_APP_SETTING_KEY)
-    localSetting = JSON.parse(localSettingStr)
+    localSetting = Lockr.get(process.env.VUE_APP_SETTING_KEY)
   } catch (e) {
     console.error(e)
   }
@@ -93,7 +94,7 @@ function getLocalSetting(loadTheme) {
   return localSetting
 }
 
-module.exports = {
+export default {
   getThemeColors,
   changeThemeColor,
   modifyVars,

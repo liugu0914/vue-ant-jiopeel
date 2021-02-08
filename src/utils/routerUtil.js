@@ -46,10 +46,10 @@ function parseRoutes(routesConfig, routerMap, routes = []) {
     const route = {
       ...router,
       path: routeCfg.path || router.path || routeCfg.router,
-      name: routeCfg.name || router.name,
       component: router.component,
       redirect: routeCfg.redirect || router.redirect,
       meta: {
+        name: routeCfg.name || router.name,
         ...meta
       }
     }

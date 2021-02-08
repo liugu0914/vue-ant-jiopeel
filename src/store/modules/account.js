@@ -1,3 +1,5 @@
+import Lockr from 'lockr'
+
 export default {
   namespaced: true,
   state: {
@@ -10,8 +12,7 @@ export default {
     user: state => {
       if (!state.user) {
         try {
-          const user = localStorage.getItem(process.env.VUE_APP_USER_KEY)
-          state.user = JSON.parse(user)
+          state.user = Lockr.get(process.env.VUE_APP_USER_KEY)
         } catch (e) {
           console.error(e)
         }
@@ -21,9 +22,8 @@ export default {
     permissions: state => {
       if (!state.permissions) {
         try {
-          const permissions = localStorage.getItem(process.env.VUE_APP_PERMISSIONS_KEY)
-          state.permissions = JSON.parse(permissions)
-          state.permissions = state.permissions ? state.permissions : []
+          const permissions = Lockr.get(process.env.VUE_APP_PERMISSIONS_KEY)
+          state.permissions = permissions || []
         } catch (e) {
           console.error(e.message)
         }
@@ -33,9 +33,8 @@ export default {
     roles: state => {
       if (!state.roles) {
         try {
-          const roles = localStorage.getItem(process.env.VUE_APP_ROLES_KEY)
-          state.roles = JSON.parse(roles)
-          state.roles = state.roles ? state.roles : []
+          const roles = Lockr.get(process.env.VUE_APP_ROLES_KEY)
+          state.roles = roles || []
         } catch (e) {
           console.error(e.message)
         }
@@ -45,9 +44,8 @@ export default {
     menus: state => {
       if (!state.menus) {
         try {
-          const menus = localStorage.getItem(process.env.VUE_APP_MENUS_KEY)
-          state.menus = JSON.parse(menus)
-          state.menus = state.menus ? state.menus : []
+          const menus = Lockr.get(process.env.VUE_APP_MENUS_KEY)
+          state.menus = menus || []
         } catch (e) {
           console.error(e.message)
         }
@@ -58,19 +56,19 @@ export default {
   mutations: {
     setUser(state, user) {
       state.user = user
-      localStorage.setItem(process.env.VUE_APP_USER_KEY, JSON.stringify(user))
+      Lockr.set(process.env.VUE_APP_USER_KEY, user)
     },
     setPermissions(state, permissions) {
       state.permissions = permissions
-      localStorage.setItem(process.env.VUE_APP_PERMISSIONS_KEY, JSON.stringify(permissions))
+      Lockr.set(process.env.VUE_APP_PERMISSIONS_KEY, permissions)
     },
     setRoles(state, roles) {
       state.roles = roles
-      localStorage.setItem(process.env.VUE_APP_ROLES_KEY, JSON.stringify(roles))
+      Lockr.set(process.env.VUE_APP_ROLES_KEY, roles)
     },
     setMenus(state, menus) {
       state.menus = menus
-      localStorage.setItem(process.env.VUE_APP_MENUS_KEY, JSON.stringify(menus))
+      Lockr.set(process.env.VUE_APP_MENUS_KEY, menus)
     }
   }
 }

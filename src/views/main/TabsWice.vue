@@ -132,7 +132,7 @@ export default {
       padding: 0 10px;
       line-height: 30px;
       transition: all .2s;
-      &.ant-tabs-tab-active{
+      &.ant-tabs-tab-active .tab{
         font-weight: 600;
       }
       &:hover {

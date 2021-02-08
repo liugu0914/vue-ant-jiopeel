@@ -10,6 +10,26 @@
   border-right: none;
 }
 
-.ant-menu-submenu>.ant-menu {
+.ant-menu-submenu-popup.ant-menu-submenu>.ant-menu {
   border-radius: @border-radius-xl;
+}
+
+.ant-menu-item-link {
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: clip;
+}
+
+.ant-menu-item-not-allowed {
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: clip;
+  color: @gray-6  !important;
+  cursor: not-allowed;
+}
+
+.ant-menu-dark {
+  .ant-menu-item-not-allowed {
+    color: @gray-8  !important;
+  }
 }
