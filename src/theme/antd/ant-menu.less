@@ -10,6 +10,14 @@
   border-right: none;
 }
 
+.ant-menu-vertical .ant-menu-item::after,
+.ant-menu-vertical-left .ant-menu-item::after,
+.ant-menu-vertical-right .ant-menu-item::after,
+.ant-menu-inline .ant-menu-item::after {
+  left: 0;
+  right: unset;
+}
+
 .ant-menu-submenu-popup.ant-menu-submenu>.ant-menu {
   border-radius: @border-radius-xl;
 }

@@ -1,11 +1,11 @@
-import client from 'webpack-theme-color-replacer/client'
-import { theme } from '../config'
-import { getMenuColors, getAntdColors, getThemeToggleColors, getFunctionalColors } from '../utils/colors'
-import ANTD from '../config/default'
-import Lockr from 'lockr'
+const client = require('webpack-theme-color-replacer/client')
+const { theme } = require('../config')
+const { getMenuColors, getAntdColors, getThemeToggleColors, getFunctionalColors } = require('../utils/colors')
+const { ANTD } = require('../config/default')
+const Lockr = require('lockr')
 
 
-export function getThemeColors(color, $theme) {
+function getThemeColors(color, $theme) {
   const _color = color || theme.color
   const mode = $theme || theme.mode
   const replaceColors = getThemeToggleColors(_color, mode)
@@ -22,12 +22,12 @@ export function getThemeColors(color, $theme) {
   return themeColors
 }
 
-export function changeThemeColor(newColor, $theme) {
+function changeThemeColor(newColor, $theme) {
   const promise = client.changer.changeColor({ newColors: getThemeColors(newColor, $theme) })
   return promise
 }
 
-export function modifyVars(color) {
+function modifyVars(color) {
   const _color = color || theme.color
   const palettes = getAntdColors(_color, theme.mode)
   const menuColors = getMenuColors(_color, theme.mode)
@@ -67,7 +67,7 @@ export function modifyVars(color) {
   }
 }
 
-export function loadLocalTheme(localSetting) {
+function loadLocalTheme(localSetting) {
   if (localSetting && localSetting.theme) {
     let { color, mode } = localSetting.theme
     color = color || theme.color
@@ -81,7 +81,7 @@ export function loadLocalTheme(localSetting) {
  * @param load {boolean} 是否加载配置中的主题
  * @returns {Object}
  */
-export function getLocalSetting(loadTheme) {
+function getLocalSetting(loadTheme) {
   let localSetting = {}
   try {
     localSetting = Lockr.get(process.env.VUE_APP_SETTING_KEY)
@@ -94,7 +94,7 @@ export function getLocalSetting(loadTheme) {
   return localSetting
 }
 
-export default {
+module.exports = {
   getThemeColors,
   changeThemeColor,
   modifyVars,
