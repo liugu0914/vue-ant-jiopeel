@@ -23,6 +23,14 @@ export function isRegExp(v) {
   return _toString.call(v) === '[object RegExp]'
 }
 
+export function isObject(v) {
+  return _toString.call(v) === '[object Object]'
+}
+
+export function isString(v) {
+  return _toString.call(v) === '[object String]'
+}
+
 export function enquireScreen(call) {
   const handler = {
     match: function() {

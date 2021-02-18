@@ -8,7 +8,7 @@
 
 <script>
 import Oauth from '@/api/login/oauth'
-import { setAuthorization } from '@/utils/request'
+import { saveUserData } from './login.common'
 export default {
   props: {
     grantType: String,
@@ -21,14 +21,12 @@ export default {
     console.log('grantType :' + this.grantType)
     console.log('code :' + this.code)
     Oauth.authRedirect(this.grantType, this.code).then(res => {
-      console.log('认证成功：' + JSON.stringify(res))
-      const access_token = res.data.access_token
-      console.log('access_token==> ' + JSON.stringify(access_token))
-      setAuthorization(access_token)
+      const { data } = res
+      saveUserData(data)
       this.message = '授权认证成功,正在跳转...'
-      setTimeout(() => {
+      this.$nextTick(() => {
         this.$router.push('/main')
-      }, 100)
+      })
     }).catch(res => {
       this.message = '授权认证失败,正在返回登录界面...'
       setTimeout(() => {

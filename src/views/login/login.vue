@@ -21,6 +21,7 @@
                         autocomplete="off"
                         tabindex="1"
                         placeholder="账号"
+                        @pressEnter="login()"
                       >
                         <template slot="prefix">
                           <i class="cs cs-user primary" />
@@ -37,13 +38,14 @@
                         tabindex="2"
                         :type="see?'text':'password'"
                         placeholder="密码"
+                        @pressEnter="login()"
                       >
                         <template slot="prefix">
                           <i class="cs cs-password primary" />
                         </template>
                         <template slot="suffix">
                           <a-tooltip bottom color="#000" :title="see?'密码可见':'密码不可见'">
-                            <i :class="see?'cs-see':'cs-nosee'" class="cs is-see primary" @click="isSee" />
+                            <i :class="see?'cs-see':'cs-nosee'" class="cs is-see primary" @click="isSee()" />
                           </a-tooltip>
                         </template>
                       </a-input>
@@ -55,7 +57,7 @@
                 <a-col
                   span="24"
                 >
-                  <a-button :loading="loading" :disabled="disabled" tabindex="3" block x-large class="login-btn" @click="login">
+                  <a-button :loading="loading" :disabled="disabled" tabindex="3" block x-large class="login-btn" @click="login()">
                     登录
                   </a-button>
                 </a-col>
@@ -108,6 +110,7 @@
                         autocomplete="off"
                         tabindex="1"
                         placeholder="账号"
+                        @pressEnter="register()"
                       >
                         <template slot="prefix">
                           <i class="cs cs-user primary" />
@@ -122,6 +125,7 @@
                         autocomplete="off"
                         tabindex="2"
                         placeholder="邮箱"
+                        @pressEnter="register()"
                       >
                         <template slot="prefix">
                           <i class="cs cs-email primary" />
@@ -137,13 +141,14 @@
                         tabindex="3"
                         :type="see?'text':'password'"
                         placeholder="密码"
+                        @pressEnter="register()"
                       >
                         <template slot="prefix">
                           <i class="cs cs-password primary" />
                         </template>
                         <template slot="suffix">
                           <a-tooltip bottom color="#000" :title="see?'密码可见':'密码不可见'">
-                            <i :class="see?'cs-see':'cs-nosee'" class="cs is-see primary" @click="isSee" />
+                            <i :class="see?'cs-see':'cs-nosee'" class="cs is-see primary" @click="isSee()" />
                           </a-tooltip>
                         </template>
                       </a-input>
@@ -153,7 +158,7 @@
               </a-row>
               <a-row>
                 <a-col class="pb-4" :span="24">
-                  <a-button :loading="loading" :disabled="disabled" tabindex="4" block x-large class="login-btn" @click="register">
+                  <a-button :loading="loading" :disabled="disabled" tabindex="4" block x-large class="login-btn" @click="register()">
                     注册
                   </a-button>
                 </a-col>
@@ -172,6 +177,7 @@
                         autocomplete="off"
                         tabindex="1"
                         placeholder="账号"
+                        @pressEnter="forget()"
                       >
                         <template slot="prefix">
                           <i class="cs cs-user primary" />
@@ -187,6 +193,7 @@
                         autocomplete="off"
                         tabindex="2"
                         placeholder="邮箱"
+                        @pressEnter="forget()"
                       >
                         <template slot="prefix">
                           <i class="cs cs-email primary" />
@@ -198,7 +205,7 @@
               </a-row>
               <a-row>
                 <a-col :span="24" class="pb-4">
-                  <a-button :loading="loading" :disabled="disabled" tabindex="4" block x-large class="login-btn" @click="forget">
+                  <a-button :loading="loading" :disabled="disabled" tabindex="4" block x-large class="login-btn" @click="forget()">
                     重置密码
                   </a-button>
                 </a-col>
@@ -215,10 +222,7 @@
 </template>
 <script>
 import Oauth from '@/api/login/oauth'
-import { setAuthorization } from '@/utils/request'
-import { simple2Tree } from '@/utils/tool'
-import { loadRoutes } from '@/utils/routerUtil'
-import { mapMutations } from 'vuex'
+import { saveUserData } from './login.common'
 
 const ACTIVE_TYPE = {
   Login: 'login',
@@ -295,7 +299,6 @@ export default {
     console.log('login')
   },
   methods: {
-    ...mapMutations('account', ['setUser', 'setPermissions', 'setRoles']),
     isSee() {
       this.see = !this.see
     },
@@ -320,7 +323,7 @@ export default {
           return Oauth.authRedirect(grantType, res.data.code)
         }).then(res => {
           const { data } = res
-          this.saveUserData(data)
+          saveUserData(data)
           this.$message.success('登录成功')
           this.$nextTick(() => {
             this.$router.push('/main')
@@ -332,19 +335,6 @@ export default {
           }, 800)
         })
       })
-    },
-    /**
-     * 保存用户信息
-     */
-    saveUserData(data) {
-      const { access_token, user: userInfo } = data
-      console.log('access_token==> ' + JSON.stringify(access_token))
-      setAuthorization(access_token)
-      const { user, permissions, roleList, menus } = userInfo
-      this.setUser(user)
-      this.setPermissions(permissions)
-      this.setRoles(roleList)
-      loadRoutes(simple2Tree(menus, 'id', 'superId', 'children'))
     },
     /**
      * 注册

@@ -46,7 +46,7 @@
               <span>个性化设置</span>
             </a-menu-item>
             <a-menu-divider />
-            <a-menu-item>
+            <a-menu-item @click="logOut()">
               <a-icon style="margin-right: 8px;" type="poweroff" />
               <span>退出登录</span>
             </a-menu-item>
@@ -63,6 +63,9 @@
 
 import Drawer from '@/components/tool/Drawer'
 import Setting from '@/components/setting/Setting'
+import Oauth from '@/api/login/oauth'
+import { removeAuthorization } from '@/utils/request'
+
 
 export default {
   name: 'AdminHead',
@@ -100,6 +103,12 @@ export default {
     boxBreadcrumb(route) {
       const { meta = {}} = route
       this.breadcrumb = meta.breadcrumb
+    },
+    logOut() {
+      Oauth.logout().then(res => {
+        removeAuthorization()
+        this.$router.push('/login')
+      }).over()
     }
   }
 }

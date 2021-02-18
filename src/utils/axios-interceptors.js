@@ -1,6 +1,7 @@
 // import Cookie from 'js-cookie'
 import Lockr from 'lockr'
 import qs from 'qs'
+import { isObject } from '@/utils/util'
 // import { whiteList } from '@/router'
 
 
@@ -16,6 +17,8 @@ const reqCommon = {
    * @returns {*}
    */
   onFulfilled(config, options) {
+    const { Authorization } = config
+    config.headers.common[config.Authorization] = Lockr.get(Authorization)
     if (config.method === 'get') {
       config.params = { ...(config.data || {}), ...config.params }
       return config
@@ -59,9 +62,10 @@ const resp401 = {
    * @returns {*}
    */
   onRejected(error, options) {
-    const { Authorization } = error
+    const { response, config } = error
+    const { Authorization } = config
     const { router, message } = options
-    if (error.status == 401) {
+    if (response.status == 401) {
       const msg = '登录超时,请重新登录'
       if (Lockr.get(Authorization)) {
         Lockr.rm(Authorization)
@@ -85,8 +89,12 @@ const resp500 = {
    * @returns {*}
    */
   onRejected(error, options) {
+    if (!isObject(error)) {
+      return error
+    }
+    const { response } = error
     const { message } = options
-    if (error.status == 500) {
+    if (response.status == 500) {
       const msg = '服务器连接错误'
       message.error(msg)
       return Promise.reject(msg)
@@ -125,14 +133,12 @@ const respCommon = {
    * @returns {Promise<never>}
    */
   onRejected(error, options) {
+    const { response = {}} = error
     const { message } = options
     let msg = '操作失败'
     const state = 'error' // 提示框状态
-    if (error.response) {
-      const response = error.response
-      if (response.data && response.data.message) {
-        msg = response.data.message
-      }
+    if (response.data && response.data.message) {
+      msg = response.data.message
     }
     message[state](msg)
     return Promise.reject(msg)
