@@ -5,6 +5,7 @@ import Vue from 'vue'
 import Antd from 'ant-design-vue'
 import App from '@/App.vue'
 import '@/theme/index.less'
+import 'animate.css/source/animate.css'
 import store from '@/store'
 import { initRouter } from '@/router' // 路由器
 import { initI18n } from '@/utils/i18n'

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Lockr from 'lockr'
+import Cookie from 'js-cookie'
 
 /**
  * 请求类型
@@ -17,15 +17,21 @@ const METHOD = {
 }
 
 
-// 跨域认证信息 header 名
-const Authorization = process.env.VUE_APP_ACCESS_TOKEN_KEY
+// 前端鉴别认证
+// const Authorization = process.env.VUE_APP_AUTHORIZATION_KEY
+
+// token名称
+const ACCESS_TOKEN = process.env.VUE_APP_ACCESS_TOKEN_KEY
+
+const Authorization = ACCESS_TOKEN
+
 
 axios.defaults.timeout = 15000
 axios.defaults.baseURL = process.env.VUE_APP_BASE_API
 axios.defaults.withCredentials = true
 axios.defaults.Authorization = Authorization
-axios.defaults.xsrfHeaderName = Authorization
-axios.defaults.xsrfCookieName = Authorization
+axios.defaults.xsrfHeaderName = ACCESS_TOKEN
+axios.defaults.xsrfCookieName = ACCESS_TOKEN
 axios.defaults.headers.post['Content-Type'] = CONTENT_TYPE.FORM
 
 /**
@@ -55,21 +61,21 @@ async function request(url, method, params) {
  * @param token {Object}
  */
 function setAuthorization(token) {
-  Lockr.set(Authorization, token)
+  Cookie.set(Authorization, token.access_token, { expires: new Date(token.expiresIn) })
 }
 
 /**
  * 移出认证信息
  */
 function removeAuthorization() {
-  Lockr.rm(Authorization)
+  Cookie.remove(Authorization)
 }
 
 /**
  * 检查认证信息
  */
 function checkAuthorization() {
-  const token = Lockr.get(Authorization)
+  const token = Cookie.get(Authorization)
   return !!token
 }
 

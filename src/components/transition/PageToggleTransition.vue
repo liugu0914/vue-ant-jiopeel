@@ -32,7 +32,7 @@ export default {
       type: String,
       validator(value) {
         return ['x', 'y', 'left', 'right', 'up', 'down', 'downLeft', 'upRight', 'downRight', 'upLeft', 'downBig',
-          'upBig', 'downLeft', 'downRight', 'topRight', 'bottomLeft', 'topLeft', 'bottomRight', 'default'].indexOf(value) > -1
+          'upBig', 'leftBig', 'rightBig', 'downLeft', 'downRight', 'topRight', 'bottomLeft', 'topLeft', 'bottomRight', 'default'].indexOf(value) > -1
       }
     },
     reverse: {
@@ -81,14 +81,10 @@ export default {
 </script>
 
 <style lang="less">
-  .page-toggle-enter-active{
-    position: absolute !important;
-    animation-duration: 0.8s !important;
-    width: calc(100%) !important;
-  }
+  .page-toggle-enter-active,
   .page-toggle-leave-active{
     position: absolute !important;
-    animation-duration: 0.8s !important;
+    animation-duration: 0.6s !important;
     width: calc(100%) !important;
   }
   .page-toggle-enter{

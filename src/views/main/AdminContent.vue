@@ -8,9 +8,11 @@
       @refresh="refresh" />
     <div :class="['admin-content-view','beauty-scroll' ,fixedHeader?'fixed':'']">
       <div class="admin-content-body">
-        <a-keep-alive v-model="clearCaches">
-          <router-view v-if="!refreshing" ref="tabContent" :key="getKey()" />
-        </a-keep-alive>
+        <page-toggle-transition :disabled="animate.disabled" :animate="animate.name" :direction="animate.direction">
+          <a-keep-alive v-model="clearCaches">
+            <router-view v-if="!refreshing" ref="tabContent" :key="getKey()" />
+          </a-keep-alive>
+        </page-toggle-transition>
       </div>
     </div>
   </a-layout-content>
@@ -18,6 +20,7 @@
 <script>
 
 import AKeepAlive from '@/components/cache/AKeepAlive'
+import PageToggleTransition from '@/components/transition/PageToggleTransition'
 import TabsWice from '@/views/main/TabsWice'
 import { mapState } from 'vuex'
 
@@ -25,6 +28,7 @@ export default {
   name: 'AdminContent',
   components: {
     AKeepAlive,
+    PageToggleTransition,
     TabsWice
   },
   data() {
@@ -60,7 +64,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('setting', ['fixedHeader'])
+    ...mapState('setting', ['fixedHeader', 'animate'])
   },
   methods: {
     /**

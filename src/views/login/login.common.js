@@ -31,9 +31,9 @@ function setRoles(roles) {
  * 保存信息
  */
 export function saveUserData(data) {
-  const { access_token, user: userInfo } = data
-  console.log('access_token==> ' + JSON.stringify(access_token))
-  setAuthorization(access_token)
+  const { Authorization, user: userInfo } = data
+  console.log('Authorization ==> ', Authorization)
+  setAuthorization(Authorization)
   const { user, permissions, roleList, menus } = userInfo
   setUser(user)
   setPermissions(permissions)
