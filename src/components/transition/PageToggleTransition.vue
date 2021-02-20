@@ -84,7 +84,7 @@ export default {
   .page-toggle-enter-active,
   .page-toggle-leave-active{
     position: absolute !important;
-    animation-duration: 0.6s !important;
+    animation-duration: 0.8s !important;
     width: calc(100%) !important;
   }
   .page-toggle-enter{

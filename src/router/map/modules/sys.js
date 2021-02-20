@@ -9,7 +9,7 @@ export default {
   user: {
     path: '/user',
     name: 'user',
-    component: () => import(`@/${path}/app/main.vue`)
+    component: () => import(`@/${path}/user/main.vue`)
   },
   menu: {
     path: '/menu',

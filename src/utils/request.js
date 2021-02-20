@@ -1,5 +1,6 @@
 import axios from 'axios'
-import Cookie from 'js-cookie'
+import Lockr from 'lockr'
+// import Cookie from 'js-cookie'
 
 /**
  * 请求类型
@@ -61,21 +62,21 @@ async function request(url, method, params) {
  * @param token {Object}
  */
 function setAuthorization(token) {
-  Cookie.set(Authorization, token.access_token, { expires: new Date(token.expiresIn) })
+  Lockr.set(Authorization, token.access_token)
 }
 
 /**
  * 移出认证信息
  */
 function removeAuthorization() {
-  Cookie.remove(Authorization)
+  Lockr.rm(Authorization)
 }
 
 /**
  * 检查认证信息
  */
 function checkAuthorization() {
-  const token = Cookie.get(Authorization)
+  const token = Lockr.get(Authorization)
   return !!token
 }
 
