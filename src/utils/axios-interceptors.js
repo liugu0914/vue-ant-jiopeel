@@ -23,7 +23,7 @@ const reqCommon = {
       config.params = { ...(config.data || {}), ...config.params }
       return config
     }
-    const contentType = config.headers.post['Content-Type']
+    const contentType = config.headers['Content-Type'] || config.headers.post['Content-Type']
     const flag = contentType && contentType.indexOf('application/json') >= 0
     if (!flag) {
       const form = contentType && contentType.indexOf('application/x-www-form-urlencoded') >= 0

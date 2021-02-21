@@ -6,13 +6,16 @@
         <a-input-search
           style="width: 300px"
           :max-length="200"
-          placeholder="搜索名称/用户">
-          <a-button slot="enterButton" type="primary">
+          placeholder="搜索名称/用户"
+          allow-clear
+          :loading="loading"
+          @search="queryPage">
+          <!-- <a-button slot="enterButton" type="primary">
             <a-icon type="search" />
-          </a-button>
+          </a-button> -->
         </a-input-search>
         <a-tooltip title="高级搜索">
-          <a-button type="link" style="border:none;box-shadow: none;background-color: transparent;" @click="openAdvancedSearch">
+          <a-button type="link" @click="openAdvancedSearch">
             <a-icon type="filter" />
           </a-button>
         </a-tooltip>
@@ -49,13 +52,12 @@
       :columns="columns"
       :data-source="dataSource"
       :selected-rows.sync="selectedRows"
+      :loading="loading"
       @clear="onClear"
       @change="onChange"
       @selectedRowChange="onSelectChange"
     >
-      <div slot="description" slot-scope="{text}">
-        {{ text }}
-      </div>
+      <a-avatar slot="imgUrl" slot-scope="{text}" :src="text" icon="user" />
       <div slot="action" slot-scope="{record}">
         <a-tooltip>
           <template slot="title">
@@ -127,35 +129,36 @@
 </template>
 
 <script>
-// import { test } from '@/api/modules/sys/main'
+import { getListPage } from '@/api/modules/sys/user'
 import StandardTable from '@/components/table/StandardTable'
 import _ from 'lodash'
 const columns = [
   {
     title: '序号',
-    dataIndex: 'index'
+    dataIndex: 'index',
+    customRender: (text, record, index) => index + 1
   },
   {
-    title: '描述',
-    dataIndex: 'description',
-    scopedSlots: { customRender: 'description' }
+    title: '头像',
+    dataIndex: 'imgUrl',
+    scopedSlots: { customRender: 'imgUrl' }
   },
   {
-    title: '服务调用次数',
-    dataIndex: 'callNo',
-    sorter: true,
-    needTotal: true,
-    customRender: (text) => text + ' 次'
+    title: '用户名称',
+    dataIndex: 'userName'
   },
   {
-    dataIndex: 'status',
-    needTotal: true,
-    slots: { title: 'statusTitle' }
+    title: '账号',
+    dataIndex: 'account',
+    customRender: (text) => text
   },
   {
-    title: '更新时间',
-    dataIndex: 'updatedAt',
-    sorter: true
+    title: '邮箱',
+    dataIndex: 'email'
+  },
+  {
+    title: '类型',
+    dataIndex: 'type'
   },
   {
     title: '操作',
@@ -163,19 +166,6 @@ const columns = [
     scopedSlots: { customRender: 'action' }
   }
 ]
-const dataSource = []
-
-for (let i = 0; i < 95; i++) {
-  dataSource.push({
-    key: i,
-    id: i,
-    index: i + 1,
-    description: '这是一段描述',
-    callNo: Math.floor(Math.random() * 1000),
-    status: Math.floor(Math.random() * 10) % 4,
-    updatedAt: '2018-07-26'
-  })
-}
 const DefaultForm = {
   id: '',
   description: '',
@@ -189,12 +179,13 @@ export default {
   data() {
     return {
       advanced: true,
+      loading: false,
       visible: false,
       confirmLoading: false,
       advancedSearch: false,
       dataForm: dataForm,
       columns: columns,
-      dataSource: dataSource,
+      dataSource: [],
       selectedRows: []
     }
   },
@@ -202,9 +193,36 @@ export default {
     deleteRecord: 'delete'
   },
   created() {
-    // test().over()
+    this.queryPage()
   },
   methods: {
+    /**
+     * 分页查询
+     */
+    queryPage() {
+      const params = {
+        page: {
+          pageNum: 0,
+          pageSize: 10
+        },
+        query: {
+          id: ''
+        }
+      }
+      this.loading = true
+      getListPage(params).then(res => {
+        const { data } = res
+        const result = data.result || []
+        result.map(item => {
+          item.key = item.id
+          return item
+        })
+        this.dataSource = result
+        setTimeout(() => {
+          this.loading = false
+        }, 200)
+      }).done()
+    },
     openAdvancedSearch() {
       this.advancedSearch = !this.advancedSearch
     },

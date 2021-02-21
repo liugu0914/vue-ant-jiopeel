@@ -1,18 +1,18 @@
 <template>
   <div class="standard-table">
-    <!-- <div class="alert">
-      <a-alert v-if="selectedRows" type="info" :show-icon="true">
+    <div class="alert">
+      <a-alert v-if="selectedRows" type="info" :show-icon="true" banner>
         <div slot="message" class="message">
           已选择&nbsp;<a>{{ selectedRows.length }}</a>&nbsp;项 <a class="clear" @click="onClear">清空</a>
-          <template v-for="(item, index) in needTotalList">
+          <!-- <template v-for="(item, index) in needTotalList">
             <div v-if="item.needTotal" :key="index">
               {{ item.title }}总计&nbsp;
               <a>{{ item.customRender ? item.customRender(item.total) : item.total }}</a>
             </div>
-          </template>
+          </template> -->
         </div>
       </a-alert>
-    </div> -->
+    </div>
     <a-table
       :bordered="bordered"
       :loading="loading"
@@ -43,12 +43,14 @@ export default {
   name: 'StandardTable',
   props: {
     bordered: Boolean,
-    loading: [Boolean, Object],
+    loading: {
+      type: [Boolean, Object]
+    },
     columns: Array,
     dataSource: Array,
     rowKey: {
       type: [String, Function],
-      default: 'key'
+      default: 'id'
     },
     pagination: {
       type: [Object, Boolean],

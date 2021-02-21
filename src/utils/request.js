@@ -33,7 +33,7 @@ axios.defaults.withCredentials = true
 axios.defaults.Authorization = Authorization
 axios.defaults.xsrfHeaderName = ACCESS_TOKEN
 axios.defaults.xsrfCookieName = ACCESS_TOKEN
-axios.defaults.headers.post['Content-Type'] = CONTENT_TYPE.FORM
+axios.defaults.headers.post['Content-Type'] = CONTENT_TYPE.JSON
 
 /**
  * axios请求
@@ -43,7 +43,7 @@ axios.defaults.headers.post['Content-Type'] = CONTENT_TYPE.FORM
  * @returns {Promise<AxiosResponse<T>>}
  */
 async function request(url, method, params) {
-  // 兼容axios.request (不推荐)
+  // 兼容axios.request
   if (arguments.length === 1 && Object.prototype.toString.call(arguments[0]) === '[object Object]') {
     return axios.request(arguments[0])
   }

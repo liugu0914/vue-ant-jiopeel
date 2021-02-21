@@ -1,4 +1,4 @@
-import { request, METHOD } from '@/utils/request.js'
+import { request, METHOD, CONTENT_TYPE } from '@/utils/request.js'
 
 /**
  *  用户授权接口
@@ -22,19 +22,34 @@ class Oauth {
    * 登录
    */
   static async login(data) {
-    return await request('/login', METHOD.POST, data)
+    return await request({
+      url: '/login',
+      method: METHOD.POST,
+      data,
+      headers: { 'Content-Type': CONTENT_TYPE.FORM }
+    })
   }
   /**
    * 注册
    */
   static async register(data) {
-    return await request('/register', METHOD.POST, data)
+    return await request({
+      url: '/register',
+      method: METHOD.POST,
+      data,
+      headers: { 'Content-Type': CONTENT_TYPE.FORM }
+    })
   }
   /**
    * 重置密码
    */
   static async resetPassword(data) {
-    return await request('/resetPassword', METHOD.POST, data)
+    return await request({
+      url: '/resetPassword',
+      method: METHOD.POST,
+      data,
+      headers: { 'Content-Type': CONTENT_TYPE.FORM }
+    })
   }
   /**
    * 退出
