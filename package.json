@@ -16,7 +16,7 @@
     "enquire.js": "^2.1.6",
     "js-cookie": "^2.2.1",
     "lockr": "^0.8.5",
-    "lodash": "^4.17.20",
+    "lodash.clonedeep": "^4.5.0",
     "nprogress": "^0.2.0",
     "qs.js": "^0.1.12",
     "vue": "^2.6.11",

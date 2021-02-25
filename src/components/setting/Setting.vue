@@ -26,7 +26,7 @@
         <color-checkbox v-for="(color, index) in palettes" :key="index" :color="color" :value="index" />
       </color-checkbox-group>
     </setting-item>
-    <a-divider />
+    <!-- <a-divider />
     <setting-item :title="$t('navigate.title')">
       <img-checkbox-group
         :default-values="[layout]"
@@ -36,8 +36,8 @@
         <img-checkbox :title="$t('navigate.head')" img="https://gw.alipayobjects.com/zos/rmsportal/KDNDBbriJhLwuqMoxcAr.svg" value="head" />
         <img-checkbox :title="$t('navigate.mix')" img="https://gw.alipayobjects.com/zos/antfincdn/x8Ob%26B8cy8/LCkqqYNmvBEbokSDscrm.svg" value="mix" />
       </img-checkbox-group>
-    </setting-item>
-    <setting-item>
+    </setting-item> -->
+    <!-- <setting-item>
       <a-list :split="false">
         <a-list-item>
           {{ $t('navigate.content.title') }}
@@ -81,7 +81,7 @@
           <a-switch slot="actions" :checked="hideSetting" size="small" @change="setHideSetting" />
         </a-list-item>
       </a-list>
-    </setting-item>
+    </setting-item> -->
     <a-divider />
     <setting-item :title="$t('animate.title')">
       <a-list :split="false">
@@ -117,15 +117,6 @@
         </a-list-item>
       </a-list>
     </setting-item>
-    <a-alert
-      v-if="isDev"
-      style="max-width: 240px; margin: -16px 0 8px; word-break: break-all"
-      type="warning"
-      :message="$t('alert')"
-    />
-    <a-button v-if="isDev" id="copyBtn" :data-clipboard-text="copyConfig" style="width: 100%" icon="copy" @click="copyCode">
-      {{ $t('copy') }}
-    </a-button>
   </div>
 </template>
 

@@ -50,6 +50,11 @@ export default {
     this.active = key
     this.addListener()
   },
+  provide() {
+    return {
+      content: this
+    }
+  },
   watch: {
     $route: function(newRoute) {
       const { meta = {}} = newRoute
@@ -249,5 +254,8 @@ export default {
       margin: 10px;
     }
   }
+}
+.enabled-scroll{
+  overflow: auto;
 }
 </style>

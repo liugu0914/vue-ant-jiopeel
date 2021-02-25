@@ -1,62 +1,26 @@
 <template>
   <a-card :bordered="false">
-    <!-- 搜索 -->
-    <a-row class="mb-2" type="flex" align="middle" :gutter="[0,16]" justify="space-between">
-      <a-col :md="12" :sm="24">
-        <a-input-search
-          style="width: 300px"
-          :max-length="200"
-          placeholder="搜索名称/用户"
-          allow-clear
-          :loading="loading"
-          @search="queryPage">
-          <!-- <a-button slot="enterButton" type="primary">
-            <a-icon type="search" />
-          </a-button> -->
-        </a-input-search>
-        <a-tooltip title="高级搜索">
-          <a-button type="link" @click="openAdvancedSearch">
-            <a-icon type="filter" />
-          </a-button>
-        </a-tooltip>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-button-group class="float-right">
-          <a-button type="primary" @click="visible = true">
-            <a-icon type="plus" />新建
-          </a-button>
-          <a-button @click="visible = true">
-            <a-icon type="edit" />编辑
-          </a-button>
-          <a-button>
-            <a-icon type="delete" />删除
-          </a-button>
-          <a-dropdown>
-            <a-menu slot="overlay" @click="handleMenuClick">
-              <a-menu-item key="delete">
-                删除
-              </a-menu-item>
-              <a-menu-item key="audit">
-                审批
-              </a-menu-item>
-            </a-menu>
-            <a-button>
-              更多<a-icon type="down" />
-            </a-button>
-          </a-dropdown>
-        </a-button-group>
-      </a-col>
-    </a-row>
     <!-- 表格 -->
     <standard-table
       :columns="columns"
       :data-source="dataSource"
       :selected-rows.sync="selectedRows"
       :loading="loading"
-      @clear="onClear"
+      :pagination="params.page"
       @change="onChange"
-      @selectedRowChange="onSelectChange"
+      @search="onSearch"
     >
+      <template slot="btns">
+        <a-button type="primary" @click="visible = true">
+          <a-icon type="plus" />新建
+        </a-button>
+        <a-button @click="visible = true">
+          <a-icon type="edit" />编辑
+        </a-button>
+        <a-button>
+          <a-icon type="delete" />删除
+        </a-button>
+      </template>
       <a-avatar slot="imgUrl" slot-scope="{text}" :src="text" icon="user" />
       <div slot="action" slot-scope="{record}">
         <a-tooltip>
@@ -114,56 +78,79 @@
         </a-row>
       </a-form-model>
     </a-modal>
-    <!-- 高级搜索 -->
-    <a-drawer
-      title="高级搜索"
-      placement="top"
-      :visible="advancedSearch"
-      @close="openAdvancedSearch"
-    >
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-    </a-drawer>
   </a-card>
 </template>
 
 <script>
 import { getListPage } from '@/api/modules/sys/user'
+import { BoxPage } from '@/utils/business'
 import StandardTable from '@/components/table/StandardTable'
-import _ from 'lodash'
+import { cloneDeep } from '@/utils/tool'
 const columns = [
   {
     title: '序号',
     dataIndex: 'index',
-    customRender: (text, record, index) => index + 1
+    customRender: (text, record, index) => index + 1,
+    searchAble: true,
+    disableCheck: true
   },
   {
     title: '头像',
     dataIndex: 'imgUrl',
-    scopedSlots: { customRender: 'imgUrl' }
+    scopedSlots: { customRender: 'imgUrl' },
+    searchAble: true,
+    disableCheck: true,
+    dataType: 'radio',
+    search: {
+      options: [
+        { label: '是', value: 1 },
+        { label: '否', value: 0 }
+      ]
+    }
   },
   {
     title: '用户名称',
-    dataIndex: 'userName'
+    dataIndex: 'userName',
+    searchAble: true,
+    disableCheck: true,
+    dataType: 'month'
   },
   {
     title: '账号',
     dataIndex: 'account',
-    customRender: (text) => text
+    customRender: (text) => text,
+    searchAble: true,
+    dataType: 'date'
   },
   {
     title: '邮箱',
-    dataIndex: 'email'
+    dataIndex: 'email',
+    searchAble: true,
+    dataType: 'range',
+    search: {
+      name: 'date'
+    }
   },
   {
     title: '类型',
-    dataIndex: 'type'
+    dataIndex: 'type',
+    searchAble: true,
+    dataType: 'select',
+    search: {
+      options: [
+        { label: '已下单', value: 1 },
+        { label: '已付款', value: 2 },
+        { label: '已审核', value: 3 },
+        { label: '已发货', value: 4 }
+      ],
+      multiple: true
+    }
   },
   {
     title: '操作',
     dataIndex: 'ops',
-    scopedSlots: { customRender: 'action' }
+    scopedSlots: { customRender: 'action' },
+    disableCheck: true
   }
 ]
 const DefaultForm = {
@@ -172,19 +159,25 @@ const DefaultForm = {
   callNo: '',
   updatedAt: ''
 }
-const dataForm = _.cloneDeep(DefaultForm)
+const dataForm = cloneDeep(DefaultForm)
 export default {
   name: 'QueryList',
   components: { StandardTable },
   data() {
     return {
-      advanced: true,
+      advanced: false,
       loading: false,
       visible: false,
       confirmLoading: false,
       advancedSearch: false,
       dataForm: dataForm,
       columns: columns,
+      params: {
+        page: {
+          current: 1
+        },
+        query: {}
+      },
       dataSource: [],
       selectedRows: []
     }
@@ -200,31 +193,26 @@ export default {
      * 分页查询
      */
     queryPage() {
-      const params = {
-        page: {
-          pageNum: 0,
-          pageSize: 10
-        },
-        query: {
-          id: ''
-        }
-      }
       this.loading = true
-      getListPage(params).then(res => {
+      getListPage(this.params).then(res => {
         const { data } = res
         const result = data.result || []
-        result.map(item => {
-          item.key = item.id
-          return item
-        })
+        this.params.page = BoxPage(data)
         this.dataSource = result
-        setTimeout(() => {
-          this.loading = false
-        }, 200)
-      }).done()
+      }).done().finally(() => {
+        this.loading = false
+      })
     },
-    openAdvancedSearch() {
-      this.advancedSearch = !this.advancedSearch
+    onSearch(conditions) {
+      console.log('conditions', conditions)
+      this.params.query = conditions
+      console.log(this.params.query)
+      this.queryPage()
+    },
+    onChange(pagination) {
+      console.log(pagination)
+      this.params.page = BoxPage(pagination)
+      this.queryPage()
     },
     submitForm(formName, callback) {
       this.$refs[formName].validate(valid => {
@@ -235,11 +223,11 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
-      this.dataForm = _.cloneDeep(DefaultForm)
+      this.dataForm = cloneDeep(DefaultForm)
       console.log(DefaultForm)
     },
     edit(record) {
-      this.dataForm = _.cloneDeep(record)
+      this.dataForm = cloneDeep(record)
       this.visible = true
     },
     handleOk(e) {
@@ -275,10 +263,8 @@ export default {
     onStatusTitleClick() {
       this.$message.info('你点击了状态栏表头')
     },
-    onChange() {
-      this.$message.info('表格状态改变了')
-    },
-    onSelectChange() {
+
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.$message.info('选中行改变了')
     },
     addNew() {

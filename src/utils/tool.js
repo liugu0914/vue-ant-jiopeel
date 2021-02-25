@@ -1,3 +1,6 @@
+import _cloneDeep from 'lodash.clonedeep'
+
+
 /**
  * ------------------------------------------------------------------------
  *  工具类
@@ -271,19 +274,7 @@ export function startsWiths(arr, item) {
 // ----------------------------------------------------------------------
 // 深复制
 // ----------------------------------------------------------------------
-export function deepClone(obj) {
-  const objClone = Array.isArray(obj) ? [] : {}
-  if (obj && typeof obj === 'object') {
-    for (const key in obj) {
-      if (obj[key] && typeof obj[key] === 'object') {
-        objClone[key] = deepClone(obj[key])
-      } else {
-        objClone[key] = obj[key]
-      }
-    }
-  }
-  return objClone
-}
+export const cloneDeep = _cloneDeep
 
 
 export default {
@@ -295,5 +286,5 @@ export default {
   chkQQ,
   chkPhone,
   chkTel,
-  chkEmail, chkHttp, chkUrl, chkIdCard, startsWiths, deepClone
+  chkEmail, chkHttp, chkUrl, chkIdCard, startsWiths, cloneDeep
 }

@@ -1,28 +1,77 @@
 <template>
   <div class="standard-table">
+    <!-- 高级搜索 -->
+    <a-drawer
+      title="高级搜索"
+      placement="top"
+      height="320"
+      width="320"
+      :visible="advancedSearch"
+      @close="openAdvancedSearch"
+    >
+      <search-area :format-conditions="true" :columns="visibleColumns" @change="onSearchChange" @search="onSearchChange">
+        <template v-for="slot in Object.keys($slots)" :slot="slot">
+          <slot :name="slot" />
+        </template>
+      </search-area>
+    </a-drawer>
+    <!-- 表头 -->
+    <a-row class="mb-2" type="flex" align="middle" :gutter="[0,16]" justify="space-between">
+      <a-col :md="12" :sm="24">
+        <a-input
+          v-if="showInput"
+          v-model="inputSearch"
+          style="width: 280px"
+          :max-length="200"
+          placeholder="搜索名称/用户"
+          allow-clear
+          :loading="loading"
+          @change="onInputChange"
+          @pressEnter="onInputSearch"
+        >
+          <a-tooltip slot="suffix" title="点击或回车搜索">
+            <a-icon type="search" @click="onInputSearch" />
+          </a-tooltip>
+        </a-input>
+        <a-tooltip v-if="searchCols && searchCols.length >0" title="高级搜索">
+          <a-button type="link" @click="openAdvancedSearch">
+            <a-icon type="filter" />
+          </a-button>
+        </a-tooltip>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <action-size v-model="size">
+          <slot slot="default" name="btns" />
+          <a-tooltip slot="setting" title="设置">
+            <action-columns :columns="columns">
+              <template v-for="slot in Object.keys($slots)" :slot="slot">
+                <slot :name="slot" />
+              </template>
+            </action-columns>
+          </a-tooltip>
+        </action-size>
+      </a-col>
+    </a-row>
+    <!-- 提示框 -->
     <div class="alert">
       <a-alert v-if="selectedRows" type="info" :show-icon="true" banner>
         <div slot="message" class="message">
           已选择&nbsp;<a>{{ selectedRows.length }}</a>&nbsp;项 <a class="clear" @click="onClear">清空</a>
-          <!-- <template v-for="(item, index) in needTotalList">
-            <div v-if="item.needTotal" :key="index">
-              {{ item.title }}总计&nbsp;
-              <a>{{ item.customRender ? item.customRender(item.total) : item.total }}</a>
-            </div>
-          </template> -->
         </div>
       </a-alert>
     </div>
+    <!-- 表格 -->
     <a-table
+      :size="size"
       :bordered="bordered"
       :loading="loading"
-      :columns="columns"
+      :columns="visibleColumns"
       :data-source="dataSource"
       :row-key="rowKey"
-      :pagination="pagination"
+      :pagination="initPagination"
       :expanded-row-keys="expandedRowKeys"
       :expanded-row-render="expandedRowRender"
-      :row-selection="selectedRows ? {selectedRowKeys: selectedRowKeys, onChange: updateSelect} : undefined"
+      :row-selection="selectedRows ? {selectedRowKeys: selectedRowKeys,onSelect:onSelect, onSelectAll:onSelectAll} : undefined"
       @change="onChange"
     >
       <template v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') " :slot="slot" slot-scope="text, record, index">
@@ -39,10 +88,22 @@
 </template>
 
 <script>
+
+import ActionSize from '@/components/table/advance/ActionSize'
+import ActionColumns from '@/components/table/advance/ActionColumns'
+import SearchArea from '@/components/table/advance/SearchArea'
 export default {
   name: 'StandardTable',
+  components: {
+    ActionSize,
+    ActionColumns,
+    SearchArea
+  },
   props: {
-    bordered: Boolean,
+    bordered: {
+      type: [Boolean],
+      default: false
+    },
     loading: {
       type: [Boolean, Object]
     },
@@ -54,13 +115,15 @@ export default {
     },
     pagination: {
       type: [Object, Boolean],
-      default: () => (
-        { pageSizeOptions: ['10', '20', '30', '40', '50'],
-          showSizeChanger: true,
-          defaultPageSize: 10,
-          hideOnSinglePage: true
-        }
-      )
+      default: () => ({})
+    },
+    showInput: {
+      type: [Boolean],
+      default: true
+    },
+    inputName: {
+      type: [String],
+      default: 'search'
     },
     selectedRows: Array,
     expandedRowKeys: Array,
@@ -68,52 +131,106 @@ export default {
   },
   data() {
     return {
-      needTotalList: []
+      conditions: {},
+      inputSearch: '',
+      size: 'default',
+      advancedSearch: false,
+      newSelectedRows: []
     }
   },
   methods: {
+    openAdvancedSearch() {
+      this.advancedSearch = !this.advancedSearch
+    },
+    onInputChange() {
+      const inputName = this.inputName
+      if (this.inputSearch) {
+        this.conditions[inputName] = this.inputSearch
+      } else {
+        delete this.conditions[inputName]
+        this.onInputSearch()
+      }
+    },
+    onInputSearch() {
+      this.$emit('search', this.conditions)
+    },
+    onSearchChange(conditions) {
+      const inputName = this.inputName
+      this.conditions = conditions
+      if (this.inputSearch) {
+        this.conditions[inputName] = this.inputSearch
+      }
+      console.log(this.conditions)
+      this.$emit('search', this.conditions)
+    },
+    onSelect(record, selected) {
+      const key = this.getRowKey()
+      const index = this.newSelectedRows.findIndex(item => item[key] === record[key])
+      if (selected && index == -1) {
+        this.newSelectedRows.push(record)
+      } else {
+        this.newSelectedRows.splice(index, 1)
+      }
+      const selectedRowKeys = this.newSelectedRows.map(record => {
+        return record[this.getRowKey()]
+      })
+      this.updateSelect(selectedRowKeys, this.newSelectedRows)
+    },
+    onSelectAll(selected, selectedRows, changeRows) {
+      const key = this.getRowKey()
+      changeRows.forEach(record => {
+        const index = this.newSelectedRows.findIndex(item => {
+          return item[key] === record[key]
+        })
+        if (selected && index == -1) {
+          this.newSelectedRows.push(record)
+        } else {
+          this.newSelectedRows.splice(index, 1)
+        }
+      })
+      const selectedRowKeys = this.newSelectedRows.map(record => {
+        return record[this.getRowKey()]
+      })
+      this.updateSelect(selectedRowKeys, this.newSelectedRows)
+    },
     updateSelect(selectedRowKeys, selectedRows) {
       this.$emit('update:selectedRows', selectedRows)
       this.$emit('selectedRowChange', selectedRowKeys, selectedRows)
     },
-    initTotalList(columns) {
-      const totalList = columns.filter(item => item.needTotal)
-        .map(item => {
-          return {
-            ...item,
-            total: 0
-          }
-        })
-      return totalList
+    getRowKey() {
+      return (typeof this.rowKey === 'function') ? this.rowKey() : this.rowKey
     },
     onClear() {
+      this.newSelectedRows = []
       this.updateSelect([], [])
-      this.$emit('clear')
+      this.$emit('clearSelect')
     },
     onChange(pagination, filters, sorter, { currentDataSource }) {
       this.$emit('change', pagination, filters, sorter, { currentDataSource })
     }
   },
-  created() {
-    this.needTotalList = this.initTotalList(this.columns)
-  },
-  watch: {
-    selectedRows(selectedRows) {
-      this.needTotalList = this.needTotalList.map(item => {
-        return {
-          ...item,
-          total: selectedRows.reduce((sum, val) => {
-            return sum + val[item.dataIndex]
-          }, 0)
-        }
-      })
-    }
-  },
   computed: {
+    visibleColumns() {
+      const visibleColumns = this.columns.filter(col => col.visible)
+      return visibleColumns
+    },
     selectedRowKeys() {
       return this.selectedRows.map(record => {
-        return (typeof this.rowKey === 'function') ? this.rowKey(record) : record[this.rowKey]
+        return record[this.getRowKey()]
       })
+    },
+    searchCols() {
+      return this.visibleColumns.filter(item => item.searchAble)
+    },
+    initPagination() {
+      const page = {
+        pageSizeOptions: ['10', '20', '30', '40', '50'],
+        showSizeChanger: true,
+        defaultPageSize: 10,
+        showTotal: (total, range) => `共 ${total} 条`
+        // hideOnSinglePage: true
+      }
+      return typeof this.pagination === 'boolean' ? this.pagination : { ...page, ...this.pagination }
     }
   }
 }

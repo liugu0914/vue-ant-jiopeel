@@ -1,226 +1,299 @@
 <template>
-  <div class="search-area" ref="root">
-    <div class="select-root" ref="selectRoot"></div>
-    <div class="search-item" :key="index" v-for="(col, index) in searchCols">
-      <div v-if="col.dataType === 'boolean'" :class="['title', {active: col.search.value !== undefined}]">
-        <template v-if="col.title">
-          {{col.title}}:
-        </template>
-        <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title"></slot>
-        <a-switch @change="onSwitchChange(col)" class="switch" v-model="col.search.value" size="small" checked-children="是" un-checked-children="否" />
-        <a-icon v-if="col.search.value !== undefined" class="close" @click="e => onCloseClick(e, col)" type="close-circle" theme="filled" />
-      </div>
-      <div v-else-if="col.dataType === 'time'" :class="['title', {active: col.search.value}]">
-        <template v-if="col.title">
-          {{col.title}}:
-        </template>
-        <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title"></slot>
-        <a-time-picker :format="col.search.format" v-model="col.search.value" placeholder="选择时间" @change="(time, timeStr) => onCalendarChange(time, timeStr, col)" @openChange="open => onCalendarOpenChange(open, col)" class="time-picker" size="small" :get-popup-container="() => $refs.root"/>
-      </div>
-      <div v-else-if="col.dataType === 'date'" :class="['title', {active: col.search.value}]">
-        <template v-if="col.title">
-          {{col.title}}:
-        </template>
-        <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title"></slot>
-        <a-date-picker :format="col.search.format" v-model="col.search.value" @change="onDateChange(col)" class="date-picker" size="small" :getCalendarContainer="() => $refs.root"/>
-      </div>
-      <div v-else-if="col.dataType === 'datetime'" class="title datetime active">
-        <template v-if="col.title">
-          {{col.title}}:
-        </template>
-        <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title"></slot>
-        <a-date-picker :format="col.search.format" v-model="col.search.value" @change="(date, dateStr) => onCalendarChange(date, dateStr, col)" @openChange="open => onCalendarOpenChange(open, col)" class="datetime-picker" size="small" show-time :getCalendarContainer="() => $refs.root"/>
-      </div>
-      <div v-else-if="col.dataType === 'select'" :class="['title', {active: col.search.value !== undefined}]">
-        <template v-if="col.title">
-          {{col.title}}:
-        </template>
-        <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title"></slot>
-        <a-select :allowClear="true" :options="col.search.selectOptions" v-model="col.search.value" placeholder="请选择..." @change="onSelectChange(col)" class="select" slot="content" size="small" :get-popup-container="() => $refs.selectRoot">
-        </a-select>
-      </div>
-      <div v-else :class="['title', {active: col.search.value}]">
-        <a-popover @visibleChange="onVisibleChange(col, index)" v-model="col.search.visible" placement="bottom" :trigger="['click']" :get-popup-container="() => $refs.root">
-          <template v-if="col.title">
-            {{col.title}}
-          </template>
-          <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title"></slot>
-          <div class="value " v-if="col.search.value">:&nbsp;&nbsp;{{col.search.format && typeof col.search.format === 'function' ? col.search.format(col.search.value) : col.search.value}}</div>
-          <a-icon v-if="!col.search.value" class="icon-down" type="down"/>
-          <div class="operations" slot="content">
-            <a-button @click="onCancel(col)" class="btn" size="small" type="link">取消</a-button>
-            <a-button @click="onConfirm(col)" class="btn" size="small" type="primary">确认</a-button>
-          </div>
-          <div class="search-overlay" slot="title">
-            <a-input :id="`${searchIdPrefix}${index}`" :allow-clear="true" @keyup.esc="onCancel(col)" @keyup.enter="onConfirm(col)" v-model="col.search.value" size="small" />
-          </div>
-        </a-popover>
-        <a-icon v-if="col.search.value" @click="e => onCloseClick(e, col)" class="close" type="close-circle" theme="filled"/>
-      </div>
+  <div ref="root" class="search-area">
+    <div ref="selectRoot" class="select-root" />
+
+    <a-form layout="vertical">
+      <a-row :gutter="[16,0]">
+        <a-col v-for="(col, index) in searchCols" :key="index" :xl="6" :lg="8" :md="12" :sm="24">
+          <a-form-item v-if="col.dataType === 'boolean'">
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-switch v-model="col.search.value" checked-children="是" un-checked-children="否" @change="onSwitchChange(col)" />
+          </a-form-item>
+          <a-form-item v-else-if="col.dataType === 'time'">
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-time-picker v-model="col.search.value" :format="col.search.format" placeholder="选择时间" class="w-100" @change="(time, timeStr) => onCalendarChange(time, timeStr, col)" @openChange="open => onCalendarOpenChange(open, col)" />
+          </a-form-item>
+          <a-form-item v-else-if="col.dataType === 'date'">
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-date-picker v-model="col.search.value" class="w-100" :format="col.search.format" @change="onDateChange(col)" />
+          </a-form-item>
+          <a-form-item v-else-if="col.dataType === 'month'">
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-month-picker v-model="col.search.value" class="w-100" :format="col.search.format" @change="onDateChange(col)" />
+          </a-form-item>
+          <a-form-item v-else-if="col.dataType === 'range'">
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-range-picker v-model="col.search.value" class="w-100" :format="col.search.format" @change="onDateChange(col)" />
+          </a-form-item>
+          <a-form-item v-else-if="col.dataType === 'datetime'">
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-date-picker v-model="col.search.value" class="w-100" :format="col.search.format" show-time @change="(date, dateStr) => onCalendarChange(date, dateStr, col)" @openChange="open => onCalendarOpenChange(open, col)" />
+          </a-form-item>
+          <a-form-item v-else-if="col.dataType === 'select'">
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-select v-model="col.search.value" class="w-100" allow-clear :mode="col.search && col.search.multiple?'multiple':'default' " placeholder="请选择" @change="onSelectChange(col)">
+              <a-select-option v-for="(item,selectIndex) in col.search.options" :key="selectIndex" :value="item.value" :disabled="item.disabled">
+                {{ item.label }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item v-else-if="col.dataType === 'checkbox'">
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-checkbox-group v-model="col.search.value" :options="col.search.options" @change="onSelectChange(col)" />
+          </a-form-item>
+          <a-form-item v-else-if="col.dataType === 'radio'">
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-radio-group v-model="col.search.value" @change="()=>onSelectChange(col)">
+              <a-radio v-for="(item,radioIndex) in col.search.options" :key="radioIndex" :value="item.value">
+                {{ item.label }}
+              </a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item v-else>
+            <template slot="label">
+              <template v-if="col.title">
+                {{ col.title }}
+              </template>
+              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            </template>
+            <a-input v-model="col.search.value" placeholder="请输入" class="w-100" allow-clear @change="onConfirm(col)" />
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
+    <div
+      :style="{
+        textAlign: 'right'
+      }"
+    >
+      <a-button style="marginRight: 8px" @click="onClear">
+        重置
+      </a-button>
+      <a-button type="primary" @click="onSearch">
+        查询
+      </a-button>
     </div>
   </div>
 </template>
 
 <script>
-  import fastEqual from 'fast-deep-equal'
-  import moment from 'moment'
+import fastEqual from 'fast-deep-equal'
+import moment from 'moment'
 
-  export default {
-    name: 'SearchArea',
-    props: ['columns', 'formatConditions'],
-    inject: ['table'],
-    created() {
-      this.columns.forEach(item => {
-        this.$set(item, 'search', {...item.search, visible: false, value: undefined, format: this.getFormat(item)})
-      })
-      console.log(this.columns)
-    },
-    watch: {
-      searchCols(newVal, oldVal) {
-        if (newVal.length != oldVal.length) {
-          const newConditions = this.getConditions(newVal)
-          const newSearchOptions = this.getSearchOptions(newVal)
-          if (!fastEqual(newConditions, this.conditions)) {
-            this.conditions = newConditions
-            this.searchOptions = newSearchOptions
-            this.$emit('change', this.conditions, this.searchOptions)
-          }
+export default {
+  name: 'SearchArea',
+  props: ['columns', 'formatConditions'],
+  created() {
+    this.columns.forEach(item => {
+      this.$set(item, 'search', { ...item.search, value: undefined, format: this.getFormat(item) })
+    })
+  },
+  watch: {
+    searchCols(newVal, oldVal) {
+      if (newVal.length != oldVal.length) {
+        const newConditions = this.getConditions(newVal)
+        const newSearchOptions = this.getSearchOptions(newVal)
+        if (!fastEqual(newConditions, this.conditions)) {
+          this.conditions = newConditions
+          this.searchOptions = newSearchOptions
+          this.$emit('change', this.conditions, this.searchOptions)
         }
       }
-    },
-    data() {
-      return {
-        conditions: {},
-        searchOptions: []
-      }
-    },
-    computed: {
-      searchCols() {
-        return this.columns.filter(item => item.searchAble)
-      },
-      searchIdPrefix() {
-        return this.table.id + '-ipt-'
-      }
-    },
-    methods: {
-      onCloseClick(e, col) {
-        e.preventDefault()
-        e.stopPropagation()
-        col.search.value = undefined
-        const {backup, value} = col.search
-        if (backup !== value) {
-          this.backupAndEmitChange(col)
-        }
-      },
-      onCancel(col) {
-        col.search.value = col.search.backup
-        col.search.visible = false
-      },
-      onConfirm(col) {
-        const {backup, value} = col.search
-        col.search.visible = false
-        if (backup !== value) {
-          this.backupAndEmitChange(col)
-        }
-      },
-      onSwitchChange(col) {
-        const {backup, value} = col.search
-        if (backup !== value) {
-          this.backupAndEmitChange(col)
-        }
-      },
-      onSelectChange(col) {
+    }
+  },
+  data() {
+    return {
+      conditions: {},
+      searchOptions: []
+    }
+  },
+  computed: {
+    searchCols() {
+      return this.columns.filter(item => item.searchAble)
+    }
+  },
+  methods: {
+    onCloseClick(e, col) {
+      e.preventDefault()
+      e.stopPropagation()
+      col.search.value = undefined
+      const { backup, value } = col.search
+      if (backup !== value) {
         this.backupAndEmitChange(col)
-      },
-      onCalendarOpenChange(open, col) {
-        col.search.visible = open
-        const {momentEqual, backupAndEmitChange} = this
-        const {value, backup, format} = col.search
-        if (!open && !momentEqual(value, backup, format)) {
-          backupAndEmitChange(col, moment(value))
-        }
-      },
-      onCalendarChange(date, dateStr, col) {
-        const {momentEqual, backupAndEmitChange} = this
-        const {value, backup, format} = col.search
-        if (!col.search.visible && !momentEqual(value, backup, format)) {
-          backupAndEmitChange(col, moment(value))
-        }
-      },
-      onDateChange(col) {
-        const {momentEqual, backupAndEmitChange} = this
-        const {value, backup, format} = col.search
-        if (!momentEqual(value, backup, format)) {
-          backupAndEmitChange(col, moment(value))
-        }
-      },
-      getFormat(col) {
-        if (col.search && col.search.format) {
-          return col.search.format
-        }
-        const dataType = col.dataType
-        switch(dataType) {
-          case 'time': return 'HH:mm:ss'
-          case 'date': return 'YYYY-MM-DD'
-          case 'datetime': return 'YYYY-MM-DD HH:mm:ss'
-          default: return undefined
-        }
-      },
-      backupAndEmitChange(col, backValue = col.search.value) {
-        const {getConditions, getSearchOptions} = this
-        col.search.backup = backValue
-        this.conditions = getConditions(this.searchCols)
-        this.searchOptions = getSearchOptions(this.searchCols)
-        this.$emit('change', this.conditions, this.searchOptions)
-      },
-      getConditions(columns) {
-        const conditions = {}
-        columns.filter(item => item.search.value !== undefined && item.search.value !== '' && item.search.value !== null)
-          .forEach(col => {
-            const {value, format} = col.search
-            if (this.formatConditions && format) {
-              if (typeof format === 'function') {
-                conditions[col.dataIndex] = format(col.search.value)
-              } else if (typeof format === 'string' && value.constructor.name === 'Moment') {
-                conditions[col.dataIndex] = value.format(format)
+      }
+    },
+    onConfirm(col) {
+      const { backup, value } = col.search
+      if (backup !== value) {
+        this.backupAndEmitChange(col)
+      }
+    },
+    onSwitchChange(col) {
+      const { backup, value } = col.search
+      if (backup !== value) {
+        this.backupAndEmitChange(col)
+      }
+    },
+    onSelectChange(col) {
+      this.backupAndEmitChange(col)
+    },
+    onCalendarOpenChange(open, col) {
+      const { momentEqual, backupAndEmitChange } = this
+      const { value, backup, format } = col.search
+      if (!open && !momentEqual(value, backup, format)) {
+        backupAndEmitChange(col, moment(value))
+      }
+    },
+    onCalendarChange(date, dateStr, col) {
+      const { momentEqual, backupAndEmitChange } = this
+      const { value, backup, format } = col.search
+      if (!momentEqual(value, backup, format)) {
+        backupAndEmitChange(col, moment(value))
+      }
+    },
+    onDateChange(col) {
+      const { momentEqual, backupAndEmitChange } = this
+      const { value, backup, format } = col.search
+      if (!momentEqual(value, backup, format)) {
+        backupAndEmitChange(col, moment(value))
+      }
+    },
+    getFormat(col) {
+      if (col.search && col.search.format) {
+        return col.search.format
+      }
+      const dataType = col.dataType
+      switch (dataType) {
+        case 'time': return 'HH:mm:ss'
+        case 'date': return 'YYYY-MM-DD'
+        case 'month': return 'YYYY-MM'
+        case 'year': return 'YYYY'
+        case 'datetime': return 'YYYY-MM-DD HH:mm:ss'
+        case 'range': return 'YYYY-MM-DD'
+        default: return undefined
+      }
+    },
+    backupAndEmitChange(col, backValue = col.search.value) {
+      const { getConditions, getSearchOptions } = this
+      col.search.backup = backValue
+      this.conditions = getConditions(this.searchCols)
+      this.searchOptions = getSearchOptions(this.searchCols)
+      this.$emit('change', this.conditions, this.searchOptions)
+    },
+    getConditions(columns) {
+      const conditions = {}
+      columns.filter(item => item.search.value !== undefined && item.search.value !== '' && item.search.value !== null)
+        .forEach(col => {
+          const { value, format, name } = col.search
+          const dataIndex = name || col.dataIndex
+          let searchVal
+          if (this.formatConditions && format) {
+            if (typeof format === 'function') {
+              searchVal = format(col.search.value)
+            } else if (typeof format === 'string' && (value.constructor.name === 'Moment' || value.constructor.name === 'Array')) {
+              if (Array.isArray(value)) {
+                const rangeStr = []
+                value.forEach((moment) => {
+                  rangeStr.push(moment.format(format))
+                })
+                searchVal = rangeStr
               } else {
-                conditions[col.dataIndex] = value
+                searchVal = value.format(format)
               }
             } else {
-              conditions[col.dataIndex] = value
+              searchVal = value
             }
-          })
-        return conditions
-      },
-      getSearchOptions(columns) {
-        return columns.filter(item => item.search.value !== undefined && item.search.value !== '' && item.search.value !== null)
-          .map(({dataIndex, search}) => ({field: dataIndex, value: search.value, format: search.format}))
-      },
-      onVisibleChange(col, index) {
-        if (!col.search.visible) {
-          col.search.value = col.search.backup
-        } else {
-          let input = document.getElementById(`${this.searchIdPrefix}${index}`)
-          if (input) {
-            setTimeout(() => {input.focus()}, 0)
           } else {
-            this.$nextTick(() => {
-              input = document.getElementById(`${this.searchIdPrefix}${index}`)
-              input.focus()
-            })
+            searchVal = value
           }
-        }
-      },
-      momentEqual(target, source, format) {
-        if (target === source) {
-          return true
-        } else if (target && source && target.format(format) === source.format(format)) {
-          return true
+          const isArr = Array.isArray(searchVal)
+          if ((!isArr && searchVal) || (isArr && searchVal.length > 0)) {
+            conditions[dataIndex] = searchVal
+          }
+        })
+      console.log('conditions', conditions)
+      return conditions
+    },
+    getSearchOptions(columns) {
+      return columns.filter(item => item.search.value !== undefined && item.search.value !== '' && item.search.value !== null)
+        .map(({ dataIndex, search }) => ({ field: search.name || dataIndex, value: search.value, format: search.format }))
+    },
+    onClear() {
+      this.searchCols.filter(item => item.search.value !== undefined && item.search.value !== '' && item.search.value !== null)
+        .forEach(col => {
+          col.search.value = undefined
+        })
+      this.$emit('clear', {})
+    },
+    onSearch() {
+      this.$emit('search', this.getConditions(this.searchCols))
+    },
+    momentEqual(target, source, format) {
+      const isArr = Array.isArray(target)
+      if (isArr) {
+        if (target && source) {
+          let flag = false
+          target.forEach((moment, index) => {
+            flag = target[index].format(format) === source._i[index].format(format)
+          })
+          return flag
         }
         return false
       }
+      if (target === source) {
+        return true
+      } else if (target && source && target.format(format) === source.format(format)) {
+        return true
+      }
+      return false
     }
   }
+}
 </script>
 
 <style scoped lang="less">
