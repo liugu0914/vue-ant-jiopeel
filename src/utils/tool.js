@@ -277,6 +277,16 @@ export function startsWiths(arr, item) {
 export const cloneDeep = _cloneDeep
 
 
+
+/**
+ * 封装后台分页数据
+ * @param {Object} data
+ */
+export function BoxPage(data) {
+  return { current: data.current, pageSize: data.pageSize, total: data.total }
+}
+
+
 export default {
   toSerialize,
   toObject,

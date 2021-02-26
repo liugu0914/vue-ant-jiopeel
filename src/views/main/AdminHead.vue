@@ -34,7 +34,7 @@
         <a-dropdown>
           <div class="header-child-item">
             <a-avatar size="default" shape="circle" src="https://gw.alipayobjects.com/zos/rmsportal/WhxKECPNujWoWEFNdnJE.png" />
-            <span class="ml-1 item-name d-none">系统管理员</span>
+            <span class="ml-1 item-name d-none">{{ user.userName }}</span>
           </div>
           <a-menu slot="overlay">
             <a-menu-item>
@@ -65,7 +65,7 @@ import Drawer from '@/components/tool/Drawer'
 import Setting from '@/components/setting/Setting'
 import Oauth from '@/api/login/oauth'
 import { removeAuthorization } from '@/utils/request'
-
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'AdminHead',
@@ -92,6 +92,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('account', ['user'])
   },
   methods: {
     toggleCollapse() {

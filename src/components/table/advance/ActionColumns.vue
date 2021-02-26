@@ -11,24 +11,13 @@
     </div>
     <a-list v-for="(col, i) in columns" :key="i" slot="content" style="width: 100%" size="small">
       <a-list-item>
-        <a-checkbox v-model="col.visible" :disabled="col.disableCheck" @change="e => onCheckChange(e, col)" />
+        <a-checkbox v-model="col.visible" :disabled="col.disable" @change="e => onCheckChange(e, col)" />
         <span class="float-right px-1">
           <template v-if="col.title">
             {{ col.title }}
           </template>
           <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
         </span>
-        <!-- <template slot="actions">
-            <a-tooltip title="固定在列头" :mouse-enter-delay="0.5" :get-popup-container="() => $refs.root">
-              <a-icon :class="['left', {active: col.fixed === 'left'}]" type="vertical-align-top" @click="fixColumn('left', col)" />
-            </a-tooltip>
-            <a-tooltip title="固定在列尾" :mouse-enter-delay="0.5" :get-popup-container="() => $refs.root">
-              <a-icon :class="['right', {active: col.fixed === 'right'}]" type="vertical-align-bottom" @click="fixColumn('right', col)" />
-            </a-tooltip>
-            <a-tooltip title="添加搜索" :mouse-enter-delay="0.5" :get-popup-container="() => $refs.root">
-              <a-icon :class="{active: col.searchAble}" type="search" @click="setSearch(col)" />
-            </a-tooltip>
-          </template> -->
       </a-list-item>
     </a-list>
   </a-popover>

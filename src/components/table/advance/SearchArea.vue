@@ -4,7 +4,7 @@
 
     <a-form layout="vertical">
       <a-row :gutter="[16,0]">
-        <a-col v-for="(col, index) in searchCols" :key="index" :xl="6" :lg="8" :md="12" :sm="24">
+        <a-col v-for="(col, index) in searchCols" :key="index" :xl="response.xl" :lg="response.lg" :md="response.md" :sm="response.sm">
           <a-form-item v-if="col.dataType === 'boolean'">
             <template slot="label">
               <template v-if="col.title">
@@ -112,9 +112,11 @@
       }"
     >
       <a-button style="marginRight: 8px" @click="onClear">
+        <a-icon type="undo" />
         重置
       </a-button>
       <a-button type="primary" @click="onSearch">
+        <a-icon type="search" />
         查询
       </a-button>
     </div>
@@ -127,7 +129,7 @@ import moment from 'moment'
 
 export default {
   name: 'SearchArea',
-  props: ['columns', 'formatConditions'],
+  props: ['columns', 'formatConditions', 'isResponse'],
   created() {
     this.columns.forEach(item => {
       this.$set(item, 'search', { ...item.search, value: undefined, format: this.getFormat(item) })
@@ -155,6 +157,9 @@ export default {
   computed: {
     searchCols() {
       return this.columns.filter(item => item.searchAble)
+    },
+    response() {
+      return this.isResponse === true ? { xl: 6, lg: 8, md: 12, sm: 24 } : { xl: 24, lg: 24, md: 24, sm: 24 }
     }
   },
   methods: {
@@ -297,80 +302,4 @@ export default {
 </script>
 
 <style scoped lang="less">
-.search-area{
-  .select-root{
-    text-align: left;
-  }
-  margin: -4px 0;
-  .search-item{
-    margin: 4px 4px;
-    display: inline-block;
-    .title{
-      padding: 4px 8px;
-      cursor: pointer;
-      border-radius: 4px;
-      user-select: none;
-      display: inline-flex;
-      align-items: center;
-      .close{
-        color: @text-color-second;
-        margin-left: 4px;
-        font-size: 12px;
-        vertical-align: middle;
-        :hover{
-          color: @text-color;
-        }
-      }
-      .switch{
-        margin-left: 4px;
-      }
-      .time-picker{
-        margin-left: 4px;
-        width: 96px;
-      }
-      .date-picker{
-        margin-left: 4px;
-        width: 120px;
-      }
-      .datetime-picker{
-        margin-left: 4px;
-        width: 195px;
-      }
-      .value{
-        display: inline-block;
-        overflow: hidden;
-        flex:1;
-        vertical-align: middle;
-        max-width: 144px;
-        text-overflow: ellipsis;
-        word-break: break-all;
-        white-space: nowrap;
-      }
-      &.active{
-        background-color: @layout-bg-color;
-      }
-    }
-    .icon-down{
-      vertical-align: middle;
-      font-size: 12px;
-    }
-  }
-  .search-overlay{
-    padding: 8px 0px;
-    text-align: center;
-  }
-  .select{
-    margin-left: 4px;
-    max-width: 144px;
-    min-width: 96px;
-    text-align: left;
-  }
-  .operations{
-    display: flex;
-    margin: -6px 0;
-    justify-content: space-between;
-    .btn{
-    }
-  }
-}
 </style>

@@ -3,13 +3,14 @@
     <!-- 高级搜索 -->
     <a-drawer
       title="高级搜索"
-      placement="top"
+      :placement="placement"
       height="320"
-      width="320"
+      width="400"
+      :body-style="{ padding: '20px 24px'}"
       :visible="advancedSearch"
       @close="openAdvancedSearch"
     >
-      <search-area :format-conditions="true" :columns="visibleColumns" @change="onSearchChange" @search="onSearchChange">
+      <search-area :format-conditions="true" :is-response="placement === 'top' || placement === 'bottom'" :columns="visibleColumns" @change="onSearchChange" @search="onSearchChange">
         <template v-for="slot in Object.keys($slots)" :slot="slot">
           <slot :name="slot" />
         </template>
@@ -25,15 +26,14 @@
           :max-length="200"
           placeholder="搜索名称/用户"
           allow-clear
-          :loading="loading"
           @change="onInputChange"
           @pressEnter="onInputSearch"
         >
-          <a-tooltip slot="suffix" title="点击或回车搜索">
-            <a-icon type="search" @click="onInputSearch" />
+          <a-tooltip v-cloak slot="suffix" title="点击或回车搜索">
+            <a-icon :type="loading?'loading':'search'" @click="onInputSearch" />
           </a-tooltip>
         </a-input>
-        <a-tooltip v-if="searchCols && searchCols.length >0" title="高级搜索">
+        <a-tooltip v-if="searchCols && searchCols.length >0" v-cloak title="高级搜索">
           <a-button type="link" @click="openAdvancedSearch">
             <a-icon type="filter" />
           </a-button>
@@ -42,7 +42,7 @@
       <a-col :md="12" :sm="24">
         <action-size v-model="size">
           <slot slot="default" name="btns" />
-          <a-tooltip slot="setting" title="设置">
+          <a-tooltip v-cloak slot="setting" title="设置">
             <action-columns :columns="columns">
               <template v-for="slot in Object.keys($slots)" :slot="slot">
                 <slot :name="slot" />
@@ -131,6 +131,7 @@ export default {
   },
   data() {
     return {
+      placement: 'top',
       conditions: {},
       inputSearch: '',
       size: 'default',
@@ -152,6 +153,7 @@ export default {
       }
     },
     onInputSearch() {
+      if (this.loading) { return }
       this.$emit('search', this.conditions)
     },
     onSearchChange(conditions) {
