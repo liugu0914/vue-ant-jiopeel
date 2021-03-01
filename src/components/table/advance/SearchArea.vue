@@ -273,7 +273,8 @@ export default {
         .forEach(col => {
           col.search.value = undefined
         })
-      this.$emit('clear', {})
+      // this.$emit('clear', {})
+      this.$emit('search', {})
     },
     onSearch() {
       this.$emit('search', this.getConditions(this.searchCols))

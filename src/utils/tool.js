@@ -283,18 +283,6 @@ export const cloneDeep = _cloneDeep
  * @param {Object} data
  */
 export function BoxPage(data) {
-  return { current: data.current, pageSize: data.pageSize, total: data.total }
-}
-
-
-export default {
-  toSerialize,
-  toObject,
-  evalString,
-  isJSON,
-  simple2Tree,
-  chkQQ,
-  chkPhone,
-  chkTel,
-  chkEmail, chkHttp, chkUrl, chkIdCard, startsWiths, cloneDeep
+  const { current, pageSize, total } = data
+  return { current, pageSize, total }
 }

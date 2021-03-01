@@ -19,25 +19,17 @@ export const columns = [
   {
     title: '用户名称',
     dataIndex: 'userName',
-    searchAble: true,
-    disable: true,
-    dataType: 'month'
+    disable: true
   },
   {
     title: '账号',
     dataIndex: 'account',
-    customRender: (text) => text,
-    searchAble: true,
-    dataType: 'date'
+    customRender: (text) => text
   },
   {
     title: '邮箱',
     dataIndex: 'email',
-    searchAble: true,
-    dataType: 'range',
-    search: {
-      name: 'date'
-    }
+    searchAble: true
   },
   {
     title: '类型',
@@ -45,11 +37,12 @@ export const columns = [
     searchAble: true,
     dataType: 'select',
     search: {
+      name: 'typeSearch',
       options: [
-        { label: '已下单', value: 1 },
-        { label: '已付款', value: 2 },
-        { label: '已审核', value: 3 },
-        { label: '已发货', value: 4 }
+        { label: 'gitee', value: 'gitee' },
+        { label: 'github', value: 'github' },
+        { label: 'weixin', value: 'weixin' },
+        { label: 'local', value: 'local' }
       ],
       multiple: true
     }
@@ -69,8 +62,10 @@ export const columns = [
  * @author lyc
  */
 export const defaultForm = {
-  id: '',
-  description: '',
-  callNo: '',
-  updatedAt: ''
+  id: undefined,
+  account: undefined,
+  email: undefined,
+  type: undefined,
+  userName: undefined,
+  enable: 0
 }

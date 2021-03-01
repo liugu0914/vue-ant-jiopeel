@@ -24,7 +24,7 @@
           v-model="inputSearch"
           style="width: 280px"
           :max-length="200"
-          placeholder="搜索名称/用户"
+          :placeholder="placeholder"
           allow-clear
           @change="onInputChange"
           @pressEnter="onInputSearch"
@@ -71,7 +71,7 @@
       :pagination="initPagination"
       :expanded-row-keys="expandedRowKeys"
       :expanded-row-render="expandedRowRender"
-      :row-selection="selectedRows ? {selectedRowKeys: selectedRowKeys,onSelect:onSelect, onSelectAll:onSelectAll} : undefined"
+      :row-selection="selectedRows ? {selectedRowKeys: selectedRowKeys ,onChange:updateSelect} : undefined"
       @change="onChange"
     >
       <template v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') " :slot="slot" slot-scope="text, record, index">
@@ -121,6 +121,10 @@ export default {
       type: [Boolean],
       default: true
     },
+    placeholder: {
+      type: [String],
+      default: '搜索...'
+    },
     inputName: {
       type: [String],
       default: 'search'
@@ -137,6 +141,22 @@ export default {
       size: 'default',
       advancedSearch: false,
       newSelectedRows: []
+    }
+  },
+  watch: {
+    dataSource(datas) {
+      const key = this.getRowKey()
+      const rows = []
+      const keys = []
+      this.selectedRows.forEach(row => {
+        const rowKey = row[key]
+        const index = datas.findIndex(item => item[key] === rowKey)
+        if (index > -1) {
+          rows.push(datas[index])
+          keys.push(rowKey)
+        }
+      })
+      this.updateSelect(keys, rows)
     }
   },
   methods: {
@@ -193,6 +213,11 @@ export default {
       const selectedRowKeys = this.newSelectedRows.map(record => {
         return record[this.getRowKey()]
       })
+      this.updateSelect(selectedRowKeys, this.newSelectedRows)
+    },
+    onSelectChange(selectedRowKeys, selectedRows) {
+      console.log('onSelectChange')
+      console.log(selectedRowKeys, selectedRows)
       this.updateSelect(selectedRowKeys, this.newSelectedRows)
     },
     updateSelect(selectedRowKeys, selectedRows) {

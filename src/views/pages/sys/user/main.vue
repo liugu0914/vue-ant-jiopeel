@@ -12,16 +12,19 @@
       :selected-rows.sync="selectedRows"
       :loading="loading"
       :pagination="params.page"
+      placeholder="搜索用户名称/账号"
       @change="onChange"
       @search="onSearch"
     >
       <template slot="btns">
-        <a-button type="primary" @click="visible = true">
+        <a-button type="primary" @click="add">
           <a-icon type="plus" />新建
         </a-button>
-        <a-button>
-          <a-icon type="delete" />删除
-        </a-button>
+        <a-popconfirm title="是否确认删除选中的数据?" :disabled="selectedRows && selectedRows.length===0" @confirm="delSelectedRows">
+          <a-button>
+            <a-icon type="delete" />删除
+          </a-button>
+        </a-popconfirm>
       </template>
       <a-avatar slot="imgUrl" slot-scope="{text}" :src="text" icon="user" />
       <div slot="action" slot-scope="{record}">
@@ -30,11 +33,13 @@
             <a-icon type="edit" />
           </a>
         </a-tooltip>
-        <a-tooltip title="删除">
-          <a @click="deleteRecord(record.key)">
-            <a-icon type="delete" />
-          </a>
-        </a-tooltip>
+        <a-popconfirm title="是否确认删除?" @confirm="()=>deleteRecord(record.id)">
+          <a-tooltip title="删除">
+            <a>
+              <a-icon type="delete" />
+            </a>
+          </a-tooltip>
+        </a-popconfirm>
       </div>
     </standard-table>
     <!-- 弹窗 -->
@@ -48,23 +53,37 @@
         <a-row>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: true, message: '描述不能为空', trigger: 'blur' }"
-              label="描述" prop="description">
-              <a-input v-model="dataForm.description" class="w-100" :max-length="255" autocomplete="off" />
+              :rules=" { required: true, message: '用户名称不能为空', trigger: 'blur' }"
+              label="用户名称" prop="userName">
+              <a-input v-model="dataForm.userName" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: true, message: '服务调用次数不能为空', trigger: 'blur' }"
-              label="服务调用次数" prop="callNo">
-              <a-input-number v-model.number="dataForm.callNo" class="w-100" :min="0" :max="1000000" autocomplete="off" />
+              :rules=" { required: true, message: '账号不能为空', trigger: 'blur' }"
+              label="账号" prop="account">
+              <a-input v-model="dataForm.account" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: true, message: '更新时间不能为空', trigger: ['change', 'blur'] }"
-              label="更新时间" prop="updatedAt">
-              <a-date-picker v-model="dataForm.updatedAt" input-read-only value-format="YYYY-MM-DD" class="w-100" />
+              :rules=" { required: true, message: '邮箱不能为空', trigger: 'blur' }"
+              label="邮箱" prop="email">
+              <a-input v-model="dataForm.email" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+            </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              :rules=" { required: true, message: '类型不能为空', trigger: 'blur' }"
+              label="类型" prop="type">
+              <a-input v-model="dataForm.type" class="w-100" disabled autocomplete="off" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              :rules=" { required: true}"
+              label="是否可用" prop="enable">
+              <a-switch checked-children="是" un-checked-children="否" :checked="dataForm.enable === '1'" @change="(checked)=>dataForm.enable =checked?'1':'0'" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -75,27 +94,26 @@
 
 <script>
 import { BoxPage, cloneDeep } from '@/utils/tool'
-import { getListPage } from '@/api/modules/sys/user'
+import { getListPage, getOne, save, del } from '@/api/modules/sys/user'
 import StandardTable from '@/components/table/StandardTable'
 import Modal from '@/components/modal/Modal'
 import { columns, defaultForm } from './constant'
 
-const dataForm = cloneDeep(defaultForm)
 export default {
   components: { StandardTable, Modal },
   data() {
     return {
-      loading: false,
-      visible: false,
-      confirmLoading: false,
-      dataForm: dataForm,
-      columns: columns,
-      params: {
-        page: {},
-        query: {}
+      loading: false, // 表格加载
+      visible: false, // 弹窗控制
+      confirmLoading: false, // 确认按钮控制
+      dataForm: cloneDeep(defaultForm), // 单条数据显示
+      columns: columns, // 表字段
+      params: { // 分页查询
+        page: {}, // 分页数据
+        query: {} // 查询数据
       },
-      dataSource: [],
-      selectedRows: []
+      dataSource: [], // 数据行
+      selectedRows: [] // 选择行
     }
   },
   created() {
@@ -117,7 +135,7 @@ export default {
       }).done().finally(() => {
         setTimeout(() => {
           this.loading = false
-        }, 300)
+        }, 0)
       })
     },
     /**
@@ -137,21 +155,50 @@ export default {
      * @author lyc
      */
     onChange(pagination) {
-      console.log(pagination)
       this.params.page = BoxPage(pagination)
       this.queryPage()
     },
     /**
-     * 提交表单
+     * 新增
      * @date 2021-2-26 10:23:26
      * @author lyc
      */
-    submitForm(formName, callback) {
-      this.$refs[formName].validate(valid => {
-        if (!valid) return
-        console.log('error submit!!')
-        return callback()
+    add() {
+      this.dataForm.type = 'local'
+      this.visible = true
+    },
+    /**
+     * 编辑
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    edit(record) {
+      getOne(record.id).then(res => {
+        this.dataForm = res.data
+      }).done().finally(() => {
+        this.visible = true
       })
+    },
+    /**
+     * 删除
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    deleteRecord(id) {
+      del(id).then(() => {
+        this.queryPage()
+      }).done()
+    },
+    /**
+     * 删除选择行
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    delSelectedRows() {
+      const id = this.selectedRows.map(item => item.id).join(',')
+      if (id) {
+        this.deleteRecord(id)
+      }
     },
     /**
      * 重置数据
@@ -161,16 +208,6 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields()
       this.dataForm = cloneDeep(defaultForm)
-      console.log(defaultForm)
-    },
-    /**
-     * 编辑
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    edit(record) {
-      this.dataForm = cloneDeep(record)
-      this.visible = true
     },
     /**
      * 保存
@@ -181,11 +218,13 @@ export default {
       this.$refs['ruleForm'].validate(valid => {
         if (!valid) return
         this.confirmLoading = true
-        setTimeout(() => {
+        save(this.dataForm).then(res => {
+          this.queryPage()
+        }).done().finally(() => {
           this.visible = false
           this.confirmLoading = false
           this.resetForm('ruleForm')
-        }, 2000)
+        })
       })
     },
     /**
@@ -194,8 +233,8 @@ export default {
      * @author lyc
      */
     handleCancel() {
-      console.log('Clicked cancel button')
       this.visible = false
+      this.confirmLoading = false
       this.resetForm('ruleForm')
     }
   }
