@@ -5,103 +5,65 @@
     <a-form layout="vertical">
       <a-row :gutter="[16,0]">
         <a-col v-for="(col, index) in searchCols" :key="index" :xl="response.xl" :lg="response.lg" :md="response.md" :sm="response.sm">
-          <a-form-item v-if="col.dataType === 'boolean'">
+          <a-form-item>
             <template slot="label">
               <template v-if="col.title">
                 {{ col.title }}
               </template>
               <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
             </template>
-            <a-switch v-model="col.search.value" checked-children="是" un-checked-children="否" @change="onSwitchChange(col)" />
-          </a-form-item>
-          <a-form-item v-else-if="col.dataType === 'time'">
-            <template slot="label">
-              <template v-if="col.title">
-                {{ col.title }}
-              </template>
-              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            <template v-if="col.dataType === 'boolean'">
+              <a-switch v-model="col.search.value" checked-children="是" un-checked-children="否" @change="onSwitchChange(col)" />
             </template>
-            <a-time-picker v-model="col.search.value" :format="col.search.format" placeholder="选择时间" class="w-100" @change="(time, timeStr) => onCalendarChange(time, timeStr, col)" @openChange="open => onCalendarOpenChange(open, col)" />
-          </a-form-item>
-          <a-form-item v-else-if="col.dataType === 'date'">
-            <template slot="label">
-              <template v-if="col.title">
-                {{ col.title }}
-              </template>
-              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            <template v-else-if="col.dataType === 'time'">
+              <a-time-picker v-model="col.search.value" :format="col.search.format" placeholder="选择时间" class="w-100" @change="(time, timeStr) => onCalendarChange(time, timeStr, col)" @openChange="open => onCalendarOpenChange(open, col)" />
             </template>
-            <a-date-picker v-model="col.search.value" class="w-100" :format="col.search.format" @change="onDateChange(col)" />
-          </a-form-item>
-          <a-form-item v-else-if="col.dataType === 'month'">
-            <template slot="label">
-              <template v-if="col.title">
-                {{ col.title }}
-              </template>
-              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            <template v-else-if="col.dataType === 'date'">
+              <a-date-picker v-model="col.search.value" class="w-100" :format="col.search.format" @change="onDateChange(col)" />
             </template>
-            <a-month-picker v-model="col.search.value" class="w-100" :format="col.search.format" @change="onDateChange(col)" />
-          </a-form-item>
-          <a-form-item v-else-if="col.dataType === 'range'">
-            <template slot="label">
-              <template v-if="col.title">
-                {{ col.title }}
-              </template>
-              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            <template v-else-if="col.dataType === 'month'">
+              <a-month-picker v-model="col.search.value" class="w-100" :format="col.search.format" @change="onDateChange(col)" />
             </template>
-            <a-range-picker v-model="col.search.value" class="w-100" :format="col.search.format" @change="onDateChange(col)" />
-          </a-form-item>
-          <a-form-item v-else-if="col.dataType === 'datetime'">
-            <template slot="label">
-              <template v-if="col.title">
-                {{ col.title }}
-              </template>
-              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            <template v-else-if="col.dataType === 'datetime'">
+              <a-date-picker v-model="col.search.value" class="w-100" :format="col.search.format" show-time @change="(date, dateStr) => onCalendarChange(date, dateStr, col)" @openChange="open => onCalendarOpenChange(open, col)" />
             </template>
-            <a-date-picker v-model="col.search.value" class="w-100" :format="col.search.format" show-time @change="(date, dateStr) => onCalendarChange(date, dateStr, col)" @openChange="open => onCalendarOpenChange(open, col)" />
-          </a-form-item>
-          <a-form-item v-else-if="col.dataType === 'select'">
-            <template slot="label">
-              <template v-if="col.title">
-                {{ col.title }}
-              </template>
-              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            <template v-else-if="col.dataType === 'range'">
+              <a-range-picker v-model="col.search.value" class="w-100" :format="col.search.format" @change="onDateChange(col)" />
             </template>
-            <a-select v-model="col.search.value" class="w-100" allow-clear :mode="col.search && col.search.multiple?'multiple':'default' " placeholder="请选择" @change="onSelectChange(col)">
-              <a-select-option v-for="(item,selectIndex) in col.search.options" :key="selectIndex" :value="item.value" :disabled="item.disabled">
-                {{ item.label }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item v-else-if="col.dataType === 'checkbox'">
-            <template slot="label">
-              <template v-if="col.title">
-                {{ col.title }}
-              </template>
-              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            <template v-else-if="col.dataType === 'tree'">
+              <a-tree-select
+                v-model="col.search.value"
+                class="w-100"
+                allow-clear
+                :tree-data="col.search.options"
+                :multiple="col.search && col.search.multiple"
+                placeholder="请选择"
+                @focus="focus(col)"
+                @change="onSelectChange(col)"
+              />
             </template>
-            <a-checkbox-group v-model="col.search.value" :options="col.search.options" @change="onSelectChange(col)" />
-          </a-form-item>
-          <a-form-item v-else-if="col.dataType === 'radio'">
-            <template slot="label">
-              <template v-if="col.title">
-                {{ col.title }}
-              </template>
-              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            <template v-else-if="col.dataType === 'select'">
+              <a-select
+                v-model="col.search.value" class="w-100" allow-clear :mode="col.search && col.search.multiple?'multiple':'default' "
+                placeholder="请选择" @change="onSelectChange(col)" @focus="focus(col)">
+                <a-select-option v-for="(item,selectIndex) in col.search.options" :key="selectIndex" :value="item.value" :disabled="item.disabled">
+                  {{ item.label || item.title }}
+                </a-select-option>
+              </a-select>
             </template>
-            <a-radio-group v-model="col.search.value" @change="()=>onSelectChange(col)">
-              <a-radio v-for="(item,radioIndex) in col.search.options" :key="radioIndex" :value="item.value">
-                {{ item.label }}
-              </a-radio>
-            </a-radio-group>
-          </a-form-item>
-          <a-form-item v-else>
-            <template slot="label">
-              <template v-if="col.title">
-                {{ col.title }}
-              </template>
-              <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
+            <template v-else-if="col.dataType === 'checkbox'">
+              <a-checkbox-group v-model="col.search.value" :options="col.search.options" @change="onSelectChange(col)" />
             </template>
-            <a-input v-model="col.search.value" placeholder="请输入" class="w-100" allow-clear @change="onConfirm(col)" />
+            <template v-else-if="col.dataType === 'radio'">
+              <a-radio-group v-model="col.search.value" @change="()=>onSelectChange(col)">
+                <a-radio v-for="(item,radioIndex) in col.search.options" :key="radioIndex" :value="item.value">
+                  {{ item.label }}
+                </a-radio>
+              </a-radio-group>
+            </template>
+            <template v-else>
+              <a-input v-model="col.search.value" placeholder="请输入" :max-length="255" class="w-100" allow-clear @change="onConfirm(col)" />
+            </template>
           </a-form-item>
         </a-col>
       </a-row>
@@ -132,6 +94,8 @@ export default {
   props: ['columns', 'formatConditions', 'isResponse'],
   created() {
     this.columns.forEach(item => {
+      item.search = item.search || {}
+      item.search.options = item.search.options || []
       this.$set(item, 'search', { ...item.search, value: undefined, format: this.getFormat(item) })
     })
   },
@@ -186,6 +150,14 @@ export default {
     },
     onSelectChange(col) {
       this.backupAndEmitChange(col)
+    },
+    focus(col) {
+      const { async = false, options = [] } = col.search
+      if (async && async instanceof Function && options.length === 0) {
+        async().then(res => {
+          options.push(...res)
+        })
+      }
     },
     onCalendarOpenChange(open, col) {
       const { momentEqual, backupAndEmitChange } = this

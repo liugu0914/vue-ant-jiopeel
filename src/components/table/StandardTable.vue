@@ -34,7 +34,7 @@
           </a-tooltip>
         </a-input>
         <a-tooltip v-if="searchCols && searchCols.length >0" v-cloak title="高级搜索">
-          <a-button type="link" @click="openAdvancedSearch">
+          <a-button type="link" :class="{filter:hasFilter}" @click="openAdvancedSearch">
             <a-icon type="filter" />
           </a-button>
         </a-tooltip>
@@ -92,6 +92,7 @@
 import ActionSize from '@/components/table/advance/ActionSize'
 import ActionColumns from '@/components/table/advance/ActionColumns'
 import SearchArea from '@/components/table/advance/SearchArea'
+import { cloneDeep } from '@/utils/tool'
 export default {
   name: 'StandardTable',
   components: {
@@ -237,6 +238,11 @@ export default {
     }
   },
   computed: {
+    hasFilter() {
+      const conditions = cloneDeep(this.conditions)
+      delete conditions[this.inputName]
+      return Object.values(conditions).length === 0
+    },
     visibleColumns() {
       const visibleColumns = this.columns.filter(col => col.visible)
       return visibleColumns
@@ -275,6 +281,9 @@ export default {
     .clear{
       float: right;
     }
+  }
+  .filter{
+    color: @gray-7;
   }
 }
 </style>

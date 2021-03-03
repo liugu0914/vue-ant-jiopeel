@@ -1,5 +1,5 @@
 <!--
-  用户
+  菜单
   @date 2021-2-26 10:23:26
   @author lyc
  -->
@@ -11,13 +11,12 @@
       :data-source="dataSource"
       :selected-rows.sync="selectedRows"
       :loading="loading"
-      :pagination="params.page"
-      placeholder="搜索用户名称/账号"
-      @change="onChange"
+      :pagination="false"
+      placeholder="搜索菜单名称/别称"
       @search="onSearch"
     >
       <template slot="btns">
-        <a-button type="primary" @click="add">
+        <a-button type="primary" @click="add()">
           <a-icon type="plus" />新建
         </a-button>
         <a-popconfirm title="是否确认删除选中的数据?" :disabled="selectedRows && selectedRows.length===0" @confirm="delSelectedRows">
@@ -26,8 +25,15 @@
           </a-button>
         </a-popconfirm>
       </template>
-      <a-avatar slot="imgUrl" slot-scope="{text}" :src="text" icon="user" />
+      <template slot="enable" slot-scope="{text}">
+        <a-switch checked-children="是" disabled un-checked-children="否" :checked="text === '1'" />
+      </template>
       <div slot="action" slot-scope="{record}">
+        <a-tooltip v-if="record.parent === '1'" title="添加子菜单">
+          <a class="mr-1" @click="add(record)">
+            <a-icon type="plus" />
+          </a>
+        </a-tooltip>
         <a-tooltip title="编辑">
           <a class="mr-1" @click="edit(record)">
             <a-icon type="edit" />
@@ -51,35 +57,63 @@
       @cancel="handleCancel">
       <a-form-model ref="ruleForm" :model="dataForm" layout="vertical">
         <a-row>
-          <a-col :sm="24">
+          <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '用户名称不能为空', trigger: 'blur' }"
-              label="用户名称" prop="userName">
-              <a-input v-model="dataForm.userName" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              :rules=" { required: true, message: '菜单名称不能为空', trigger: 'blur' }"
+              label="菜单名称" prop="name">
+              <a-input v-model="dataForm.name" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
-          <a-col :sm="24">
+          <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '账号不能为空', trigger: 'blur' }"
-              label="账号" prop="account">
-              <a-input v-model="dataForm.account" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              :rules=" { required: true, message: '菜单图标不能为空', trigger: 'blur' }"
+              label="菜单图标" prop="icon">
+              <a-input v-model="dataForm.icon" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
-          <a-col :sm="24">
+          <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '邮箱不能为空', trigger: 'blur' }"
-              label="邮箱" prop="email">
-              <a-input v-model="dataForm.email" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              :rules=" { required: true, message: '是否为父级不能为空', trigger: 'blur' }"
+              label="是否为父级" prop="parent">
+              <a-switch checked-children="是" un-checked-children="否" :checked="dataForm.parent === '1'" @change="(checked)=>dataForm.parent =checked?'1':'0'" />
             </a-form-model-item>
           </a-col>
-          <a-col :sm="24">
+          <a-col v-if="dataForm.parent === '0'" :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '类型不能为空', trigger: 'blur' }"
-              label="类型" prop="type">
-              <a-input v-model="dataForm.type" class="w-100" disabled autocomplete="off" />
+              :rules=" { required: true, message: '路由别称不能为空', trigger: 'blur' }"
+              label="路由别称" prop="router">
+              <a-input v-model="dataForm.router" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
-          <a-col :sm="24">
+          <a-col :span="24">
+            <a-form-model-item
+              :rules=" { required: dataForm.parent === '0', message: '父级菜单不能为空', trigger: 'blur' }"
+              label="父级菜单" prop="superId">
+              <a-tree-select
+                v-model="dataForm.superId"
+                class="w-100"
+                allow-clear
+                :tree-data="superMenus"
+                tree-default-expand-all
+                :replace-fields="{children:'children', title:'name', key:'id', value: 'id' }"
+              />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item
+              :rules=" { required: true, message: '菜单顺序不能为空', trigger: 'blur' }"
+              label="菜单顺序" prop="orderNum">
+              <a-input-number v-model="dataForm.orderNum" class="w-100" :min="1" :max="100000" allow-clear />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item
+              :rules=" { required: true, message: '所属应用不能为空', trigger: 'blur' }"
+              label="所属应用" prop="appId">
+              <a-select v-model="dataForm.appId" class="w-100" allow-clear :options="apps" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
             <a-form-model-item
               :rules=" { required: true}"
               label="是否可用" prop="enable">
@@ -93,11 +127,12 @@
 </template>
 
 <script>
-import { BoxPage, cloneDeep } from '@/utils/tool'
-import { getListPage, getOne, save, del } from '@/api/modules/sys/user'
+import { cloneDeep } from '@/utils/tool'
+import { getListPage, getSuperMenus, getOne, save, del } from '@/api/modules/sys/menu'
 import StandardTable from '@/components/table/StandardTable'
 import Modal from '@/components/modal/Modal'
 import { columns, defaultForm } from './constant'
+import { getAsyncApps } from './async'
 
 export default {
   components: { StandardTable, Modal },
@@ -109,16 +144,26 @@ export default {
       confirmLoading: false, // 确认按钮控制
       dataForm: cloneDeep(defaultForm), // 单条数据显示
       columns: columns, // 表字段
-      params: { // 分页查询
-        page: {}, // 分页数据
-        query: {} // 查询数据
-      },
+      params: {}, // 查询
       dataSource: [], // 数据行
-      selectedRows: [] // 选择行
+      selectedRows: [], // 选择行
+      apps: [], // 应用数据
+      superMenus: [] // 父级菜单
     }
   },
   created() {
     this.queryPage()
+  },
+  watch: {
+    visible(flag) { // 弹窗显示需要加载的数据
+      if (!flag) { return }
+      if (this.apps && this.apps.length === 0) {
+        this.getApps()
+      }
+      if (this.superMenus && this.superMenus.length === 0) {
+        this.getMenus()
+      }
+    }
   },
   methods: {
     /**
@@ -130,9 +175,7 @@ export default {
       this.loading = true
       getListPage(this.params).then(res => {
         const { data } = res
-        const result = data.result || []
-        this.params.page = BoxPage(data)
-        this.dataSource = result
+        this.dataSource = data || []
       }).done().finally(() => {
         setTimeout(() => {
           this.loading = false
@@ -140,23 +183,29 @@ export default {
       })
     },
     /**
+     * 获取应用列表数据
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    async getApps() {
+      this.apps = await getAsyncApps().then(res => res).done()
+    },
+    /**
+     * 获取父级菜单列表数据
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    async getMenus() {
+      this.superMenus = await getSuperMenus().then(res => res.data || []).done()
+    },
+    /**
      * 搜索
      * @date 2021-2-26 10:23:26
      * @author lyc
      */
     onSearch(conditions) {
-      console.log('conditions', conditions)
-      this.params.query = conditions
-      console.log(this.params.query)
-      this.queryPage()
-    },
-    /**
-     * 分页变化
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    onChange(pagination) {
-      this.params.page = BoxPage(pagination)
+      this.params = conditions
+      console.log(conditions)
       this.queryPage()
     },
     /**
@@ -164,10 +213,13 @@ export default {
      * @date 2021-2-26 10:23:26
      * @author lyc
      */
-    add() {
+    add(record) {
       this.title = '新增'
-      this.dataForm.type = 'local'
       this.visible = true
+      if (record) { // 添加子菜单
+        this.dataForm.parent = '0'
+        this.dataForm.superId = record.id
+      }
     },
     /**
      * 编辑
@@ -177,7 +229,9 @@ export default {
     edit(record) {
       this.title = '编辑'
       getOne(record.id).then(res => {
-        this.dataForm = res.data
+        const { data } = res
+        data.superId = data.superId === '0' ? undefined : data.superId
+        this.dataForm = data
       }).done().finally(() => {
         this.visible = true
       })
@@ -221,7 +275,7 @@ export default {
       this.$refs['ruleForm'].validate(valid => {
         if (!valid) return
         this.confirmLoading = true
-        save(this.dataForm).then(res => {
+        save(this.dataForm).then(() => {
           this.queryPage()
         }).done().finally(() => {
           this.visible = false

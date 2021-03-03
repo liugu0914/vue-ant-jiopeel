@@ -70,7 +70,40 @@ function setAuthorization(token) {
  */
 function removeAuthorization() {
   Lockr.rm(Authorization)
+  removeUser()
+  removeRoles()
+  removePermissions()
+  removeMenus()
 }
+
+/**
+ * 移出用户信息
+ */
+function removeUser() {
+  Lockr.rm(process.env.VUE_APP_USER_KEY)
+}
+
+/**
+ * 移出角色信息
+ */
+function removeRoles() {
+  Lockr.rm(process.env.VUE_APP_ROLES_KEY)
+}
+
+/**
+ * 移出权限信息
+ */
+function removePermissions() {
+  Lockr.rm(process.env.VUE_APP_PERMISSIONS_KEY)
+}
+
+/**
+ * 移出菜单信息
+ */
+function removeMenus() {
+  Lockr.rm(process.env.VUE_APP_MENUS_KEY)
+}
+
 
 /**
  * 检查认证信息
@@ -145,6 +178,10 @@ export {
   request,
   setAuthorization,
   removeAuthorization,
+  removeUser,
+  removeRoles,
+  removePermissions,
+  removeMenus,
   checkAuthorization,
   loadInterceptors,
   parseUrlParams

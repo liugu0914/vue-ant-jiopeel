@@ -6,6 +6,11 @@
 const path = 'views/pages/sys'
 
 export default {
+  organization: {
+    path: '/organization',
+    name: 'organization',
+    component: () => import(`@/${path}/organization/main.vue`)
+  },
   user: {
     path: '/user',
     name: 'user',
@@ -14,7 +19,7 @@ export default {
   menu: {
     path: '/menu',
     name: 'menu',
-    component: () => import(`@/${path}/app/main.vue`)
+    component: () => import(`@/${path}/menu/main.vue`)
   },
   role: {
     path: '/role',

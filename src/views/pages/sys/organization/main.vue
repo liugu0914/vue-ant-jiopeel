@@ -1,5 +1,5 @@
 <!--
-  用户
+  组织
   @date 2021-2-26 10:23:26
   @author lyc
  -->
@@ -12,7 +12,7 @@
       :selected-rows.sync="selectedRows"
       :loading="loading"
       :pagination="params.page"
-      placeholder="搜索用户名称/账号"
+      placeholder="搜索组织名称/描述"
       @change="onChange"
       @search="onSearch"
     >
@@ -26,7 +26,9 @@
           </a-button>
         </a-popconfirm>
       </template>
-      <a-avatar slot="imgUrl" slot-scope="{text}" :src="text" icon="user" />
+      <template slot="enable" slot-scope="{text}">
+        <a-switch checked-children="是" disabled un-checked-children="否" :checked="text === '1'" />
+      </template>
       <div slot="action" slot-scope="{record}">
         <a-tooltip title="编辑">
           <a class="mr-1" @click="edit(record)">
@@ -51,35 +53,21 @@
       @cancel="handleCancel">
       <a-form-model ref="ruleForm" :model="dataForm" layout="vertical">
         <a-row>
-          <a-col :sm="24">
+          <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '用户名称不能为空', trigger: 'blur' }"
-              label="用户名称" prop="userName">
-              <a-input v-model="dataForm.userName" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              :rules=" { required: true, message: '组织名称不能为空', trigger: 'blur' }"
+              label="组织名称" prop="name">
+              <a-input v-model="dataForm.name" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
-          <a-col :sm="24">
+          <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '账号不能为空', trigger: 'blur' }"
-              label="账号" prop="account">
-              <a-input v-model="dataForm.account" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              :rules=" { required: true, message: '组织描述不能为空', trigger: 'blur' }"
+              label="组织描述" prop="des">
+              <a-textarea v-model="dataForm.des" class="w-100" :max-length="255" allow-clear />
             </a-form-model-item>
           </a-col>
-          <a-col :sm="24">
-            <a-form-model-item
-              :rules=" { required: true, message: '邮箱不能为空', trigger: 'blur' }"
-              label="邮箱" prop="email">
-              <a-input v-model="dataForm.email" class="w-100" :max-length="255" autocomplete="off" allow-clear />
-            </a-form-model-item>
-          </a-col>
-          <a-col :sm="24">
-            <a-form-model-item
-              :rules=" { required: true, message: '类型不能为空', trigger: 'blur' }"
-              label="类型" prop="type">
-              <a-input v-model="dataForm.type" class="w-100" disabled autocomplete="off" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :sm="24">
+          <a-col :span="24">
             <a-form-model-item
               :rules=" { required: true}"
               label="是否可用" prop="enable">
@@ -94,7 +82,7 @@
 
 <script>
 import { BoxPage, cloneDeep } from '@/utils/tool'
-import { getListPage, getOne, save, del } from '@/api/modules/sys/user'
+import { getListPage, getOne, save, del } from '@/api/modules/sys/organization'
 import StandardTable from '@/components/table/StandardTable'
 import Modal from '@/components/modal/Modal'
 import { columns, defaultForm } from './constant'
@@ -145,7 +133,6 @@ export default {
      * @author lyc
      */
     onSearch(conditions) {
-      console.log('conditions', conditions)
       this.params.query = conditions
       console.log(this.params.query)
       this.queryPage()
@@ -166,7 +153,6 @@ export default {
      */
     add() {
       this.title = '新增'
-      this.dataForm.type = 'local'
       this.visible = true
     },
     /**

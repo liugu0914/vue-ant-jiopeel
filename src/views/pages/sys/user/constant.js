@@ -19,11 +19,13 @@ export const columns = [
   {
     title: '用户名称',
     dataIndex: 'userName',
+    searchAble: true,
     disable: true
   },
   {
     title: '账号',
     dataIndex: 'account',
+    searchAble: true,
     customRender: (text) => text
   },
   {
@@ -67,5 +69,5 @@ export const defaultForm = {
   email: undefined,
   type: undefined,
   userName: undefined,
-  enable: 0
+  enable: '1'
 }

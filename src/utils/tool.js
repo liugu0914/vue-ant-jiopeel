@@ -286,3 +286,25 @@ export function BoxPage(data) {
   const { current, pageSize, total } = data
   return { current, pageSize, total }
 }
+
+
+
+/**
+ * 递归数据为Tree
+ * @param {Array} datas 递归数据
+ * @param {Object} replaceFields 替换datas 中的字段
+ */
+export function toTree(datas, replaceFields = {}) {
+  const DefaultKeys = { children: 'children', title: 'title', key: 'key', value: 'value', ...replaceFields }
+  return datas.map(data => {
+    const item = {
+      label: data[DefaultKeys.title],
+      value: data[DefaultKeys.value],
+      key: data[DefaultKeys.key]
+    }
+    if (data[DefaultKeys.children] && data[DefaultKeys.children].length > 0) {
+      item.children = toTree(data.children, replaceFields)
+    }
+    return item
+  })
+}

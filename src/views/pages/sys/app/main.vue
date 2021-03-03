@@ -26,7 +26,9 @@
           </a-button>
         </a-popconfirm>
       </template>
-      <a-switch slot="enable" slot-scope="{text}" checked-children="是" un-checked-children="否" :default-checked="text === '1'" />
+      <template slot="enable" slot-scope="{text}">
+        <a-switch checked-children="是" disabled un-checked-children="否" :checked="text === '1'" />
+      </template>
       <div slot="action" slot-scope="{record}">
         <a-tooltip title="编辑">
           <a class="mr-1" @click="edit(record)">
@@ -46,7 +48,7 @@
     <modal
       v-model="visible"
       :confirm-loading="confirmLoading"
-      ok-text="确认" cancel-text="取消" title="新增"
+      ok-text="确认" cancel-text="取消" :title="title"
       @ok="handleOk"
       @cancel="handleCancel">
       <a-form-model ref="ruleForm" :model="dataForm" layout="vertical">
@@ -103,6 +105,7 @@ export default {
   components: { StandardTable, Modal },
   data() {
     return {
+      title: '',
       loading: false, // 表格加载
       visible: false, // 弹窗控制
       confirmLoading: false, // 确认按钮控制
@@ -163,6 +166,7 @@ export default {
      * @author lyc
      */
     add() {
+      this.title = '新增'
       this.visible = true
     },
     /**
@@ -171,6 +175,7 @@ export default {
      * @author lyc
      */
     edit(record) {
+      this.title = '编辑'
       getOne(record.id).then(res => {
         this.dataForm = res.data
       }).done().finally(() => {

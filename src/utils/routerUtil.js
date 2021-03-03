@@ -186,10 +186,9 @@ function boxMeta(menus, routeMap, breadcrumb = []) {
     }
     if (menu.children && menu.children.length > 0) { // 存在子菜单
       boxMeta(menu.children, routeMap, breadcrumb)
-    } else {
-      if (breadcrumb.length > 0) {
-        breadcrumb.pop()
-      }
+    }
+    if (breadcrumb.length > 0) {
+      breadcrumb.pop()
     }
   })
   return menus

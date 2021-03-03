@@ -1,5 +1,5 @@
 /**
- * 应用 - 接口
+ * 菜单 - 接口
  * @author lyc
  * @date 2021年3月1日16:54:36
  */
@@ -7,11 +7,19 @@ import { request, METHOD } from '@/utils/request.js'
 
 
 /**
- * 获取用户分页数据
+ * 获取分页数据
  * @param { param: {需要查询的数据} , page: { pageNum: 第几页, pageSize: 每页大小} } params
  */
 export async function getListPage(params) {
-  return await request('/admin/user/getListPage', METHOD.POST, params)
+  return await request('/admin/menu/getListPage', METHOD.POST, params)
+}
+
+/**
+ * 获取父级菜单
+
+ */
+export async function getSuperMenus() {
+  return await request(`/admin/menu/getSuperMenus`, METHOD.GET)
 }
 
 
@@ -20,7 +28,7 @@ export async function getListPage(params) {
 
  */
 export async function getOne(id) {
-  return await request(`/admin/user/get/${id}`, METHOD.GET)
+  return await request(`/admin/menu/getOneById`, METHOD.GET, { id })
 }
 
 /**
@@ -28,13 +36,15 @@ export async function getOne(id) {
 
  */
 export async function save(params) {
-  return await request('/admin/user/save', METHOD.POST, params)
+  return await request('/admin/menu/save', METHOD.POST, params)
 }
+
 
 
 /**
  * 删除数据
  */
 export async function del(ids) {
-  return await request(`/admin/user/del`, METHOD.GET, { ids })
+  return await request(`/admin/menu/del`, METHOD.GET, { ids })
 }
+

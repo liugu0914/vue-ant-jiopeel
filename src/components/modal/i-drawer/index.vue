@@ -11,9 +11,9 @@
     v-bind="{...$options.propsData}"
     @close="cancel"
   >
-    <template v-for="slot in Object.keys($slots)" :slot="slot">
+    <div v-for="(slot,index) in Object.keys($slots)" :key="index" :slot="slot">
       <slot :name="slot" />
-    </template>
+    </div>
     <div class="drawer-btn-group">
       <a-button :style="{ marginRight: '8px' }" @click="cancel">
         {{ cancelText }}
@@ -82,11 +82,11 @@ export default {
 </script>
 <style scoped lang="less">
 .drawer-btn-group{
-    position: absolute;
-    right: 0;
-    bottom: 0;
+    // position: absolute;
+    // right: 0;
+    // bottom: 0;
+    // border-top: 1px solid #f0f0f0;
     width: 100%;
-    border-top: 1px solid #f0f0f0;
     padding: 10px 16px;
     background:  @component-background;
     text-align: right;

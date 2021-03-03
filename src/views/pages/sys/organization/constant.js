@@ -10,23 +10,13 @@ export const columns = [
     customRender: (text, record, index) => index + 1
   },
   {
-    title: '应用图标',
-    dataIndex: 'icon',
-    scopedSlots: { customRender: 'icon' },
+    title: '组织名称',
+    dataIndex: 'name',
+    searchAble: true,
     disable: true
   },
   {
-    title: '应用名称',
-    dataIndex: 'name',
-    searchAble: true
-  },
-  {
-    title: '应用标识',
-    dataIndex: 'shortname',
-    searchAble: true
-  },
-  {
-    title: '应用描述',
+    title: '组织描述',
     dataIndex: 'des',
     searchAble: true
   },
@@ -52,9 +42,7 @@ export const columns = [
  */
 export const defaultForm = {
   id: undefined,
-  icon: undefined,
   name: undefined,
-  shortname: undefined,
   des: undefined,
   enable: '1'
 }
