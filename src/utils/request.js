@@ -71,6 +71,7 @@ function setAuthorization(token) {
 function removeAuthorization() {
   Lockr.rm(Authorization)
   removeUser()
+  removeOrganization()
   removeRoles()
   removePermissions()
   removeMenus()
@@ -81,6 +82,13 @@ function removeAuthorization() {
  */
 function removeUser() {
   Lockr.rm(process.env.VUE_APP_USER_KEY)
+}
+
+/**
+ * 移出组织信息
+ */
+function removeOrganization() {
+  Lockr.rm(process.env.VUE_APP_ORGANIZATION_KEY)
 }
 
 /**
@@ -179,6 +187,7 @@ export {
   setAuthorization,
   removeAuthorization,
   removeUser,
+  removeOrganization,
   removeRoles,
   removePermissions,
   removeMenus,

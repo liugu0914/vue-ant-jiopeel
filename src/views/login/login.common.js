@@ -12,6 +12,14 @@ function setUser(user) {
 }
 
 /**
+ * 保存组织信息
+ * @param {Array} organization
+ */
+function setOrganization(organization) {
+  store.commit('account/setOrganization', organization)
+}
+
+/**
  * 保存权限信息
  * @param {*} permissions
  */
@@ -34,8 +42,9 @@ export function saveUserData(data) {
   const { Authorization, user: userInfo } = data
   console.log('Authorization ==> ', Authorization)
   setAuthorization(Authorization)
-  const { user, permissions, roleList, menus } = userInfo
+  const { user, organization, permissions, roleList, menus } = userInfo
   setUser(user)
+  setOrganization(organization)
   setPermissions(permissions)
   setRoles(roleList)
   loadRoutes(simple2Tree(menus, 'id', 'superId', 'children'))

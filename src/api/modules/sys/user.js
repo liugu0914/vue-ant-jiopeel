@@ -20,7 +20,7 @@ export async function getListPage(params) {
 
  */
 export async function getOne(id) {
-  return await request(`/admin/user/get/${id}`, METHOD.GET)
+  return await request(`/admin/user/getInfoById`, METHOD.GET, { id })
 }
 
 /**

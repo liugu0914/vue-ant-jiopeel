@@ -62,6 +62,13 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item
+              :rules=" { required: true, message: '组织别称不能为空', trigger: 'blur' }"
+              label="组织别称" prop="alias">
+              <a-input v-model="dataForm.alias" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item
               :rules=" { required: true, message: '组织描述不能为空', trigger: 'blur' }"
               label="组织描述" prop="des">
               <a-textarea v-model="dataForm.des" class="w-100" :max-length="255" allow-clear />

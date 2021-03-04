@@ -4,6 +4,7 @@ export default {
   namespaced: true,
   state: {
     user: undefined,
+    organization: null,
     permissions: null,
     roles: null,
     menus: null
@@ -18,6 +19,16 @@ export default {
         }
       }
       return state.user
+    },
+    organization: state => {
+      if (!state.organization) {
+        try {
+          state.organization = Lockr.get(process.env.VUE_APP_ORGANIZATION_KEY)
+        } catch (e) {
+          console.error(e)
+        }
+      }
+      return state.organization
     },
     permissions: state => {
       if (!state.permissions) {
@@ -57,6 +68,10 @@ export default {
     setUser(state, user) {
       state.user = user
       Lockr.set(process.env.VUE_APP_USER_KEY, user)
+    },
+    setOrganization(state, organization) {
+      state.organization = organization
+      Lockr.set(process.env.VUE_APP_ORGANIZATION_KEY, organization)
     },
     setPermissions(state, permissions) {
       state.permissions = permissions

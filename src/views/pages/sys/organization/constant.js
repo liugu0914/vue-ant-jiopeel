@@ -16,6 +16,12 @@ export const columns = [
     disable: true
   },
   {
+    title: '组织别称',
+    dataIndex: 'alias',
+    searchAble: true,
+    disable: true
+  },
+  {
     title: '组织描述',
     dataIndex: 'des',
     searchAble: true
@@ -43,6 +49,7 @@ export const columns = [
 export const defaultForm = {
   id: undefined,
   name: undefined,
+  alias: undefined,
   des: undefined,
   enable: '1'
 }
