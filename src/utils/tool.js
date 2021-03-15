@@ -298,7 +298,8 @@ export function toTree(datas, replaceFields = {}) {
   const DefaultKeys = { children: 'children', title: 'title', key: 'key', value: 'value', ...replaceFields }
   return datas.map(data => {
     const item = {
-      label: data[DefaultKeys.title],
+      ...data,
+      title: data[DefaultKeys.title],
       value: data[DefaultKeys.value],
       key: data[DefaultKeys.key]
     }

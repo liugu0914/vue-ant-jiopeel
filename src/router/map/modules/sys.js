@@ -34,6 +34,6 @@ export default {
   permission: {
     path: '/permission',
     name: 'permission',
-    component: () => import(`@/${path}/app/main.vue`)
+    component: () => import(`@/${path}/permission/main.vue`)
   }
 }
