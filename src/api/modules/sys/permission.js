@@ -33,6 +33,27 @@ export async function getFuc(menuId) {
 }
 
 
+
+/**
+ * 配置菜单
+ * @param { String } appId 应用Id
+ */
+export async function getConfigMenu(appId) {
+  return await request(`${prefix}/getConfigMenu`, METHOD.GET, { appId })
+}
+
+
+/**
+ * 保存配置菜单
+ * @param { String } appId 应用Id
+ * @param { String[] } Ids 选中的菜单Id
+ */
+export async function saveMenu(appId, Ids) {
+  return await request(`${prefix}/saveMenu?appId=${appId}`, METHOD.POST, Ids)
+}
+
+
+
 /**
  * 通过Id查询数据
 

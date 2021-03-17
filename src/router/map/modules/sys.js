@@ -24,7 +24,7 @@ export default {
   role: {
     path: '/role',
     name: 'role',
-    component: () => import(`@/${path}/app/main.vue`)
+    component: () => import(`@/${path}/role/main.vue`)
   },
   app: {
     path: '/app',

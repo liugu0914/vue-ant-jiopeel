@@ -1,5 +1,5 @@
 <template>
-  <div class="permission-item">
+  <div :class="['permission-item',color]">
     <span>{{ message }}</span>
     <div class="permission-item-action">
       <slot v-if="hasSlot" />
@@ -24,7 +24,11 @@
 export default {
   name: 'ActionAlert',
   props: {
-    message: String
+    message: String,
+    disabled: {
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     edit() {
@@ -37,13 +41,21 @@ export default {
   computed: {
     hasSlot() {
       return this.$slots.default
+    },
+    color() {
+      return this.disabled ? 'gray' : 'normal'
     }
   }
 }
 </script>
 <style scoped lang="less">
-  .permission-item{
+  .normal{
     background-color: @blue-1;
+  }
+  .gray{
+    background-color:  @gray-5;
+  }
+  .permission-item{
     margin: 0;
     line-height: 1.5;
     list-style: none;
