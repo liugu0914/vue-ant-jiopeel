@@ -484,7 +484,7 @@ export default {
     }
   }
   .box{
-    border: 1px solid @gray-5;
+    border: 1px solid #f0f0f0;
     border-radius: @border-radius-md;
     display: inline-block;
     width: 100%;

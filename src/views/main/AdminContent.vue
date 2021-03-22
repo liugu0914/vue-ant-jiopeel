@@ -6,7 +6,7 @@
       @change="changePage"
       @close="remove"
       @refresh="refresh" />
-    <div :class="['admin-content-view','beauty-scroll' ,fixedHeader?'fixed':'']">
+    <div ref="contentView" :class="['admin-content-view','beauty-scroll' ,fixedHeader?'fixed':'']">
       <div class="admin-content-body">
         <page-toggle-transition :disabled="animate.disabled" :animate="animate.name" :direction="animate.direction">
           <a-keep-alive v-model="clearCaches">

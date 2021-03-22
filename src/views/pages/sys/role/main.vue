@@ -5,55 +5,70 @@
  -->
 <template>
   <a-card>
-    <!-- 表格 -->
-    <!-- <standard-table
-      :columns="columns"
-      :data-source="dataSource"
-      :selected-rows.sync="selectedRows"
-      :loading="loading"
-      :pagination="params.page"
-      placeholder="搜索角色名称/描述"
-      @change="onChange"
-      @search="onSearch"
-    >
-      <template slot="btns">
-        <a-button type="primary" @click="add">
-          <a-icon type="plus" />新建
-        </a-button>
-        <a-popconfirm title="是否确认删除选中的数据?" :disabled="selectedRows && selectedRows.length===0" @confirm="delSelectedRows">
-          <a-button>
-            <a-icon type="delete" />删除
-          </a-button>
-        </a-popconfirm>
-      </template>
-      <template slot="enable" slot-scope="{text}">
-        <a-switch checked-children="是" disabled un-checked-children="否" :checked="text === '1'" />
-      </template>
-      <div slot="action" slot-scope="{record}">
-        <a-tooltip title="分配权限">
-          <a class="mr-1" @click="edit(record)">
-            <a-icon type="share-alt" />
-          </a>
-        </a-tooltip>
-        <a-tooltip title="编辑">
-          <a class="mr-1" @click="edit(record)">
-            <a-icon type="edit" />
-          </a>
-        </a-tooltip>
-        <a-popconfirm title="是否确认删除?" @confirm="()=>deleteRecord(record.id)">
-          <a-tooltip title="删除">
-            <a>
-              <a-icon type="delete" />
-            </a>
-          </a-tooltip>
-        </a-popconfirm>
-      </div>
-    </standard-table> -->
-    <a-tabs default-active-key="1" tab-position="left">
-      <a-tab-pane v-for="(role,index) in dataSource" :key="index" :tab="role.name">
-        Content of Tab 1
-      </a-tab-pane>
+    <a-tabs default-active-key="1">
+      <a-tab-pane v-for="(role,index) in roles" :key="index" :tab="role.name" />
     </a-tabs>
+    <a-row :gutter="[16,16]">
+      <a-col :md="24" :lg="20">
+        <a-card id="sys-per" class="mb-3" title="系统权限">
+          <a slot="extra" href="#">全选</a>
+          <a-checkbox-group :options="plainOptions" />
+        </a-card>
+        <a-card id="menu-per" title="菜单权限">
+          <a slot="extra" href="#">全选</a>
+          <a-divider id="menu-sys" orientation="left">
+            系统配置
+          </a-divider>
+
+          <a-card id="menu-sys-menu" class="mb-2">
+            <a slot="extra" href="#">全选</a>
+            <a-checkbox slot="title">
+              菜单管理
+            </a-checkbox>
+            <a-checkbox-group :options="plainOptions" />
+          </a-card>
+          <a-card id="menu-sys-app" class="mb-2">
+            <a slot="extra" href="#">全选</a>
+            <a-checkbox slot="title">
+              应用管理
+            </a-checkbox>
+            <a-checkbox-group :options="plainOptions" />
+          </a-card>
+          <a-card id="menu-sys-per" class="mb-2">
+            <a slot="extra" href="#">全选</a>
+            <a-checkbox slot="title">
+              权限管理
+            </a-checkbox>
+            <a-checkbox-group :options="plainOptions" />
+          </a-card>
+          <a-card id="menu-sys-user" class="mb-2">
+            <a slot="extra" href="#">全选</a>
+            <a-checkbox slot="title">
+              用户管理
+            </a-checkbox>
+            <a-checkbox-group :options="plainOptions" />
+          </a-card>
+        </a-card>
+      </a-col>
+      <a-col :md="0" :lg="4">
+        <!-- <a-anchor
+          ref="anchor"
+          :offset-top="16"
+          :get-container="getAnchorContainer">
+          <a-anchor-link href="#sys-per" title="系统权限" />
+          <a-anchor-link href="#menu-per" title="菜单权限">
+            <a-anchor-link href="#menu-sys" title="系统配置">
+              <a-anchor-link href="#menu-sys-menu" title="菜单管理" />
+
+              <a-anchor-link href="#menu-sys-app" title="应用管理" />
+              <a-anchor-link href="#menu-sys-per" title="权限管理" />
+              <a-anchor-link href="#menu-sys-user" title="用户管理" />
+            </a-anchor-link>
+          </a-anchor-link>
+        </a-anchor> -->
+      </a-col>
+    </a-row>
+
 
     <!-- 弹窗 -->
     <modal
@@ -95,31 +110,19 @@
         </a-row>
       </a-form-model>
     </modal>
-    <!-- 权限分配 -->
-    <modal
-      v-model="pvisible"
-      :confirm-loading="pconfirmLoading"
-      ok-text="确认" cancel-text="取消" title="配置菜单"
-      @ok="pHandleOk"
-      @cancel="pHandleCancel">
-      <a-tree
-        default-expand-all
-        checkable
-        :checked-keys="checkedKeys"
-        :tree-data="menuConfigTrees"
-        @check="checkNode"
-      />
-    </modal>
   </a-card>
 </template>
 
 <script>
-import { BoxPage, cloneDeep } from '@/utils/tool'
-import { getListPage, getOne, save, del } from '@/api/modules/sys/role'
+import { cloneDeep } from '@/utils/tool'
+import { getListPage, configDetail, getOne, save, del } from '@/api/modules/sys/role'
 import Modal from '@/components/modal/Modal'
-import { columns, defaultForm } from './constant'
+import { mapState } from 'vuex'
+import { getAsyncApps } from '@/views/pages/sys/menu/async'
+import { defaultForm } from './constant'
 
 export default {
+  inject: ['content'],
   components: { Modal },
   data() {
     return {
@@ -128,23 +131,58 @@ export default {
       visible: false, // 弹窗控制
       confirmLoading: false, // 确认按钮控制
       dataForm: cloneDeep(defaultForm), // 单条数据显示
-      columns: columns, // 表字段
-      params: { // 分页查询
-        page: {}, // 分页数据
-        query: {} // 查询数据
-      },
-      dataSource: [], // 数据行
-      selectedRows: [], // 选择行
+      roles: [], // 角色行
+      apps: [], // 选择行
       // 权限分配
       pvisible: false,
-      pconfirmLoading: false // 确认按钮控制
-
+      pconfirmLoading: false, // 确认按钮控制
+      plainOptions: ['Apple', 'Pear', 'Orange'],
+      targetOffset: undefined
     }
   },
   created() {
     this.queryPage()
+    this.getApps()
+    this.getConfigDetail()
+  },
+  mounted() {
+    this.targetOffset = window.innerHeight / 2
+    console.log(this.targetOffset)
+    console.log(this.content)
+  },
+  /**
+   * 当 keep-alive 包含的组件再次渲染的时候触发
+   */
+  activated() {
+    const el = this.$refs.anchor.$el
+    el.style.width = ''
+    el.style.height = ''
+  },
+  computed: {
+    ...mapState('setting', ['fixedHeader'])
   },
   methods: {
+    /**
+     * 获取应用集合
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    getApps() {
+      getAsyncApps().then(res => {
+        this.apps = res.data || []
+      }).done()
+    },
+    /**
+     * 获取配置信息集合
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    getConfigDetail() {
+      configDetail('123', '123').then(res => {
+        const data = res.data || []
+        console.log(data)
+      }).done()
+    },
     /**
      * 分页查询
      * @date 2021-2-26 10:23:26
@@ -155,8 +193,7 @@ export default {
       getListPage(this.params).then(res => {
         const { data } = res
         const result = data.result || []
-        this.params.page = BoxPage(data)
-        this.dataSource = result
+        this.roles = result
       }).done().finally(() => {
         setTimeout(() => {
           this.loading = false
@@ -171,15 +208,6 @@ export default {
     onSearch(conditions) {
       this.params.query = conditions
       console.log(this.params.query)
-      this.queryPage()
-    },
-    /**
-     * 分页变化
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    onChange(pagination) {
-      this.params.page = BoxPage(pagination)
       this.queryPage()
     },
     /**
@@ -273,6 +301,14 @@ export default {
     phandleCancel() {
       this.pvisible = false
       this.pconfirmLoading = false
+    },
+    /**
+     * 指定滚动的容器
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    getAnchorContainer() {
+      return this.fixedHeader ? this.content.$refs.contentView : document.body.querySelector('.admin-content').parentElement
     }
   }
 }

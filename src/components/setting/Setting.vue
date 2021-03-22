@@ -37,9 +37,9 @@
         <img-checkbox :title="$t('navigate.mix')" img="https://gw.alipayobjects.com/zos/antfincdn/x8Ob%26B8cy8/LCkqqYNmvBEbokSDscrm.svg" value="mix" />
       </img-checkbox-group>
     </setting-item> -->
-    <!-- <setting-item>
+    <setting-item>
       <a-list :split="false">
-        <a-list-item>
+        <!-- <a-list-item>
           {{ $t('navigate.content.title') }}
           <a-select
             slot="actions"
@@ -54,18 +54,18 @@
               {{ $t('navigate.content.fixed') }}
             </a-select-option>
           </a-select>
-        </a-list-item>
+        </a-list-item> -->
         <a-list-item>
           {{ $t('navigate.fixedHeader') }}
           <a-switch slot="actions" :checked="fixedHeader" size="small" @change="setFixedHeader" />
         </a-list-item>
-        <a-list-item>
+        <!-- <a-list-item>
           {{ $t('navigate.fixedSideBar') }}
           <a-switch slot="actions" :checked="fixedSideBar" size="small" @change="setFixedSideBar" />
-        </a-list-item>
+        </a-list-item> -->
       </a-list>
     </setting-item>
-    <a-divider />
+    <!-- <a-divider />
     <setting-item :title="$t('other.title')">
       <a-list :split="false">
         <a-list-item>

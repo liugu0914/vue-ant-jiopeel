@@ -26,6 +26,15 @@ export async function getOne(id) {
 }
 
 /**
+ * 查询配置信息
+ *@param appId 应用Id
+ *@param roleId 角色Id
+ */
+export async function configDetail(appId, roleId) {
+  return await request(`${prefix}/configDetail`, METHOD.GET, { appId, roleId })
+}
+
+/**
  * 保存数据
 
  */
