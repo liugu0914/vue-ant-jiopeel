@@ -12,8 +12,8 @@ const prefix = '/admin/role'
  * 获取分页数据
  * @param { param: {需要查询的数据} , page: { pageNum: 第几页, pageSize: 每页大小} } params
  */
-export async function getListPage(params) {
-  return await request(`${prefix}/getListPage`, METHOD.POST, params)
+export async function getList(params) {
+  return await request(`${prefix}/getList`, METHOD.POST, params)
 }
 
 

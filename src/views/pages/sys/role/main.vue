@@ -5,49 +5,25 @@
  -->
 <template>
   <a-card>
-    <a-tabs default-active-key="1">
-      <a-tab-pane v-for="(role,index) in roles" :key="index" :tab="role.name" />
+    <a-tabs v-model="activeRoleKey">
+      <a-tab-pane v-for="role in roles" :key="role.id" :tab="role.name" />
+    </a-tabs>
+    <a-tabs v-model="activeAppKey">
+      <a-tab-pane v-for="app in apps" :key="app.value" :tab="app.title" />
     </a-tabs>
     <a-row :gutter="[16,16]">
       <a-col :md="24" :lg="20">
         <a-card id="sys-per" class="mb-3" title="系统权限">
-          <a slot="extra" href="#">全选</a>
-          <a-checkbox-group :options="plainOptions" />
+          <a slot="extra" @click="checkAllSysPes">全选</a>
+          <!-- <a-checkbox v-for="item in config.sys" :key="item.id" :checked=" config.pes.includes(id)" @change="(e)=>addSysPes(e,item.id)">
+            {{ item.name }}
+          </a-checkbox> -->
+          <a-checkbox-group v-model="config.pes" :options="config.sys" @change="addSysPes" />
         </a-card>
+
         <a-card id="menu-per" title="菜单权限">
           <a slot="extra" href="#">全选</a>
-          <a-divider id="menu-sys" orientation="left">
-            系统配置
-          </a-divider>
-
-          <a-card id="menu-sys-menu" class="mb-2">
-            <a slot="extra" href="#">全选</a>
-            <a-checkbox slot="title">
-              菜单管理
-            </a-checkbox>
-            <a-checkbox-group :options="plainOptions" />
-          </a-card>
-          <a-card id="menu-sys-app" class="mb-2">
-            <a slot="extra" href="#">全选</a>
-            <a-checkbox slot="title">
-              应用管理
-            </a-checkbox>
-            <a-checkbox-group :options="plainOptions" />
-          </a-card>
-          <a-card id="menu-sys-per" class="mb-2">
-            <a slot="extra" href="#">全选</a>
-            <a-checkbox slot="title">
-              权限管理
-            </a-checkbox>
-            <a-checkbox-group :options="plainOptions" />
-          </a-card>
-          <a-card id="menu-sys-user" class="mb-2">
-            <a slot="extra" href="#">全选</a>
-            <a-checkbox slot="title">
-              用户管理
-            </a-checkbox>
-            <a-checkbox-group :options="plainOptions" />
-          </a-card>
+          <menuRoleCheck :menus="config.menus" :fucs="config.fucs" :pes="config.pes" />
         </a-card>
       </a-col>
       <a-col :md="0" :lg="4">
@@ -115,40 +91,43 @@
 
 <script>
 import { cloneDeep } from '@/utils/tool'
-import { getListPage, configDetail, getOne, save, del } from '@/api/modules/sys/role'
+import { getList, configDetail, getOne, save, del } from '@/api/modules/sys/role'
 import Modal from '@/components/modal/Modal'
 import { mapState } from 'vuex'
 import { getAsyncApps } from '@/views/pages/sys/menu/async'
 import { defaultForm } from './constant'
+import MenuRoleCheck from './menuRoleCheck'
 
 export default {
   inject: ['content'],
-  components: { Modal },
+  components: { Modal, MenuRoleCheck },
   data() {
     return {
       title: '',
-      loading: false, // 表格加载
       visible: false, // 弹窗控制
       confirmLoading: false, // 确认按钮控制
       dataForm: cloneDeep(defaultForm), // 单条数据显示
       roles: [], // 角色行
+      activeRoleKey: '', // 选中的角色
       apps: [], // 选择行
+      activeAppKey: '', // 选中的应用
       // 权限分配
-      pvisible: false,
-      pconfirmLoading: false, // 确认按钮控制
       plainOptions: ['Apple', 'Pear', 'Orange'],
-      targetOffset: undefined
+      targetOffset: undefined,
+      config: {
+        sys: [], // 系统权限
+        menus: [], // 菜单权限
+        fucs: {}, // 功能权限
+        pes: [] // 已配置的权限
+      }
     }
   },
   created() {
-    this.queryPage()
-    this.getApps()
-    this.getConfigDetail()
-  },
-  mounted() {
-    this.targetOffset = window.innerHeight / 2
-    console.log(this.targetOffset)
-    console.log(this.content)
+    this.getApps().then(() => {
+      this.getRoles().then(() => {
+        this.getConfigDetail()
+      })
+    })
   },
   /**
    * 当 keep-alive 包含的组件再次渲染的时候触发
@@ -159,7 +138,16 @@ export default {
     el.style.height = ''
   },
   computed: {
-    ...mapState('setting', ['fixedHeader'])
+    ...mapState('setting', ['fixedHeader']),
+    /**
+     * 判断该权限是否被选中
+     * @date 2021年3月23日11:18:50
+     * @author lyc
+     */
+    isChecked(id) {
+      console.log(this.config.pes.includes(id))
+      return this.config.pes.includes(id)
+    }
   },
   methods: {
     /**
@@ -168,8 +156,11 @@ export default {
      * @author lyc
      */
     getApps() {
-      getAsyncApps().then(res => {
-        this.apps = res.data || []
+      return getAsyncApps().then(res => {
+        this.apps = res
+        if (res.length > 0) {
+          this.activeAppKey = res[0].value
+        }
       }).done()
     },
     /**
@@ -178,27 +169,28 @@ export default {
      * @author lyc
      */
     getConfigDetail() {
-      configDetail('123', '123').then(res => {
-        const data = res.data || []
-        console.log(data)
+      return configDetail(this.activeAppKey, this.activeRoleKey).then(res => {
+        const data = res.data || {}
+        const { sys, menus, fucs, pes } = data
+        this.config.sys = sys.map(item => ({ label: item.name, value: item.id }))
+        this.config.menus = menus
+        this.config.fucs = fucs
+        this.config.pes = pes
       }).done()
     },
     /**
-     * 分页查询
+     * 获取角色列表
      * @date 2021-2-26 10:23:26
      * @author lyc
      */
-    queryPage() {
-      this.loading = true
-      getListPage(this.params).then(res => {
-        const { data } = res
-        const result = data.result || []
-        this.roles = result
-      }).done().finally(() => {
-        setTimeout(() => {
-          this.loading = false
-        }, 0)
-      })
+    getRoles() {
+      return getList().then(res => {
+        const { data = [] } = res
+        this.roles = data
+        if (data.length > 0) {
+          this.activeRoleKey = data[0].id
+        }
+      }).done()
     },
     /**
      * 搜索
@@ -290,18 +282,6 @@ export default {
       this.confirmLoading = false
       this.resetForm('ruleForm')
     },
-    pHandleOk() {
-      this.pvisible = true
-    },
-    /**
-     * 取消
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    phandleCancel() {
-      this.pvisible = false
-      this.pconfirmLoading = false
-    },
     /**
      * 指定滚动的容器
      * @date 2021-2-26 10:23:26
@@ -309,6 +289,25 @@ export default {
      */
     getAnchorContainer() {
       return this.fixedHeader ? this.content.$refs.contentView : document.body.querySelector('.admin-content').parentElement
+    },
+    /**
+     * 点击系统权限checkBox
+     * @param 选中的值
+     * @date 2021年3月23日11:18:50
+     * @author lyc
+     */
+    addSysPes(checkedValue) {
+      this.config.pes = checkedValue
+      console.log(this.config.pes)
+    },
+    /**
+     *全选系统权限
+     * @param 选中的值
+     * @date 2021年3月23日11:18:50
+     * @author lyc
+     */
+    checkAllSysPes() {
+      this.config.pes = this.config.sys.map(item => item.value)
     }
   }
 }
