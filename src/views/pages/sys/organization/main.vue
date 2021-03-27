@@ -215,6 +215,7 @@ export default {
         if (!valid) return
         this.confirmLoading = true
         save(this.dataForm).then(res => {
+          this.$message.success('保存成功!')
           this.queryPage()
         }).done().finally(() => {
           this.visible = false

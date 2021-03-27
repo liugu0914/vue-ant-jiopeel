@@ -12,6 +12,14 @@ const prefix = '/admin/role'
  * 获取分页数据
  * @param { param: {需要查询的数据} , page: { pageNum: 第几页, pageSize: 每页大小} } params
  */
+export async function getListPage(params) {
+  return await request(`${prefix}/getListPage`, METHOD.POST, params)
+}
+
+/**
+ * 获取数据
+ * @param { param: {需要查询的数据} , page: { pageNum: 第几页, pageSize: 每页大小} } params
+ */
 export async function getList(params) {
   return await request(`${prefix}/getList`, METHOD.POST, params)
 }
@@ -40,6 +48,14 @@ export async function configDetail(appId, roleId) {
  */
 export async function save(params) {
   return await request(`${prefix}/save`, METHOD.POST, params)
+}
+
+/**
+ * 保存权限数据
+ * @param {roleId: 角色ID, sysPes: 系统权限, menuPes: 菜单权限} params 应用Id
+ */
+export async function savePes(params) {
+  return await request(`${prefix}/savePes`, METHOD.POST, params)
 }
 
 

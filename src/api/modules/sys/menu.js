@@ -44,7 +44,7 @@ export async function save(params) {
 /**
  * 删除数据
  */
-export async function del(ids) {
-  return await request(`/admin/menu/del`, METHOD.GET, { ids })
+export async function del(ids, appId) {
+  return await request(`/admin/menu/del`, METHOD.GET, { ids, appId })
 }
 

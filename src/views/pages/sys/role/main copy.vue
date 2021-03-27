@@ -5,79 +5,42 @@
  -->
 <template>
   <a-card>
-    <!-- 表格 -->
-    <standard-table
-      :columns="columns"
-      :data-source="dataSource"
-      :selected-rows.sync="selectedRows"
-      :loading="loading"
-      :pagination="params.page"
-      placeholder="搜索角色名称/标识/描述"
-      @change="onChange"
-      @search="onSearch"
-    >
-      <template slot="btns">
-        <a-button type="primary" @click="add">
-          <a-icon type="plus" />新建
-        </a-button>
-        <a-popconfirm title="是否确认删除选中的数据?" :disabled="selectedRows && selectedRows.length===0" @confirm="delSelectedRows">
-          <a-button>
-            <a-icon type="delete" />删除
-          </a-button>
-        </a-popconfirm>
-      </template>
-      <template slot="enable" slot-scope="{text}">
-        <a-switch checked-children="是" disabled un-checked-children="否" :checked="text === '1'" />
-      </template>
-      <div slot="action" slot-scope="{record}">
-        <a-tooltip title="分配权限">
-          <a class="mr-1" @click="setPermission(record)">
-            <a-icon type="share-alt" />
-          </a>
-        </a-tooltip>
-        <a-tooltip title="编辑">
-          <a class="mr-1" @click="edit(record)">
-            <a-icon type="edit" />
-          </a>
-        </a-tooltip>
-        <a-popconfirm title="是否确认删除?" @confirm="()=>deleteRecord(record.id)">
-          <a-tooltip title="删除">
-            <a>
-              <a-icon type="delete" />
-            </a>
-          </a-tooltip>
-        </a-popconfirm>
-      </div>
-    </standard-table>
-    <!-- 权限分配 -->
-    <modal
-      v-model="pesVisible"
-      :confirm-loading="pesConfirmLoading"
-      width="80%"
-      ok-text="确认"
-      cancel-text="取消"
-      title="权限分配"
-      @ok="pesHandleOk" @cancel="pesHandleCancel">
-      <a-tabs v-model="activeAppKey" @change="changeTab">
-        <a-tab-pane v-for="app in apps" :key="app.value" :tab="app.title" />
-      </a-tabs>
-      <a-row :gutter="[16,16]">
-        <a-col :md="24" :lg="20">
-          <a-card id="sys-per" class="mb-3" title="系统权限">
-            <a slot="extra" @click="checkAllSysPes">全选</a>
-            <a-checkbox-group v-if="config.sys.length>0" v-model="config.sysPes" :options="config.sys" @change="addSysPes" />
-          </a-card>
+    <a-tabs v-model="activeRoleKey" hide-add type="editable-card">
+      <a-tab-pane v-for="role in roles" :key="role.id">
+        <span slot="tab">
+          {{ role.name }}
+          <a-icon type="edit" />
 
-          <a-card id="menu-per" title="菜单权限">
-            <a slot="extra" @click="checkAllMenuPes">全选</a>
-            <menuRoleCheck v-if="config.menus.length>0" :menus="config.menus" :fucs="config.fucs" :pes.sync="config.menuPes" />
-          </a-card>
-        </a-col>
-        <a-col :md="0" :lg="4">
-          <menuRoleAnchor :menus="config.menus" />
-        </a-col>
-      </a-row>
-    </modal>
+        </span>
+      </a-tab-pane>
+      <a-button slot="tabBarExtraContent" type="primary" @click="add()">
+        <a-icon type="plus" />添加角色
+      </a-button>
+    </a-tabs>
+    <a-tabs v-model="activeAppKey">
+      <a-tab-pane v-for="app in apps" :key="app.value" :tab="app.title" />
+    </a-tabs>
+    <a-button @click="sysout">
+      asd
+    </a-button>
+    <a-row :gutter="[16,16]">
+      <a-col :md="24" :lg="20">
+        <a-card id="sys-per" class="mb-3" title="系统权限">
+          <a slot="extra" @click="checkAllSysPes">全选</a>
+          <a-checkbox-group v-model="config.sysPes" :options="config.sys" @change="addSysPes" />
+        </a-card>
+
+        <a-card id="menu-per" title="菜单权限">
+          <a slot="extra" @click="checkAllMenuPes">全选</a>
+          <menuRoleCheck :menus="config.menus" :fucs="config.fucs" :pes.sync="config.menuPes" />
+        </a-card>
+      </a-col>
+      <a-col :md="0" :lg="4">
+        <menuRoleAnchor :menus="config.menus" />
+      </a-col>
+    </a-row>
+
+
     <!-- 弹窗 -->
     <modal
       v-model="visible"
@@ -122,42 +85,30 @@
 </template>
 
 <script>
-import { BoxPage, cloneDeep } from '@/utils/tool'
-import { getListPage, configDetail, getOne, save, savePes, del } from '@/api/modules/sys/role'
-import StandardTable from '@/components/table/StandardTable'
+import { cloneDeep } from '@/utils/tool'
+import { getList, configDetail, getOne, save, del } from '@/api/modules/sys/role'
 import Modal from '@/components/modal/Modal'
+import MenuRoleCheck from './menuRoleCheck'
+import MenuRoleAnchor from './menuRoleAnchor'
 import { getAsyncApps } from '@/views/pages/sys/menu/async'
-import { columns, defaultForm } from './constant'
+import { defaultForm } from './constant'
 
 
 export default {
-  components: {
-    StandardTable,
-    Modal,
-    MenuRoleCheck: () => import('./menuRoleCheck'),
-    MenuRoleAnchor: () => import('./menuRoleAnchor')
-  },
+  inject: ['content'],
+  components: { Modal, MenuRoleCheck, MenuRoleAnchor },
   data() {
     return {
       title: '',
-      loading: false, // 表格加载
       visible: false, // 弹窗控制
       confirmLoading: false, // 确认按钮控制
       dataForm: cloneDeep(defaultForm), // 单条数据显示
-      columns: columns, // 表字段
-      params: { // 分页查询
-        page: {}, // 分页数据
-        query: {} // 查询数据
-      },
-      dataSource: [], // 数据行
-      selectedRows: [], // 选择行
-
-      // 权限分配
-      pesVisible: false, // 弹窗控制
-      pesConfirmLoading: false, // 确认按钮控制
+      roles: [], // 角色行
       activeRoleKey: '', // 选中的角色
       apps: [], // 选择行
       activeAppKey: '', // 选中的应用
+      // 权限分配
+      plainOptions: ['Apple', 'Pear', 'Orange'],
       config: {
         sys: [], // 系统权限
         menus: [], // 菜单权限
@@ -168,7 +119,22 @@ export default {
     }
   },
   created() {
-    this.queryPage()
+    this.getApps().then(() => {
+      this.getRoles().then(() => {
+        this.getConfigDetail()
+      })
+    })
+  },
+  computed: {
+    /**
+     * 判断该权限是否被选中
+     * @date 2021年3月23日11:18:50
+     * @author lyc
+     */
+    isChecked(id) {
+      console.log(this.config.pes.includes(id))
+      return this.config.pes.includes(id)
+    }
   },
   methods: {
     /**
@@ -202,22 +168,18 @@ export default {
       }).done()
     },
     /**
-     * 分页查询
+     * 获取角色列表
      * @date 2021-2-26 10:23:26
      * @author lyc
      */
-    queryPage() {
-      this.loading = true
-      getListPage(this.params).then(res => {
-        const { data } = res
-        const result = data.result || []
-        this.params.page = BoxPage(data)
-        this.dataSource = result
-      }).done().finally(() => {
-        setTimeout(() => {
-          this.loading = false
-        }, 0)
-      })
+    getRoles() {
+      return getList().then(res => {
+        const { data = [] } = res
+        this.roles = data
+        if (data.length > 0) {
+          this.activeRoleKey = data[0].id
+        }
+      }).done()
     },
     /**
      * 搜索
@@ -227,15 +189,6 @@ export default {
     onSearch(conditions) {
       this.params.query = conditions
       console.log(this.params.query)
-      this.queryPage()
-    },
-    /**
-     * 分页变化
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    onChange(pagination) {
-      this.params.page = BoxPage(pagination)
       this.queryPage()
     },
     /**
@@ -259,27 +212,6 @@ export default {
       }).done().finally(() => {
         this.visible = true
       })
-    },
-    /**
-     * 打开分配权限
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    setPermission(record) {
-      this.pesVisible = true // 打开弹窗
-      this.activeRoleKey = record.id // 角色Id
-      this.getApps().then(() => {
-        this.getConfigDetail()
-      })
-    },
-    /**
-     * 切换应用权限
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    changeTab(activeKey) {
-      this.activeAppKey = activeKey
-      this.getConfigDetail()
     },
     /**
      * 删除
@@ -321,7 +253,6 @@ export default {
         if (!valid) return
         this.confirmLoading = true
         save(this.dataForm).then(res => {
-          this.$message.success('保存成功!')
           this.queryPage()
         }).done().finally(() => {
           this.visible = false
@@ -339,38 +270,6 @@ export default {
       this.visible = false
       this.confirmLoading = false
       this.resetForm('ruleForm')
-    },
-
-    /**
-     * 权限保存
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    pesHandleOk() {
-      const params = {
-        roleId: this.activeRoleKey,
-        appId: this.activeAppKey,
-        sysPes: this.config.sysPes,
-        menuPes: this.config.menuPes
-      }
-      console.log('params : ', params)
-      savePes(params).then(() => {
-        this.$message.success('保存成功!')
-      }).done().finally(() => {
-        this.pesHandleCancel()
-      })
-    },
-
-    /**
-     * 权限取消
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    pesHandleCancel() {
-      this.pesVisible = false
-      this.pesConfirmLoading = false
-      this.config.sysPes = []
-      this.config.menuPes = []
     },
     /**
      * 点击系统权限checkBox
@@ -409,8 +308,8 @@ export default {
         if (menu.parent === '1' && menu.children) {
           newArr.push(...this.dGetPermission(menu.children))
         } else {
-          newArr.push(menu.permissionId) // 权限ID
-          const menuFucs = this.config.fucs[menu.id] || []// 根据菜单ID
+          newArr.push(menu.id)
+          const menuFucs = this.config.fucs[menu.id] || []
           newArr.push(...menuFucs.map(fuc => fuc.id))
         }
       })
@@ -428,10 +327,9 @@ export default {
         if (menu.parent === '1' && menu.children) {
           newArr.push(...this.getHasPermission(menu.children, pes))
         } else {
-          const menuId = menu.id // 菜单ID
-          const permissionId = menu.permissionId // 权限ID
-          if (pes.includes(permissionId)) {
-            newArr.push(permissionId)
+          const menuId = menu.id
+          if (pes.includes(menuId)) {
+            newArr.push(menuId)
           }
           const menuFucs = this.config.fucs[menuId] || [] // 菜单下权限
           menuFucs.forEach(item => {
@@ -442,6 +340,9 @@ export default {
         }
       })
       return newArr
+    },
+    sysout() {
+      console.log('config.pes : ', this.config.sysPes.concat(this.config.menuPes))
     }
   }
 }

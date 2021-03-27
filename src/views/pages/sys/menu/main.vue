@@ -39,7 +39,7 @@
             <a-icon type="edit" />
           </a>
         </a-tooltip>
-        <a-popconfirm title="是否确认删除?" @confirm="()=>deleteRecord(record.id)">
+        <a-popconfirm title="是否确认删除?" @confirm="()=>deleteRecord(record.id,record.appId)">
           <a-tooltip title="删除">
             <a>
               <a-icon type="delete" />
@@ -241,8 +241,8 @@ export default {
      * @date 2021-2-26 10:23:26
      * @author lyc
      */
-    deleteRecord(id) {
-      del(id).then(() => {
+    deleteRecord(id, appId) {
+      del(id, appId).then(() => {
         this.queryPage()
       }).done()
     },
@@ -276,6 +276,7 @@ export default {
         if (!valid) return
         this.confirmLoading = true
         save(this.dataForm).then(() => {
+          this.$message.success('保存成功!')
           this.queryPage()
         }).done().finally(() => {
           this.visible = false

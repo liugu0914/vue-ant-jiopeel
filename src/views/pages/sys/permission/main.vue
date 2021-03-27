@@ -351,6 +351,7 @@ export default {
     menuHandleOk() {
       this.menuConfirmLoading = true
       saveMenu(this.appId, this.checkedKeys).then(res => {
+        this.$message.success('保存成功!')
         // 刷新菜单
         this.loadMenu()
       }).done().finally(() => {
@@ -423,6 +424,7 @@ export default {
         this.confirmLoading = true
         const type = this.dataForm.type
         save(this.dataForm).then(() => {
+          this.$message.success('保存成功!')
           if (type === 'sys') {
             this.loadSys()
           }
