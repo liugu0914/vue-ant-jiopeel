@@ -9,7 +9,7 @@ import { getAppList } from '@/api/modules/sys/app'
  */
 export async function getAsyncApps() {
   return await getAppList().then(res => {
-    const { data } = res
+    const { data = [] } = res
     return data.map(item => ({
       title: item.name,
       value: item.id

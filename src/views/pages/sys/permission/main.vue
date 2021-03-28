@@ -5,7 +5,7 @@
  -->
 <template>
   <div>
-    <a-tabs v-model="appId" @change="switchApp">
+    <a-tabs v-if="apps.length>1" v-model="appId" @change="switchApp">
       <a-tab-pane v-for="app in apps" :key="app.value" :tab="app.title" />
     </a-tabs>
     <a-row>

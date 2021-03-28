@@ -5,6 +5,9 @@
  -->
 <template>
   <a-card>
+    <a-tabs v-if="apps.length>1" v-model="appId" class="mb-2" @change="switchApp">
+      <a-tab-pane v-for="app in apps" :key="app.value" :tab="app.title" />
+    </a-tabs>
     <!-- 表格 -->
     <standard-table
       :columns="columns"
@@ -108,13 +111,6 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '所属应用不能为空', trigger: 'blur' }"
-              label="所属应用" prop="appId">
-              <a-select v-model="dataForm.appId" class="w-100" allow-clear :options="apps" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-model-item
               :rules=" { required: true}"
               label="是否可用" prop="enable">
               <a-switch checked-children="是" un-checked-children="否" :checked="dataForm.enable === '1'" @change="(checked)=>dataForm.enable =checked?'1':'0'" />
@@ -148,18 +144,22 @@ export default {
       dataSource: [], // 数据行
       selectedRows: [], // 选择行
       apps: [], // 应用数据
+      appId: '', // 应用Id
       superMenus: [] // 父级菜单
     }
   },
   created() {
-    this.queryPage()
+    getAsyncApps().then(apps => {
+      if (apps.length > 0) {
+        this.appId = apps[0].value
+      }
+      this.apps = apps
+      this.queryPage()
+    })
   },
   watch: {
     visible(flag) { // 弹窗显示需要加载的数据
       if (!flag) { return }
-      if (this.apps && this.apps.length === 0) {
-        this.getApps()
-      }
       if (this.superMenus && this.superMenus.length === 0) {
         this.getMenus()
       }
@@ -167,12 +167,22 @@ export default {
   },
   methods: {
     /**
+     * 切换应用
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    switchApp(activeKey) {
+      this.appId = activeKey
+      this.queryPage()
+    },
+    /**
      * 分页查询
      * @date 2021-2-26 10:23:26
      * @author lyc
      */
     queryPage() {
       this.loading = true
+      this.params.appId = this.appId
       getListPage(this.params).then(res => {
         const { data } = res
         this.dataSource = data || []
@@ -181,14 +191,6 @@ export default {
           this.loading = false
         }, 0)
       })
-    },
-    /**
-     * 获取应用列表数据
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    async getApps() {
-      this.apps = await getAsyncApps().then(res => res).done()
     },
     /**
      * 获取父级菜单列表数据
@@ -275,6 +277,7 @@ export default {
       this.$refs['ruleForm'].validate(valid => {
         if (!valid) return
         this.confirmLoading = true
+        this.dataForm.appId = this.appId
         save(this.dataForm).then(() => {
           this.$message.success('保存成功!')
           this.queryPage()

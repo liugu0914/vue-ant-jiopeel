@@ -44,6 +44,7 @@ export const columns = [
  */
 export const defaultForm = {
   id: undefined,
+  appId: undefined,
   name: undefined,
   weight: undefined,
   remark: undefined,

@@ -5,6 +5,9 @@
  -->
 <template>
   <a-card>
+    <a-tabs v-if="apps.length>1" v-model="appId" class="mb-2" @change="changeTab">
+      <a-tab-pane v-for="app in apps" :key="app.value" :tab="app.title" />
+    </a-tabs>
     <!-- 表格 -->
     <standard-table
       :columns="columns"
@@ -58,9 +61,6 @@
       cancel-text="取消"
       title="权限分配"
       @ok="pesHandleOk" @cancel="pesHandleCancel">
-      <a-tabs v-model="activeAppKey" @change="changeTab">
-        <a-tab-pane v-for="app in apps" :key="app.value" :tab="app.title" />
-      </a-tabs>
       <a-row :gutter="[16,16]">
         <a-col :md="24" :lg="20">
           <a-card id="sys-per" class="mb-3" title="系统权限">
@@ -151,13 +151,13 @@ export default {
       },
       dataSource: [], // 数据行
       selectedRows: [], // 选择行
+      apps: [], // 应用
+      appId: '', // 选中的应用
 
       // 权限分配
       pesVisible: false, // 弹窗控制
       pesConfirmLoading: false, // 确认按钮控制
       activeRoleKey: '', // 选中的角色
-      apps: [], // 选择行
-      activeAppKey: '', // 选中的应用
       config: {
         sys: [], // 系统权限
         menus: [], // 菜单权限
@@ -168,7 +168,9 @@ export default {
     }
   },
   created() {
-    this.queryPage()
+    this.getApps().then(() => {
+      this.queryPage()
+    })
   },
   methods: {
     /**
@@ -180,7 +182,7 @@ export default {
       return getAsyncApps().then(res => {
         this.apps = res
         if (res.length > 0) {
-          this.activeAppKey = res[0].value
+          this.appId = res[0].value
         }
       }).done()
     },
@@ -190,7 +192,7 @@ export default {
      * @author lyc
      */
     getConfigDetail() {
-      return configDetail(this.activeAppKey, this.activeRoleKey).then(res => {
+      return configDetail(this.appId, this.activeRoleKey).then(res => {
         const data = res.data || {}
         const { sys, menus, fucs, pes } = data
         this.config.sys = sys.map(item => ({ label: item.name, value: item.id }))
@@ -208,6 +210,7 @@ export default {
      */
     queryPage() {
       this.loading = true
+      this.params.query.appId = this.appId
       getListPage(this.params).then(res => {
         const { data } = res
         const result = data.result || []
@@ -268,9 +271,7 @@ export default {
     setPermission(record) {
       this.pesVisible = true // 打开弹窗
       this.activeRoleKey = record.id // 角色Id
-      this.getApps().then(() => {
-        this.getConfigDetail()
-      })
+      this.getConfigDetail()
     },
     /**
      * 切换应用权限
@@ -279,7 +280,7 @@ export default {
      */
     changeTab(activeKey) {
       this.activeAppKey = activeKey
-      this.getConfigDetail()
+      this.queryPage()
     },
     /**
      * 删除
@@ -320,6 +321,7 @@ export default {
       this.$refs['ruleForm'].validate(valid => {
         if (!valid) return
         this.confirmLoading = true
+        this.dataForm.appId = this.appId
         save(this.dataForm).then(res => {
           this.$message.success('保存成功!')
           this.queryPage()
