@@ -17,7 +17,7 @@ export async function getListPage(params) {
 /**
  * 查询所有数据
  */
-export async function getAppList() {
+export async function getList() {
   return await request(`/admin/organization/getList`, METHOD.GET)
 }
 

@@ -24,6 +24,26 @@
       </div>
       <div class="header-child ">
         <div class="header-child-item">
+          <a-popover v-model="orgShow" title="选择组织/企业">
+            <template slot="content">
+              <a-list size="small" :data-source="orgs">
+                <a-list-item slot="renderItem" slot-scope="item" class="pointer" @click="()=>changeOrg(item)">
+                  <div>
+                    <a-badge :status="organization.id === item.id?'success':'default'" />
+                    <span class="mr-1">{{ item.name }}</span>
+                  </div>
+                  <span v-if="organization.id === item.id" slot="extra" class="ant-tag ant-tag-has-color primary">
+                    当前
+                  </span>
+                </a-list-item>
+              </a-list>
+            </template>
+            <span>
+              {{ organization.name }} <a-icon type="caret-down" />
+            </span>
+          </a-popover>
+        </div>
+        <div class="header-child-item">
           <a-icon class="icon-size" type="github" />
         </div>
         <div class="header-child-item">
@@ -61,6 +81,8 @@
 </template>
 <script>
 
+import { Modal } from 'ant-design-vue'
+import { getList } from '@/api/modules/sys/organization'
 import Drawer from '@/components/tool/Drawer'
 import Setting from '@/components/setting/Setting'
 import Oauth from '@/api/login/oauth'
@@ -80,11 +102,14 @@ export default {
   data() {
     return {
       showSetting: false,
-      breadcrumb: []
+      breadcrumb: [],
+      orgs: [],
+      orgShow: false
     }
   },
   created() {
     this.boxBreadcrumb(this.$route)
+    this.getOrgs()
   },
   watch: {
     $route(val) {
@@ -92,7 +117,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('account', ['user'])
+    ...mapGetters('account', ['user', 'organization'])
   },
   methods: {
     toggleCollapse() {
@@ -105,6 +130,30 @@ export default {
       const { meta = {}} = route
       this.breadcrumb = meta.breadcrumb
     },
+    getOrgs() {
+      getList().then(res => {
+        this.orgs = res.data || []
+      }).done()
+    },
+    /**
+     * 切换组织
+     */
+    changeOrg(item) {
+      this.orgShow = false
+      if (this.organization.id === item.id) { // 当前
+        return
+      }
+      Modal.confirm({
+        title: (h) => h('span', ['是否切换到组织/企业', h('a', { class: 'primary' }, item.name), '?']),
+        onOk: () => {
+          this.$message.success('切换成功')
+          Promise.resolve()
+        },
+        onCancel() {
+          Promise.resolve()
+        }
+      })
+    },
     logOut() {
       Oauth.logout().then(res => {
         removeAuthorization()
@@ -115,6 +164,12 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.primary{
+  background-color:  @primary-color;
+}
+.pointer{
+  cursor: pointer;
+}
 
 .admin-header-round {
 
