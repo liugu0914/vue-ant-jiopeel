@@ -28,6 +28,11 @@
       </template>
       <a-avatar slot="imgUrl" slot-scope="{text}" :src="text" icon="user" />
       <div slot="action" slot-scope="{record}">
+        <a-tooltip title="分配角色">
+          <a class="mr-1" @click="showRoles(record)">
+            <a-icon type="apartment" />
+          </a>
+        </a-tooltip>
         <a-tooltip title="编辑">
           <a class="mr-1" @click="edit(record)">
             <a-icon type="edit" />
@@ -89,12 +94,32 @@
         </a-row>
       </a-form-model>
     </modal>
+    <!-- 分配角色弹窗 -->
+    <modal
+      v-model="roleVisible"
+      :confirm-loading="roleConfirmLoading"
+      ok-text="确认" cancel-text="取消" title="分配角色"
+      @ok="roleHandleOk"
+      @cancel="roleHandleCancel">
+      <a-list :data-source="roles">
+        <a-list-item slot="renderItem" slot-scope="item" class="pointer" @click="chooseRole(item)">
+          <div>
+            <a-badge :status="role.roleId === item.id?'success':'default'" />
+            <span class="mr-1">{{ item.name }}</span>
+          </div>
+          <span v-if="role.roleId === item.id" slot="extra" class="ant-tag ant-tag-has-color primary">
+            当前
+          </span>
+        </a-list-item>
+      </a-list>
+    </modal>
   </a-card>
 </template>
 
 <script>
 import { BoxPage, cloneDeep } from '@/utils/tool'
 import { getListPage, getOne, save, del } from '@/api/modules/sys/user'
+import { getUserRole, getUseFulRoles, saveUserRole } from '@/api/modules/sys/role'
 import StandardTable from '@/components/table/StandardTable'
 import Modal from '@/components/modal/Modal'
 import { columns, defaultForm } from './constant'
@@ -114,7 +139,12 @@ export default {
         query: {} // 查询数据
       },
       dataSource: [], // 数据行
-      selectedRows: [] // 选择行
+      selectedRows: [], // 选择行
+
+      role: {}, // 当前角色
+      roles: [], // 可选角色
+      roleVisible: false, // 分配角色弹窗控制
+      roleConfirmLoading: false //  分配角色确认按钮控制
     }
   },
   created() {
@@ -240,7 +270,67 @@ export default {
       this.visible = false
       this.confirmLoading = false
       this.resetForm('ruleForm')
+    },
+    /**
+     * 显示角色分配
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    showRoles(record) {
+      this.roleVisible = true
+      getUseFulRoles().then((res) => {
+        this.roles = res.data || []
+        return getUserRole(record.id)
+      }).then(res => {
+        const data = res.data || {}
+        this.role = { roleId: data.id, userId: record.id }
+      }).done()
+    },
+    /**
+     * 选择角色
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    chooseRole(item) {
+      this.role.roleId = item.id
+    },
+    /**
+     * 保存角色分配
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    roleHandleOk() {
+      if (!this.role.roleId) {
+        return this.$message.warn('请选择角色后进行保存')
+      }
+      saveUserRole(this.role).then(() => {
+        this.$message.success('保存成功')
+      }).done().finally(() => {
+        this.roleHandleCancel()
+      })
+    },
+    /**
+     * 取消角色分配
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    roleHandleCancel() {
+      this.roleVisible = false
+      this.roleConfirmLoading = false
+      this.roles = []
+      this.role = {}
     }
   }
 }
 </script>
+<style lang="less" scoped>
+.primary{
+  background-color:  @primary-color;
+}
+.text{
+  color:  @text-color;
+}
+.pointer{
+  cursor: pointer;
+}
+</style>

@@ -24,7 +24,7 @@
       </div>
       <div class="header-child ">
         <div class="header-child-item">
-          <a-popover v-model="orgShow" title="选择组织/企业">
+          <a-popover v-if="orgs.length>1" v-model="orgShow" title="选择组织/企业">
             <template slot="content">
               <a-list size="small" :data-source="orgs">
                 <a-list-item slot="renderItem" slot-scope="item" class="pointer" @click="()=>changeOrg(item)">
@@ -42,6 +42,9 @@
               {{ organization.name }} <a-icon type="caret-down" />
             </span>
           </a-popover>
+          <span v-else>
+            {{ organization.name }}
+          </span>
         </div>
         <div class="header-child-item">
           <a-icon class="icon-size" type="github" />

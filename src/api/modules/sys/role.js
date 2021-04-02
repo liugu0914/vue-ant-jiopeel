@@ -65,3 +65,29 @@ export async function savePes(params) {
 export async function del(ids) {
   return await request(`${prefix}/del`, METHOD.GET, { ids })
 }
+
+
+/**
+ * 通过用户Id查询角色
+ */
+export async function getUserRole(useId) {
+  return await request(`${prefix}/getUserRole`, METHOD.GET, { useId })
+}
+
+
+
+/**
+ * 获取可选角色
+ */
+export async function getUseFulRoles() {
+  return await request(`${prefix}/getUseFulRoles`, METHOD.GET)
+}
+
+
+
+/**
+ * 保存选择的角色
+ */
+export async function saveUserRole(params) {
+  return await request(`${prefix}/saveUserRole`, METHOD.POST, params)
+}

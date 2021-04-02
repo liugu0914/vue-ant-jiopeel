@@ -279,7 +279,7 @@ export default {
      * @author lyc
      */
     changeTab(activeKey) {
-      this.activeAppKey = activeKey
+      this.appId = activeKey
       this.queryPage()
     },
     /**
@@ -351,7 +351,7 @@ export default {
     pesHandleOk() {
       const params = {
         roleId: this.activeRoleKey,
-        appId: this.activeAppKey,
+        appId: this.appId,
         sysPes: this.config.sysPes,
         menuPes: this.config.menuPes
       }
