@@ -39,5 +39,6 @@ module.exports = {
       }
     }
   },
-  publicPath: '/'
+  publicPath: process.env.VUE_APP_PUBLICPATH,
+  outputDir: process.env.VUE_APP_OUTPUTDIR
 }

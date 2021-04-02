@@ -8,7 +8,7 @@
 
 <script>
 import Oauth from '@/api/login/oauth'
-import { saveUserData } from './login.common'
+import { saveUserData } from '@/api/login/login.common'
 export default {
   props: {
     grantType: String,

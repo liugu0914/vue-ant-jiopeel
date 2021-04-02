@@ -36,18 +36,27 @@ function setRoles(roles) {
 }
 
 /**
- * 保存信息
+ * 保存角色信息
+ * @param {*} roles
  */
-export function saveUserData(data) {
-  const { Authorization, user: userInfo } = data
-  console.log('Authorization ==> ', Authorization)
-  setAuthorization(Authorization)
+export function saveUserInfo(userInfo) {
   const { user, organization, permissions, roleList, menus } = userInfo
   setUser(user)
   setOrganization(organization)
   setPermissions(permissions)
   setRoles(roleList)
   loadRoutes(simple2Tree(menus, 'id', 'superId', 'children'))
+}
+
+/**
+ * 保存信息
+ */
+export function saveUserData(data) {
+  const { Authorization, user: userInfo } = data
+  setAuthorization(Authorization)
+  saveUserInfo(userInfo)
   // 登录成功移除tabs
   sessionStorage.removeItem(process.env.VUE_APP_TBAS_KEY)
 }
+
+

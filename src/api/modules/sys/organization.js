@@ -15,10 +15,26 @@ export async function getListPage(params) {
 }
 
 /**
- * 查询所有数据
+ * 获取所有组织
  */
 export async function getList() {
   return await request(`/admin/organization/getList`, METHOD.GET)
+}
+
+/**
+ * 切换组织
+ */
+export async function changeOrganization(organizationId) {
+  return await request(`/admin/organization/changeOrganization`, METHOD.GET, { organizationId })
+}
+
+
+
+/**
+ * 获取用户对应的组织
+ */
+export async function getUserOrganization(userId) {
+  return await request(`/admin/organization/getUserOrganization`, METHOD.GET, { userId })
 }
 
 

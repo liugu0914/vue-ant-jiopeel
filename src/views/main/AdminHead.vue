@@ -82,7 +82,8 @@
 <script>
 
 import { Modal } from 'ant-design-vue'
-import { getList } from '@/api/modules/sys/organization'
+import { getUserOrganization, changeOrganization } from '@/api/modules/sys/organization'
+import { saveUserInfo } from '@/api/login/login.common'
 import Drawer from '@/components/tool/Drawer'
 import Setting from '@/components/setting/Setting'
 import Oauth from '@/api/login/oauth'
@@ -131,7 +132,7 @@ export default {
       this.breadcrumb = meta.breadcrumb
     },
     getOrgs() {
-      getList().then(res => {
+      getUserOrganization(this.user.id).then(res => {
         this.orgs = res.data || []
       }).done()
     },
@@ -147,7 +148,14 @@ export default {
         title: (h) => h('span', ['是否切换到组织/企业', h('a', { class: 'primary' }, item.name), '?']),
         onOk: () => {
           this.$message.success('切换成功')
-          Promise.resolve()
+          changeOrganization(item.id).then(res => {
+            const { data } = res
+            saveUserInfo(data)
+            this.$closeAllPage()
+            this.$router.push('/main')
+          }).done().finally(() => {
+            Promise.resolve()
+          })
         },
         onCancel() {
           Promise.resolve()

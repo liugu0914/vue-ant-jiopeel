@@ -30,6 +30,7 @@ const whiteList = {
  */
 function initRouter() {
   const options = {
+    base: process.env.VUE_APP_PUBLICPATH,
     mode: 'history',
     routes: require('./config/config.base').default
   }

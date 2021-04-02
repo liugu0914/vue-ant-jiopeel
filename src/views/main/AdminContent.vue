@@ -1,6 +1,7 @@
 <template>
   <a-layout-content class="admin-content">
     <tabs-wice
+      ref="tabs"
       :active="active"
       :page-list="pageList"
       @change="changePage"
@@ -144,7 +145,6 @@ export default {
     setCachedKey(route) {
       const { meta = {}} = route
       const page = this.pageList.find(item => item.key === (meta.key || route.fullPath))
-      page.unclose = route.meta && route.meta.page && (route.meta.page.closable === false)
       if (!page._init_) {
         let vnode
         try {
@@ -153,7 +153,7 @@ export default {
           console.warn(`[${page.fullPath}]路由没有的对应子页面,请检查!`)
           console.warn(e)
         }
-        page.cachedKey = vnode ? (vnode.key + vnode.componentOptions.Ctor.cid) : page.fullPath + '#' + new Date().getTime()
+        page.cachedKey = vnode ? (vnode.key + vnode.componentOptions.Ctor.cid) : page.fullPath
         page._init_ = true
       }
     },
@@ -161,6 +161,7 @@ export default {
      * 添加监听器
      */
     addListener() {
+      window.addEventListener('page:closeAll', this.closeAllPageListener)
       window.addEventListener('page:close', this.closePageListener)
       window.addEventListener('page:refresh', this.refreshPageListener)
       window.addEventListener('unload', this.unloadListener)
@@ -169,9 +170,19 @@ export default {
      * 移出监听器
      */
     removeListener() {
+      window.removeEventListener('page:closeAll', this.closeAllPageListener)
       window.removeEventListener('page:close', this.closePageListener)
       window.removeEventListener('page:refresh', this.refreshPageListener)
       window.removeEventListener('unload', this.unloadListener)
+    },
+    /**
+     * 页签关闭事件监听
+     * @param event 页签关闭事件
+     */
+    closeAllPageListener() {
+      this.clearCaches = this.pageList.map(page => page.cachedKey)
+      this.pageList = []
+      this.active = ''
     },
     /**
      * 页签关闭事件监听

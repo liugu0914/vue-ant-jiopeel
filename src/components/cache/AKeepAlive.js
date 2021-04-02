@@ -47,7 +47,7 @@ function pruneCacheEntry2(cache, key, keys) {
   if (cached) {
     cached.componentInstance.$destroy()
   }
-  cache[key] = null
+  delete cache[key]
   remove(keys, key)
 }
 
@@ -56,7 +56,7 @@ function pruneCacheEntry(cache, key, keys, current) {
   if (cached && (!current || cached.tag !== current.tag)) {
     cached.componentInstance.$destroy()
   }
-  cache[key] = null
+  delete cache[key]
   remove(keys, key)
 }
 
@@ -129,7 +129,11 @@ export default {
         ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
         : vnode.key + componentOptions.Ctor.cid
       if (cache[key]) {
-        vnode.componentInstance = cache[key].componentInstance
+        if (cache[key].componentInstance && !cache[key].componentInstance._isDestroyed) {
+          vnode.componentInstance = cache[key].componentInstance
+        } else {
+          cache[key] = vnode
+        }
         // make current key freshest
         remove(keys, key)
         keys.push(key)

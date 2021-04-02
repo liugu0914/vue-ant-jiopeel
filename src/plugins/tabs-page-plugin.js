@@ -2,6 +2,10 @@ const TabsPagePlugin = {
   install(Vue) {
     Vue.mixin({
       methods: {
+        $closeAllPage() {
+          const event = new CustomEvent('page:closeAll')
+          window.dispatchEvent(event)
+        },
         $closePage(closeRoute, nextRoute) {
           const event = new CustomEvent('page:close', { detail: { closeRoute, nextRoute }})
           window.dispatchEvent(event)

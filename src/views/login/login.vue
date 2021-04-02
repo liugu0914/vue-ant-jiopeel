@@ -222,7 +222,7 @@
 </template>
 <script>
 import Oauth from '@/api/login/oauth'
-import { saveUserData } from './login.common'
+import { saveUserData } from '@/api/login/login.common'
 
 const ACTIVE_TYPE = {
   Login: 'login',

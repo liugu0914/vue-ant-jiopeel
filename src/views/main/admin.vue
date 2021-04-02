@@ -14,7 +14,7 @@
     <side-menu v-show="!isMobile" :theme="theme.mode" :menu-data="menus" :collapsed="collapsed" :collapsible="true" />
     <a-layout class="beauty-scroll">
       <admin-head :class="[{'fixed-tabs': fixedTabs}]" :is-mobile="isMobile" :collapsed="collapsed" @toggleCollapse="toggleCollapse" @toggleSideMenuShow="toggleSideMenuShow" />
-      <admin-content />
+      <admin-content ref="adminContent" />
     </a-layout>
   </a-layout>
 </template>
@@ -35,6 +35,11 @@ export default {
     return {
       collapsed: false,
       sideMenuShow: false
+    }
+  },
+  provide() {
+    return {
+      admin: this
     }
   },
   created() {
