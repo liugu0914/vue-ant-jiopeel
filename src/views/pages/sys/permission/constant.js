@@ -12,5 +12,11 @@ export const defaultForm = {
   target: undefined,
   charm: undefined,
   type: undefined,
+  permissions: [{
+    key: 0,
+    permissionId: undefined,
+    target: undefined,
+    charm: undefined
+  }],
   enable: '1'
 }

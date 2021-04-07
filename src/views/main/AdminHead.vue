@@ -175,11 +175,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.primary{
-  background-color:  @primary-color;
-}
-.pointer{
-  cursor: pointer;
+
+.primary {
+  background-color: @primary-color;
 }
 
 .admin-header-round {

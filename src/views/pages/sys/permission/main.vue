@@ -129,24 +129,49 @@
         <a-row>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: true, message: '权限名称不能为空', trigger: 'blur' }"
+              :rules=" { required: true, message: '权限名称不能为空', whitespace:true, trigger: ['change', 'blur'] }"
               label="权限名称" prop="name">
               <a-input v-model="dataForm.name" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: true, message: '地址不能为空', trigger: 'blur' }"
-              label="地址" prop="target">
-              <a-input v-model="dataForm.target" class="w-100" :max-length="255" autocomplete="off" allow-clear @change="target2Charm" />
+              :rules=" { required: true, message: '主地址不能为空', whitespace:true, trigger: ['change', 'blur'] }"
+              label="主地址" prop="target">
+              <a-input v-model="dataForm.target" class="w-100" :max-length="255" autocomplete="off" allow-clear @change="mainTarget2Charm" />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: true, message: '通配符不能为空', trigger: 'blur' }"
+              :rules=" { required: true, message: '通配符不能为空', whitespace:true, trigger: ['change', 'blur'] }"
               label="通配符" prop="charm">
-              <a-input v-model="dataForm.charm" class="w-100" :max-length="255" autocomplete="off" disabled />
+              <a-input v-model="dataForm.charm" class="w-100" :max-length="255" autocomplete="off" allow-clear disabled />
             </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              v-for="(item,index) in dataForm.permissions" :key="item.key"
+              ref="permissions"
+              :prop="'permissions['+index+'].target'"
+              :rules=" { required: false, message: '目标地址不能为空', whitespace:true, trigger: ['change', 'blur'] }"
+              :label="index === 0? '目标地址':''">
+              <a-input-group compact :style="{width: dataForm.permissions.length>1?'95%':'100%'}">
+                <a-input
+                  v-model="item.target"
+                  class="w-50"
+                  :max-length="255" autocomplete="off" allow-clear
+                  @blur="() => {$refs['permissions'][index].onFieldBlur()}"
+                  @change="(e)=>{
+                    $refs['permissions'][index].onFieldChange();
+                    target2Charm(e,item.key)
+                  }" />
+                <a-input v-model="item.charm" class="w-50" disabled />
+              </a-input-group>
+              <a-icon v-if="dataForm.permissions.length>1" style="width: 5%" class="pointer" type="minus-circle-o" @click="delPermissions(item.key)" />
+            </a-form-model-item>
+            <a-button type="dashed" class="w-100" @click="addPermissions">
+              <a-icon type="plus" /> 添加权限
+            </a-button>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
@@ -384,6 +409,27 @@ export default {
       this.visible = true
     },
     /**
+     * 添加权限行操作
+     * @date 2021年3月17日10:21:04
+     * @author lyc
+     */
+    addPermissions() {
+      this.dataForm.permissions.push({
+        key: new Date().getTime(),
+        target: undefined,
+        charm: undefined
+      })
+    },
+    /**
+     * 删除权限行操作
+     * @date 2021年3月17日10:21:04
+     * @author lyc
+     */
+    delPermissions(key) {
+      const index = this.dataForm.permissions.findIndex((item) => item.key === key)
+      this.dataForm.permissions.splice(index, 1)
+    },
+    /**
      * 编辑权限操作
      * @date 2021年3月17日10:21:04
      * @author lyc
@@ -391,7 +437,19 @@ export default {
     edit(record) {
       this.title = '编辑'
       getOne(record.id).then(res => {
-        this.dataForm = res.data || []
+        const data = res.data || {}
+        if (!data.permissions || data.permissions.length === 0) {
+          data.permissions = [
+            {
+              target: undefined,
+              charm: undefined
+            }
+          ]
+        }
+        this.dataForm = data
+        this.dataForm.permissions.map(item => {
+          item.key = item.id || new Date().getTime()
+        })
       }).done().finally(() => {
         this.visible = true
       })
@@ -421,9 +479,13 @@ export default {
     handleOk() {
       this.$refs['ruleForm'].validate(valid => {
         if (!valid) return
+        const dataForm = cloneDeep(this.dataForm)
         this.confirmLoading = true
-        const type = this.dataForm.type
-        save(this.dataForm).then(() => {
+        const type = dataForm.type
+        dataForm.permissions = dataForm.permissions.splice().filter(item => {
+          return item.target && item.charm
+        })
+        save(dataForm).then(() => {
           this.$message.success('保存成功!')
           if (type === 'sys') {
             this.loadSys()
@@ -462,7 +524,7 @@ export default {
      * @date 2021年3月17日10:21:04
      * @author lyc
      */
-    target2Charm() {
+    mainTarget2Charm() {
       let uri = cloneDeep(this.dataForm.target)
       if (!uri) {
         uri = ''
@@ -471,6 +533,23 @@ export default {
         uri = uri.substring(1)
       }
       this.dataForm.charm = uri.replace(/\//g, ':')
+    },
+    /**
+     * 将target转成通配符
+     * @date 2021年3月17日10:21:04
+     * @author lyc
+     */
+    target2Charm(e, key) {
+      const value = e.target.value
+      let uri = cloneDeep(value)
+      if (!uri) {
+        uri = ''
+      }
+      if (uri.startsWith('/')) {
+        uri = uri.substring(1)
+      }
+      const index = this.dataForm.permissions.findIndex((item) => item.key === key)
+      this.dataForm.permissions[index].charm = uri.replace(/\//g, ':')
     }
   }
 }
