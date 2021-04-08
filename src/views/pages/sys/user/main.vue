@@ -17,10 +17,10 @@
       @search="onSearch"
     >
       <template slot="btns">
-        <a-button type="primary" @click="add">
+        <a-button v-if="$hasp('sys-user-add')" type="primary" @click="add">
           <a-icon type="plus" />新建
         </a-button>
-        <a-popconfirm title="是否确认删除选中的数据?" :disabled="selectedRows && selectedRows.length===0" @confirm="delSelectedRows">
+        <a-popconfirm v-if="$hasp('sys-user-del')" title="是否确认删除选中的数据?" :disabled="selectedRows && selectedRows.length===0" @confirm="delSelectedRows">
           <a-button>
             <a-icon type="delete" />删除
           </a-button>
@@ -28,17 +28,17 @@
       </template>
       <a-avatar slot="imgUrl" slot-scope="{text}" :src="text" icon="user" />
       <div slot="action" slot-scope="{record}">
-        <a-tooltip title="分配角色">
+        <a-tooltip v-if="$hasp('sys-user-configRole')" title="分配角色">
           <a class="mr-1" @click="showRoles(record)">
             <a-icon type="apartment" />
           </a>
         </a-tooltip>
-        <a-tooltip title="编辑">
+        <a-tooltip v-if="$hasp('sys-user-edit')" title="编辑">
           <a class="mr-1" @click="edit(record)">
             <a-icon type="edit" />
           </a>
         </a-tooltip>
-        <a-popconfirm title="是否确认删除?" @confirm="()=>deleteRecord(record.id)">
+        <a-popconfirm v-if="$hasp('sys-user-del')" title="是否确认删除?" @confirm="()=>deleteRecord(record.id)">
           <a-tooltip title="删除">
             <a>
               <a-icon type="delete" />
@@ -163,7 +163,7 @@ export default {
         const result = data.result || []
         this.params.page = BoxPage(data)
         this.dataSource = result
-      }).done().finally(() => {
+      }).over().finally(() => {
         setTimeout(() => {
           this.loading = false
         }, 0)
@@ -208,7 +208,7 @@ export default {
       this.title = '编辑'
       getOne(record.id).then(res => {
         this.dataForm = res.data
-      }).done().finally(() => {
+      }).over().finally(() => {
         this.visible = true
       })
     },
@@ -220,7 +220,7 @@ export default {
     deleteRecord(id) {
       del(id).then(() => {
         this.queryPage()
-      }).done()
+      }).over()
     },
     /**
      * 删除选择行
@@ -254,7 +254,7 @@ export default {
         save(this.dataForm).then(res => {
           this.$message.success('保存成功!')
           this.queryPage()
-        }).done().finally(() => {
+        }).over().finally(() => {
           this.visible = false
           this.confirmLoading = false
           this.resetForm('ruleForm')
@@ -284,7 +284,7 @@ export default {
       }).then(res => {
         const data = res.data || {}
         this.role = { roleId: data.id, userId: record.id }
-      }).done()
+      }).over()
     },
     /**
      * 选择角色
@@ -305,7 +305,7 @@ export default {
       }
       saveUserRole(this.role).then(() => {
         this.$message.success('保存成功')
-      }).done().finally(() => {
+      }).over().finally(() => {
         this.roleHandleCancel()
       })
     },

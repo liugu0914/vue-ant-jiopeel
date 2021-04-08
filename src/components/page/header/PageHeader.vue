@@ -1,18 +1,19 @@
 <template>
   <div :class="['page-header', layout, pageWidth]">
     <div class="page-header-wide">
-      <div class="breadcrumb">
+      <!-- <div class="breadcrumb">
         <a-breadcrumb>
           <a-breadcrumb-item v-for="(item, index) in breadcrumb" :key="index">
             <span>{{ item }}</span>
           </a-breadcrumb-item>
         </a-breadcrumb>
-      </div>
+      </div> -->
       <div class="detail">
         <div class="main">
           <div class="row">
             <h1 v-if="showPageTitle && title" class="title">
-              {{ title }}
+              {{ '工作台' }}
+              <!-- {{ title }} -->
             </h1>
             <div class="action">
               <slot name="action" />

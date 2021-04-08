@@ -11,7 +11,7 @@ const routesConfig = [
   'exp404',
   {
     path: '/',
-    redirect: '/main'
+    redirect: '/dashboard'
   },
   {
     path: '*',

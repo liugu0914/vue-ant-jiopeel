@@ -7,7 +7,7 @@
         <h1>{{ systemName }}</h1>
       </router-link>
     </div> -->
-      <router-link to="/dashboard/workplace">
+      <router-link to="/">
         <div class="admin-side-menu-header">
           <div :class="['logo', theme]" />
           <h1 v-if="!collapsed">

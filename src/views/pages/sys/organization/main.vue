@@ -128,7 +128,7 @@ export default {
         const result = data.result || []
         this.params.page = BoxPage(data)
         this.dataSource = result
-      }).done().finally(() => {
+      }).over().finally(() => {
         setTimeout(() => {
           this.loading = false
         }, 0)
@@ -171,7 +171,7 @@ export default {
       this.title = '编辑'
       getOne(record.id).then(res => {
         this.dataForm = res.data
-      }).done().finally(() => {
+      }).over().finally(() => {
         this.visible = true
       })
     },
@@ -183,7 +183,7 @@ export default {
     deleteRecord(id) {
       del(id).then(() => {
         this.queryPage()
-      }).done()
+      }).over()
     },
     /**
      * 删除选择行
@@ -217,7 +217,7 @@ export default {
         save(this.dataForm).then(res => {
           this.$message.success('保存成功!')
           this.queryPage()
-        }).done().finally(() => {
+        }).over().finally(() => {
           this.visible = false
           this.confirmLoading = false
           this.resetForm('ruleForm')

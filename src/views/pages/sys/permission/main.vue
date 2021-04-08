@@ -136,8 +136,8 @@
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: true, message: '主地址不能为空', whitespace:true, trigger: ['change', 'blur'] }"
-              label="主地址" prop="target">
+              :rules=" { required: true, message: '主地址/权限别称不能为空', whitespace:true, trigger: ['change', 'blur'] }"
+              label="主地址/权限别称" prop="target">
               <a-input v-model="dataForm.target" class="w-100" :max-length="255" autocomplete="off" allow-clear @change="mainTarget2Charm" />
             </a-form-model-item>
           </a-col>
@@ -230,7 +230,7 @@ export default {
       // 查询权限数据
       this.loadSys()
       this.loadMenu()
-    }).done()
+    }).over()
   },
   methods: {
     switchApp(key) {
@@ -269,7 +269,7 @@ export default {
       getFuc(this.menuId).then(res => {
         const data = res.data || []
         this.fucs = data
-      }).done()
+      }).over()
     },
     /**
      * 禁用父节点，组装tree需要的数据
@@ -298,7 +298,7 @@ export default {
     loadSys() {
       getSys(this.appId).then((res) => {
         this.syses = res.data || []
-      }).done()
+      }).over()
     },
     /**
      * 加载已配置的菜单
@@ -327,7 +327,7 @@ export default {
           this.fucs = [] // 功能级别权限
           this.menuId = 0 // 选中的菜单Id
         }
-      }).done()
+      }).over()
     },
     /**
      * 打开菜单配置
@@ -340,7 +340,7 @@ export default {
         this.menuConfigTrees = menus
         this.checkedKeys = this.getCheckedNode(menus)
         console.log(this.checkedKeys)
-      }).done().finally(() => {
+      }).over().finally(() => {
         this.menuVisible = true
       })
     },
@@ -379,7 +379,7 @@ export default {
         this.$message.success('保存成功!')
         // 刷新菜单
         this.loadMenu()
-      }).done().finally(() => {
+      }).over().finally(() => {
         this.menuVisible = false
         this.menuConfirmLoading = false
       })
@@ -450,7 +450,7 @@ export default {
         this.dataForm.permissions.map(item => {
           item.key = item.id || new Date().getTime()
         })
-      }).done().finally(() => {
+      }).over().finally(() => {
         this.visible = true
       })
     },
@@ -469,7 +469,7 @@ export default {
         if (type === 'fuc') {
           this.getFucBymenuId()
         }
-      }).done()
+      }).over()
     },
     /**
      * 保存
@@ -482,7 +482,7 @@ export default {
         const dataForm = cloneDeep(this.dataForm)
         this.confirmLoading = true
         const type = dataForm.type
-        dataForm.permissions = dataForm.permissions.splice().filter(item => {
+        dataForm.permissions = dataForm.permissions.slice().filter(item => {
           return item.target && item.charm
         })
         save(dataForm).then(() => {
@@ -493,7 +493,7 @@ export default {
           if (type === 'fuc') {
             this.getFucBymenuId()
           }
-        }).done().finally(() => {
+        }).over().finally(() => {
           this.visible = false
           this.confirmLoading = false
           this.resetForm('ruleForm')

@@ -184,7 +184,7 @@ export default {
         if (res.length > 0) {
           this.appId = res[0].value
         }
-      }).done()
+      }).over()
     },
     /**
      * 获取配置信息集合
@@ -201,7 +201,7 @@ export default {
         this.config.sysPes = sys.filter(item => pes.includes(item.id)).map(item => item.id)
         this.config.menuPes = this.getHasPermission(menus, pes)
         console.log(this.config)
-      }).done()
+      }).over()
     },
     /**
      * 分页查询
@@ -216,7 +216,7 @@ export default {
         const result = data.result || []
         this.params.page = BoxPage(data)
         this.dataSource = result
-      }).done().finally(() => {
+      }).over().finally(() => {
         setTimeout(() => {
           this.loading = false
         }, 0)
@@ -259,7 +259,7 @@ export default {
       this.title = '编辑'
       getOne(record.id).then(res => {
         this.dataForm = res.data
-      }).done().finally(() => {
+      }).over().finally(() => {
         this.visible = true
       })
     },
@@ -290,7 +290,7 @@ export default {
     deleteRecord(id) {
       del(id).then(() => {
         this.queryPage()
-      }).done()
+      }).over()
     },
     /**
      * 删除选择行
@@ -325,7 +325,7 @@ export default {
         save(this.dataForm).then(res => {
           this.$message.success('保存成功!')
           this.queryPage()
-        }).done().finally(() => {
+        }).over().finally(() => {
           this.visible = false
           this.confirmLoading = false
           this.resetForm('ruleForm')
@@ -358,7 +358,7 @@ export default {
       console.log('params : ', params)
       savePes(params).then(() => {
         this.$message.success('保存成功!')
-      }).done().finally(() => {
+      }).over().finally(() => {
         this.pesHandleCancel()
       })
     },

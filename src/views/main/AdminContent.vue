@@ -23,6 +23,7 @@
 import AKeepAlive from '@/components/cache/AKeepAlive'
 import PageToggleTransition from '@/components/transition/PageToggleTransition'
 import TabsWice from '@/views/main/TabsWice'
+import dashboard from '@/router/map/dashboard'
 import { mapState } from 'vuex'
 
 export default {
@@ -42,6 +43,9 @@ export default {
   },
   created() {
     this.loadCachedTabs()
+    if (!this.pageList || this.pageList.length === 0 || this.pageList.findIndex(item => item.keyPath === dashboard.path) === -1) {
+      this.pageList.push(this.createPage(dashboard))
+    }
     const route = this.$route
     const { meta = {}} = route
     const key = meta.key || route.fullPath
@@ -199,7 +203,10 @@ export default {
      */
     refreshPageListener(event) {
       const { pageKey } = event.detail
-      this.refresh(pageKey)
+      const index = this.pageList.findIndex(item => item.fullPath === pageKey)
+      const page = this.pageList[index]
+      console.log(page)
+      this.refresh(page)
     },
     /**
      * 页面 unload 事件监听器，添加页签到 session 缓存，用于刷新时保留页签
@@ -215,7 +222,7 @@ export default {
       const { meta = {}} = route
       return {
         key: meta.key || route.fullPath,
-        keyPath: route.matched[route.matched.length - 1].path,
+        keyPath: route.matched ? route.matched[route.matched.length - 1].path : route.path,
         fullPath: route.fullPath,
         loading: false,
         title: meta.name,

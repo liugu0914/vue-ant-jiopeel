@@ -25,7 +25,7 @@ export default {
       saveUserData(data)
       this.message = '授权认证成功,正在跳转...'
       this.$nextTick(() => {
-        this.$router.push('/main')
+        this.$router.push('/')
       })
     }).catch(res => {
       this.message = '授权认证失败,正在返回登录界面...'

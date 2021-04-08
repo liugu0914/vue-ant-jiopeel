@@ -154,8 +154,12 @@ export default {
           changeOrganization(item.id).then(res => {
             const { data } = res
             saveUserInfo(data)
+
             this.$closeAllPage()
-            this.$router.push('/main')
+            this.$router.push('/')
+            setTimeout(() => {
+              window.location.href = process.env.VUE_APP_PUBLICPATH
+            }, 100)
           }).done().finally(() => {
             Promise.resolve()
           })

@@ -326,7 +326,7 @@ export default {
           saveUserData(data)
           this.$message.success('登录成功')
           this.$nextTick(() => {
-            this.$router.push('/main')
+            this.$router.push('/')
           })
         }).done().finally(() => {
           setTimeout(() => {

@@ -2,6 +2,7 @@ import routerMap from '@/router/map'
 // import { mergeI18nFromRoutes } from '@/utils/i18n'
 import VueRouter from 'vue-router'
 import deepMerge from 'deepmerge'
+import dashboard from '@/router/map/dashboard'
 import baseRouter from '@/router/config/config.base'
 
 // 应用配置
@@ -100,9 +101,29 @@ function loadRoutes(menus) {
  * @returns {Route[]}
  */
 function addMainRoutes(target, source) {
+  const childrenRouter = []
+  childrenRouter.push(dashboard) // 默认的工作台
+  source.forEach(item => {
+    const { path, meta = {}} = item
+    if (item.children && item.children.length > 0) {
+      item.children.forEach(san => {
+        san.path = path + san.path
+        meta.breadcrumb.push({ id: san.path, name: san.name })
+        meta.key = san.path
+        meta.name = san.name
+        san.meta = meta
+      })
+      childrenRouter.push(...item.children)
+      item.children = undefined
+    }
+  })
+  childrenRouter.push(...source)
+  console.log(childrenRouter)
   const routesMap = {}
   target.forEach(item => {
-    if (item.path === '/main') { item.children = source }
+    if (item.path === '/main') {
+      item.children = childrenRouter
+    }
     routesMap[item.path] = item
   })
   return Object.values(routesMap)

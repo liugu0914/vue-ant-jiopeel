@@ -182,11 +182,10 @@ export default {
      */
     queryPage() {
       this.loading = true
-      this.params.appId = this.appId
-      getListPage(this.params).then(res => {
+      getListPage({ appId: this.appId, ...this.params }).then(res => {
         const { data } = res
         this.dataSource = data || []
-      }).done().finally(() => {
+      }).over().finally(() => {
         setTimeout(() => {
           this.loading = false
         }, 0)
@@ -198,7 +197,7 @@ export default {
      * @author lyc
      */
     async getMenus() {
-      this.superMenus = await getSuperMenus().then(res => res.data || []).done()
+      this.superMenus = await getSuperMenus().then(res => res.data || []).over()
     },
     /**
      * 搜索
@@ -234,7 +233,7 @@ export default {
         const { data } = res
         data.superId = data.superId === '0' ? undefined : data.superId
         this.dataForm = data
-      }).done().finally(() => {
+      }).over().finally(() => {
         this.visible = true
       })
     },
@@ -246,7 +245,7 @@ export default {
     deleteRecord(id, appId) {
       del(id, appId).then(() => {
         this.queryPage()
-      }).done()
+      }).over()
     },
     /**
      * 删除选择行
@@ -281,7 +280,7 @@ export default {
         save(this.dataForm).then(() => {
           this.$message.success('保存成功!')
           this.queryPage()
-        }).done().finally(() => {
+        }).over().finally(() => {
           this.visible = false
           this.confirmLoading = false
           this.resetForm('ruleForm')

@@ -1,7 +1,6 @@
 // import Cookie from 'js-cookie'
 import Lockr from 'lockr'
 import qs from 'qs'
-import { isObject } from '@/utils/util'
 // import { whiteList } from '@/router'
 
 
@@ -66,17 +65,21 @@ const resp401 = {
     const { Authorization } = config
     const { router, message } = options
     if (response.status == 401) {
-      const msg = '登录超时,请重新登录'
+      let msg = '登录超时,请重新登录'
+      if (response.data && response.data.message) {
+        msg = response.data.message
+      }
       if (Lockr.get(Authorization)) {
         Lockr.rm(Authorization)
       }
       router.push('/login')
       message.warn(msg)
-      return Promise.reject(msg)
+      return error
     }
-    return error
+    return Promise.reject(error)
   }
 }
+
 
 /**
  * 500 处理 服务内部错误
@@ -89,17 +92,14 @@ const resp500 = {
    * @returns {*}
    */
   onRejected(error, options) {
-    if (!isObject(error)) {
-      return error
-    }
     const { response } = error
     const { message } = options
     if (response.status == 500) {
       const msg = '服务器连接错误'
       message.error(msg)
-      return Promise.reject(msg)
+      return error
     }
-    return error
+    return Promise.reject(error)
   }
 }
 

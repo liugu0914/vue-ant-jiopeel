@@ -2,14 +2,8 @@
 const common = {
   main: {
     path: '/main',
-    name: '工作台',
-    component: () => import('@/views/main/admin.vue'),
-    meta: {
-      page: {
-        closable: false
-      }
-      // requiresAuth: false
-    }
+    name: 'main',
+    component: () => import('@/views/main/admin.vue')
   },
   login: {
     path: '/login',
