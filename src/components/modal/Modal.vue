@@ -29,7 +29,7 @@ export default {
   name: 'Modal',
   props: {
     type: {
-      type: [String],
+      type: String,
       default: 'IDrawer' // IDrawer IModal
     },
     value: {

@@ -5,7 +5,7 @@
  */
 import { request, METHOD } from '@/utils/request.js'
 
-const prefix = '/admin/permission'
+const prefix = '/sys/admin/permission'
 
 /**
  * 获取系统级别权限

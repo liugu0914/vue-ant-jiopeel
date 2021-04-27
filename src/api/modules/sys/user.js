@@ -11,7 +11,7 @@ import { request, METHOD } from '@/utils/request.js'
  * @param { param: {需要查询的数据} , page: { pageNum: 第几页, pageSize: 每页大小} } params
  */
 export async function getListPage(params) {
-  return await request('/admin/user/getListPage', METHOD.POST, params)
+  return await request('/sys/admin/user/getListPage', METHOD.POST, params)
 }
 
 
@@ -20,7 +20,7 @@ export async function getListPage(params) {
 
  */
 export async function getOne(id) {
-  return await request(`/admin/user/getInfoById`, METHOD.GET, { id })
+  return await request(`/sys/admin/user/getInfoById`, METHOD.GET, { id })
 }
 
 /**
@@ -28,7 +28,7 @@ export async function getOne(id) {
 
  */
 export async function save(params) {
-  return await request('/admin/user/save', METHOD.POST, params)
+  return await request('/sys/admin/user/save', METHOD.POST, params)
 }
 
 
@@ -36,5 +36,5 @@ export async function save(params) {
  * 删除数据
  */
 export async function del(ids) {
-  return await request(`/admin/user/del`, METHOD.GET, { ids })
+  return await request(`/sys/admin/user/del`, METHOD.GET, { ids })
 }

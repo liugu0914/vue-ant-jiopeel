@@ -246,7 +246,7 @@ export default {
       ACTIVE_TYPE,
       valid: true,
       see: false,
-      title: '欢迎来到Jiopeel，请登录！',
+      title: '宿迁市水环境综合整治信息化数据平台',
       activeType: ACTIVE_TYPE.Login,
       loading: false,
       disabled: false,

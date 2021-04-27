@@ -6,7 +6,7 @@
 import { request, METHOD } from '@/utils/request.js'
 
 
-const prefix = '/admin/role'
+const prefix = '/sys/admin/role'
 
 /**
  * 获取分页数据

@@ -10,20 +10,20 @@ class Oauth {
    * 获取授权地址
    */
   static async getAuthUrl(grantType) {
-    return await request('/oauth', METHOD.GET, { grantType })
+    return await request('/sys/oauth', METHOD.GET, { grantType })
   }
   /**
    * 后端认证
    */
   static async authRedirect(grantType, code) {
-    return await request(`/oauth/redirect/${grantType}`, METHOD.GET, { code })
+    return await request(`/sys/oauth/redirect/${grantType}`, METHOD.GET, { code })
   }
   /**
    * 登录
    */
   static async login(data) {
     return await request({
-      url: '/login',
+      url: '/sys/login',
       method: METHOD.POST,
       data,
       headers: { 'Content-Type': CONTENT_TYPE.FORM }
@@ -34,7 +34,7 @@ class Oauth {
    */
   static async register(data) {
     return await request({
-      url: '/register',
+      url: '/sys/register',
       method: METHOD.POST,
       data,
       headers: { 'Content-Type': CONTENT_TYPE.FORM }
@@ -45,7 +45,7 @@ class Oauth {
    */
   static async resetPassword(data) {
     return await request({
-      url: '/resetPassword',
+      url: '/sys/resetPassword',
       method: METHOD.POST,
       data,
       headers: { 'Content-Type': CONTENT_TYPE.FORM }
@@ -55,7 +55,7 @@ class Oauth {
    * 退出
    */
   static async logout() {
-    return await request('/logout', METHOD.GET)
+    return await request('/sys/logout', METHOD.GET)
   }
 }
 

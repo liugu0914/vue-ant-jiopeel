@@ -17,7 +17,9 @@ const reqCommon = {
    */
   onFulfilled(config, options) {
     const { Authorization } = config
-    config.headers.common[config.Authorization] = Lockr.get(Authorization)
+    if (Authorization && Lockr.get(Authorization)) {
+      config.headers.common[config.Authorization] = Lockr.get(Authorization)
+    }
     if (config.method === 'get') {
       config.params = { ...(config.data || {}), ...config.params }
       return config
