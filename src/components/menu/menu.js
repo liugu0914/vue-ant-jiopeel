@@ -151,7 +151,7 @@ export default {
         [
           h(tag, config,
             [
-              this.showItemIcon ? this.renderIcon(h, menu.icon ? menu.icon : 'none', menu.id) : null,
+              this.showItemIcon || menu.parent === '1' ? this.renderIcon(h, menu.icon ? menu.icon : 'none', menu.id) : null,
               menu.name
               // this.$t(getI18nKey(menu.fullPath))
             ]
