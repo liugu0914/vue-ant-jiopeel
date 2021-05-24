@@ -4,7 +4,7 @@ module.exports = {
     color: '#1492ff',
     mode: 'light',
   },
-  multiPage: true,
+  multiPage: false,
   asyncRoutes: true,       //异步加载路由，true:开启，false:不开启
   animate: {
     disabled: false,                    //禁用动画，true:禁用，false:启用

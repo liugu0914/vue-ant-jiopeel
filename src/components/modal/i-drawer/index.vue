@@ -11,10 +11,13 @@
     v-bind="{...$options.propsData}"
     @close="cancel"
   >
-    <div v-for="(slot,index) in Object.keys($slots)" :key="index" :slot="slot">
+    <div
+      v-for="(slot,index) in Object.keys($slots)" :key="index" :slot="slot" class="addForm beauty-scroll"
+      :style="{height: footer !== null ? `calc(100vh - 55px - 52px - 48px - ${top.toString().indexOf('px') == -1 ? top + 'px' : top})` : '100%'}"
+    >
       <slot :name="slot" />
     </div>
-    <div class="drawer-btn-group">
+    <div v-if="footer !== null" class="drawer-btn-group">
       <a-button :style="{ marginRight: '8px' }" @click="cancel">
         {{ cancelText }}
       </a-button>
@@ -41,16 +44,23 @@ export default {
       default: 480
     },
     // 取消按钮的文字
-    cancelText: String,
+    cancelText: {
+      type: String,
+      default: '取消'
+    },
     // 确认按钮文字
-    okText: String,
+    okText: {
+      type: String,
+      default: '确定'
+    },
     // 抽屉位置
     placement: String,
     // 关闭时销毁弹出层内子元素
     destroy: Boolean,
     // 弹出层离顶部距离
     top: [String, Number],
-    confirmLoading: Boolean
+    confirmLoading: Boolean,
+    footer: Boolean
   },
   methods: {
     // 点击遮罩层、x或取消按钮时触发
@@ -81,13 +91,22 @@ export default {
 }
 </script>
 <style scoped lang="less">
+/deep/ .ant-drawer-body {
+  padding: 24px 0;
+}
+
+.addForm {
+  overflow-y: auto;
+  padding: 0 24px;
+}
+
 .drawer-btn-group{
     // position: absolute;
     // right: 0;
     // bottom: 0;
     // border-top: 1px solid #f0f0f0;
     width: 100%;
-    padding: 10px 16px;
+    padding: 10px 24px;
     background:  @component-background;
     text-align: right;
     z-index: 1;

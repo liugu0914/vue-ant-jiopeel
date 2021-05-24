@@ -1,6 +1,13 @@
 <template>
   <div class="admin-drawer-body">
-    <a-layout-sider v-model="collapsed" :theme="sideTheme" :class="['admin-side-menu', 'beauty-scroll']" width="220" :collapsible="collapsible" :trigger="null">
+    <a-layout-sider
+      v-model="collapsed"
+      :theme="sideTheme"
+      :class="['admin-side-menu', 'beauty-scroll']"
+      width="220"
+      :collapsible="collapsible"
+      :trigger="null"
+    >
       <!-- <div :class="['logo', theme]">
       <router-link to="/dashboard/workplace">
         <img src="@/assets/img/logo.png">
@@ -15,7 +22,16 @@
           </h1>
         </div>
       </router-link>
-      <i-menu :theme="theme" :collapsed="collapsed" :options="menuData" :show-item-icon="false" class="menu" @select="onSelect" />
+      <i-menu
+        :theme="theme"
+        :collapsed="collapsed"
+        :options="menuData"
+        :show-item-icon="false"
+        :open-keys="openKeys"
+        class="menu"
+        @select="onSelect"
+        @openChange="openChange"
+      />
     </a-layout-sider>
   </div>
 </template>
@@ -47,6 +63,11 @@ export default {
       default: 'light'
     }
   },
+  data() {
+    return {
+      openKeys: []
+    }
+  },
   computed: {
     sideTheme() {
       return this.theme == 'light' ? this.theme : 'dark'
@@ -56,11 +77,19 @@ export default {
   methods: {
     onSelect(obj) {
       this.$emit('menuSelect', obj)
+    },
+    openChange(openKeys) {
+      this.openKeys = openKeys
+      // console.log(openKeys)
+      const arr = this.menuData.map(item => item.id)
+      const lastKey = openKeys[openKeys.length - 1]
+      // 判断点击的是否是一级菜单
+      if (arr.indexOf(lastKey) !== -1) return (this.openKeys = [lastKey])
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-@import "index";
+@import 'index';
 </style>

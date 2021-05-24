@@ -36,6 +36,14 @@ function setRoles(roles) {
 }
 
 /**
+ * 保存token信息
+ * @param {*} token
+ */
+function setToken(token) {
+  store.commit('account/setToken', token)
+}
+
+/**
  * 保存角色信息
  * @param {*} roles
  */
@@ -54,6 +62,7 @@ export function saveUserInfo(userInfo) {
 export function saveUserData(data) {
   const { Authorization, user: userInfo } = data
   setAuthorization(Authorization)
+  setToken(Authorization.access_token)
   saveUserInfo(userInfo)
   // 登录成功移除tabs
   sessionStorage.removeItem(process.env.VUE_APP_TBAS_KEY)

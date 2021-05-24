@@ -1,8 +1,12 @@
 const path = require('path')
+const webpack = require('webpack')
 const ThemeColorReplacer = require('webpack-theme-color-replacer')
 const { getThemeColors, modifyVars } = require('./src/utils/themeUtil')
 const { resolveCss } = require('./src/utils/theme-color-replacer-extend')
-const isProd = process.env.NODE_ENV === 'production'
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
+const isDev = process.env.NODE_ENV === 'development'
+
+const productionGzipExtensions = ['js', 'css']
 
 module.exports = {
 
@@ -13,7 +17,7 @@ module.exports = {
     }
   },
   configureWebpack: config => {
-    if (!isProd) {
+    if (isDev) {
       config.devtool = 'source-map'
     }
     config.entry.app = ['babel-polyfill', './src/main.js']
@@ -28,6 +32,33 @@ module.exports = {
         resolveCss
       })
     )
+    // Ignore all locale files of moment.js
+    config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
+    // 生产环境下将资源压缩成gzip格式
+    if (!isDev) {
+      // 压缩
+      config.plugins.push(new CompressionWebpackPlugin({
+        algorithm: 'gzip',
+        test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+        threshold: 10240,
+        minRatio: 0.8
+      }))
+    }
+  },
+  chainWebpack: (config) => {
+    if (!isDev) {
+      // 生产环境下关闭css压缩的 colormin 项，因为此项优化与主题色替换功能冲突
+      config.plugin('optimize-css')
+        .tap(args => {
+          args[0].cssnanoOptions.preset[1].colormin = false
+          return args
+        })
+      // 去除 console
+      config.optimization.minimizer('terser').tap((args) => {
+        args[0].terserOptions.compress.drop_console = true
+        return args
+      })
+    }
   },
   css: {
     loaderOptions: {
@@ -39,6 +70,7 @@ module.exports = {
       }
     }
   },
+  productionSourceMap: false,
   publicPath: process.env.VUE_APP_PUBLICPATH,
   outputDir: process.env.VUE_APP_OUTPUTDIR
 }

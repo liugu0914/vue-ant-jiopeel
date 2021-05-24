@@ -5,7 +5,7 @@
  -->
 <template>
   <a-card>
-    <a-tabs v-if="apps.length>1" v-model="appId" class="mb-2" @change="switchApp">
+    <a-tabs v-if="apps.length > 1" v-model="appId" class="mb-2" @change="switchApp">
       <a-tab-pane v-for="app in apps" :key="app.value" :tab="app.title" />
     </a-tabs>
     <!-- 表格 -->
@@ -22,16 +22,18 @@
         <a-button type="primary" @click="add()">
           <a-icon type="plus" />新建
         </a-button>
-        <a-popconfirm title="是否确认删除选中的数据?" :disabled="selectedRows && selectedRows.length===0" @confirm="delSelectedRows">
-          <a-button>
-            <a-icon type="delete" />删除
-          </a-button>
+        <a-popconfirm
+          title="是否确认删除选中的数据?"
+          :disabled="selectedRows && selectedRows.length === 0"
+          @confirm="delSelectedRows"
+        >
+          <a-button> <a-icon type="delete" />删除 </a-button>
         </a-popconfirm>
       </template>
-      <template slot="enable" slot-scope="{text}">
+      <template slot="enable" slot-scope="{ text }">
         <a-switch checked-children="是" disabled un-checked-children="否" :checked="text === '1'" />
       </template>
-      <div slot="action" slot-scope="{record}">
+      <div slot="action" slot-scope="{ record }">
         <a-tooltip v-if="record.parent === '1'" title="添加子菜单">
           <a class="mr-1" @click="add(record)">
             <a-icon type="plus" />
@@ -42,7 +44,7 @@
             <a-icon type="edit" />
           </a>
         </a-tooltip>
-        <a-popconfirm title="是否确认删除?" @confirm="()=>deleteRecord(record.id,record.appId)">
+        <a-popconfirm title="是否确认删除?" @confirm="() => deleteRecord(record.id, record.appId)">
           <a-tooltip title="删除">
             <a>
               <a-icon type="delete" />
@@ -55,65 +57,88 @@
     <modal
       v-model="visible"
       :confirm-loading="confirmLoading"
-      ok-text="确认" cancel-text="取消" :title="title"
+      ok-text="确认"
+      cancel-text="取消"
+      :title="title"
       @ok="handleOk"
-      @cancel="handleCancel">
+      @cancel="handleCancel"
+    >
       <a-form-model ref="ruleForm" :model="dataForm" layout="vertical">
         <a-row>
           <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '菜单名称不能为空', trigger: 'blur' }"
-              label="菜单名称" prop="name">
+              :rules="{ required: true, message: '菜单名称不能为空', trigger: 'blur' }"
+              label="菜单名称"
+              prop="name"
+            >
               <a-input v-model="dataForm.name" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '菜单图标不能为空', trigger: 'blur' }"
-              label="菜单图标" prop="icon">
+              :rules="{ required: true, message: '菜单图标不能为空', trigger: 'blur' }"
+              label="菜单图标"
+              prop="icon"
+            >
               <a-input v-model="dataForm.icon" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '是否为父级不能为空', trigger: 'blur' }"
-              label="是否为父级" prop="parent">
-              <a-switch checked-children="是" un-checked-children="否" :checked="dataForm.parent === '1'" @change="(checked)=>dataForm.parent =checked?'1':'0'" />
+              :rules="{ required: true, message: '是否为父级不能为空', trigger: 'blur' }"
+              label="是否为父级"
+              prop="parent"
+            >
+              <a-switch
+                checked-children="是"
+                un-checked-children="否"
+                :checked="dataForm.parent === '1'"
+                @change="checked => (dataForm.parent = checked ? '1' : '0')"
+              />
             </a-form-model-item>
           </a-col>
           <a-col v-if="dataForm.parent === '0'" :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '路由别称不能为空', trigger: 'blur' }"
-              label="路由别称" prop="router">
+              :rules="{ required: true, message: '路由别称不能为空', trigger: 'blur' }"
+              label="路由别称"
+              prop="router"
+            >
               <a-input v-model="dataForm.router" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: dataForm.parent === '0', message: '父级菜单不能为空', trigger: 'blur' }"
-              label="父级菜单" prop="superId">
+              :rules="{ required: false, message: '父级菜单不能为空', trigger: 'blur' }"
+              label="父级菜单"
+              prop="superId"
+            >
               <a-tree-select
                 v-model="dataForm.superId"
                 class="w-100"
                 allow-clear
                 :tree-data="superMenus"
                 tree-default-expand-all
-                :replace-fields="{children:'children', title:'name', key:'id', value: 'id' }"
+                :replace-fields="{ children: 'children', title: 'name', key: 'id', value: 'id' }"
               />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '菜单顺序不能为空', trigger: 'blur' }"
-              label="菜单顺序" prop="orderNum">
+              :rules="{ required: true, message: '菜单顺序不能为空', trigger: 'blur' }"
+              label="菜单顺序"
+              prop="orderNum"
+            >
               <a-input-number v-model="dataForm.orderNum" class="w-100" :min="1" :max="100000" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item
-              :rules=" { required: true}"
-              label="是否可用" prop="enable">
-              <a-switch checked-children="是" un-checked-children="否" :checked="dataForm.enable === '1'" @change="(checked)=>dataForm.enable =checked?'1':'0'" />
+            <a-form-model-item :rules="{ required: true }" label="是否可用" prop="enable">
+              <a-switch
+                checked-children="是"
+                un-checked-children="否"
+                :checked="dataForm.enable === '1'"
+                @change="checked => (dataForm.enable = checked ? '1' : '0')"
+              />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -158,8 +183,11 @@ export default {
     })
   },
   watch: {
-    visible(flag) { // 弹窗显示需要加载的数据
-      if (!flag) { return }
+    visible(flag) {
+      // 弹窗显示需要加载的数据
+      if (!flag) {
+        return
+      }
       if (this.superMenus && this.superMenus.length === 0) {
         this.getMenus()
       }
@@ -182,14 +210,17 @@ export default {
      */
     queryPage() {
       this.loading = true
-      getListPage({ appId: this.appId, ...this.params }).then(res => {
-        const { data } = res
-        this.dataSource = data || []
-      }).over().finally(() => {
-        setTimeout(() => {
-          this.loading = false
-        }, 0)
-      })
+      getListPage({ appId: this.appId, ...this.params })
+        .then(res => {
+          const { data } = res
+          this.dataSource = data || []
+        })
+        .over()
+        .finally(() => {
+          setTimeout(() => {
+            this.loading = false
+          }, 0)
+        })
     },
     /**
      * 获取父级菜单列表数据
@@ -197,7 +228,9 @@ export default {
      * @author lyc
      */
     async getMenus() {
-      this.superMenus = await getSuperMenus().then(res => res.data || []).over()
+      this.superMenus = await getSuperMenus()
+        .then(res => res.data || [])
+        .over()
     },
     /**
      * 搜索
@@ -217,7 +250,8 @@ export default {
     add(record) {
       this.title = '新增'
       this.visible = true
-      if (record) { // 添加子菜单
+      if (record) {
+        // 添加子菜单
         this.dataForm.parent = '0'
         this.dataForm.superId = record.id
       }
@@ -229,13 +263,16 @@ export default {
      */
     edit(record) {
       this.title = '编辑'
-      getOne(record.id).then(res => {
-        const { data } = res
-        data.superId = data.superId === '0' ? undefined : data.superId
-        this.dataForm = data
-      }).over().finally(() => {
-        this.visible = true
-      })
+      getOne(record.id)
+        .then(res => {
+          const { data } = res
+          data.superId = data.superId === '0' ? undefined : data.superId
+          this.dataForm = data
+        })
+        .over()
+        .finally(() => {
+          this.visible = true
+        })
     },
     /**
      * 删除
@@ -243,9 +280,11 @@ export default {
      * @author lyc
      */
     deleteRecord(id, appId) {
-      del(id, appId).then(() => {
-        this.queryPage()
-      }).over()
+      del(id, appId)
+        .then(() => {
+          this.queryPage()
+        })
+        .over()
     },
     /**
      * 删除选择行
@@ -277,14 +316,17 @@ export default {
         if (!valid) return
         this.confirmLoading = true
         this.dataForm.appId = this.appId
-        save(this.dataForm).then(() => {
-          this.$message.success('保存成功!')
-          this.queryPage()
-        }).over().finally(() => {
-          this.visible = false
-          this.confirmLoading = false
-          this.resetForm('ruleForm')
-        })
+        save(this.dataForm)
+          .then(() => {
+            this.$message.success('保存成功!')
+            this.queryPage()
+            this.visible = false
+            this.resetForm('ruleForm')
+          })
+          .over()
+          .finally(() => {
+            this.confirmLoading = false
+          })
       })
     },
     /**

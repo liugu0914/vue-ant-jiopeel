@@ -1,18 +1,21 @@
 <template>
   <a-layout-content class="admin-content">
     <tabs-wice
+      v-if="multiPage"
       ref="tabs"
       :active="active"
       :page-list="pageList"
       @change="changePage"
       @close="remove"
       @refresh="refresh" />
-    <div ref="contentView" :class="['admin-content-view','beauty-scroll' ,fixedHeader?'fixed':'']">
+    <div v-else style="height:1px" />
+    <div ref="contentView" :class="['admin-content-view','beauty-scroll' ,multiPage?'multiPage':'',fixedHeader?'fixed':'']">
       <div class="admin-content-body">
         <page-toggle-transition :disabled="animate.disabled" :animate="animate.name" :direction="animate.direction">
-          <a-keep-alive v-model="clearCaches">
+          <a-keep-alive v-if="multiPage" v-model="clearCaches">
             <router-view v-if="!refreshing" ref="tabContent" :key="getKey()" />
           </a-keep-alive>
+          <router-view v-else ref="tabContent" />
         </page-toggle-transition>
       </div>
     </div>
@@ -74,7 +77,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('setting', ['fixedHeader', 'animate'])
+    ...mapState('setting', ['multiPage', 'fixedHeader', 'animate'])
   },
   methods: {
     /**
@@ -263,8 +266,11 @@ export default {
   .admin-content-view {
     overflow-y: auto;
     overflow-x: hidden;
-    &.fixed{
+    height: calc(100% - 1px);
+    &.multiPage{
       height: calc(100% - 45px);
+    }
+    &.fixed{
       max-height: 100%;
     }
 

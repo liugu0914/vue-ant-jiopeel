@@ -311,13 +311,17 @@ export default {
         this.menusTree = this.boxTree(data)
         console.log(this.menusTree)
         if (data.length > 0) { // 选中第  一个子节点
-          const fchildren = data[0].children[0]
+          let fchildren
+          if (data[0].children && data[0].children.length > 0) {
+            fchildren = data[0].children[0]
+          } else {
+            fchildren = data[0]
+          }
           const menuId = fchildren.id // 选中子节点
           this.menuId = menuId
           this.expandedKeys.push(data[0].id) // 展开父节点
           this.selectedKeys.push(menuId)
           this.selectNode = fchildren
-          console.log(fchildren)
           this.getFucBymenuId()
         } else {
           // 为空赋值操作

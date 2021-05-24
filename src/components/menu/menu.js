@@ -115,7 +115,7 @@ export default {
         this.sOpenKeys = this.cachedOpenKeys
       }
     },
-    '$route': function() {
+    $route: function() {
       this.updateMenu()
     },
     sOpenKeys(val) {
@@ -137,44 +137,41 @@ export default {
     },
     renderMenuItem: function(h, menu) {
       let tag = 'router-link'
-      let config = { props: { to: menu.fullPath }, attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;' }}
+      let config = {
+        props: { to: menu.fullPath },
+        attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;' }
+      }
       if (menu.meta && menu.meta.link) {
         tag = 'a'
         config = { attrs: { class: 'ant-menu-item-link', href: menu.meta.link, target: '_blank' }}
       }
-      if (!menu.fullPath) { // 如果url为空则只显示名称
+      if (!menu.fullPath) {
+        // 如果url为空则只显示名称
         tag = 'a'
         config = { attrs: { class: 'ant-menu-item-not-allowed', href: 'javascript:void(0)' }}
       }
-      return h(
-        Item, { key: menu.id },
-        [
-          h(tag, config,
-            [
-              this.showItemIcon || menu.parent === '1' ? this.renderIcon(h, menu.icon ? menu.icon : 'none', menu.id) : null,
-              menu.name
-              // this.$t(getI18nKey(menu.fullPath))
-            ]
-          )
-        ]
-      )
+      return h(Item, { key: menu.id }, [
+        h(tag, config, [
+          this.showItemIcon || menu.superId === '0' ? this.renderIcon(h, menu.icon ? menu.icon : 'none', menu.id) : null,
+          menu.name
+          // this.$t(getI18nKey(menu.fullPath))
+        ])
+      ])
     },
     renderSubMenu: function(h, menu) {
       const this_ = this
-      const subItem = [h('span', { slot: 'title', attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;' }},
-        [
+      const subItem = [
+        h('span', { slot: 'title', attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;' }}, [
           this.renderIcon(h, menu.icon ? menu.icon : 'none', menu.fullPath),
           menu.name
           // this.$t(getI18nKey(menu.fullPath))
-        ]
-      )]
+        ])
+      ]
       const itemArr = []
       menu.children.forEach(function(item) {
         itemArr.push(this_.renderItem(h, item))
       })
-      return h(SubMenu, { key: menu.id },
-        subItem.concat(itemArr)
-      )
+      return h(SubMenu, { key: menu.id }, subItem.concat(itemArr))
     },
     renderItem: function(h, menu) {
       return menu.children ? this.renderSubMenu(h, menu) : this.renderMenuItem(h, menu)
@@ -204,7 +201,7 @@ export default {
       this.selectedKeys = menuRoutes
       const openKeys = menuRoutes
       if (!fastEqual(openKeys, this.sOpenKeys)) {
-        this.collapsed || this.mode === 'horizontal' ? this.cachedOpenKeys = openKeys : this.sOpenKeys = openKeys
+        this.collapsed || this.mode === 'horizontal' ? (this.cachedOpenKeys = openKeys) : (this.sOpenKeys = openKeys)
       }
     },
     getSelectedKey(route) {
@@ -223,15 +220,16 @@ export default {
           openKeys: this.openKeys ? this.openKeys : this.sOpenKeys
         },
         on: {
-          'update:openKeys': (val) => {
+          'update:openKeys': val => {
             this.sOpenKeys = val
           },
-          click: (obj) => {
+          click: obj => {
             obj.selectedKeys = [obj.key]
             this.$emit('select', obj)
           }
         }
-      }, this.renderMenu(h, this.options)
+      },
+      this.renderMenu(h, this.options)
     )
   }
 }

@@ -1,17 +1,39 @@
 <template>
   <div class="login-app">
-    <div class="login-container">
-      <a-row :gutter="[24,24]" class="width-100">
-        <a-col :span="24">
-          <div class="login-logo">
-            <img height="60" width="60" :src="require('@/assets/img/login.svg')">
-            <!-- <i class="cs cs-login primary" /> -->
+    <div class="login-header" :class="{hidden: isMobile}">
+      <a-row class="w-100" style="display: flex; align-items: center">
+        <a-col :span="18">
+          <div class="logo" />
+          <div class="header-title primary">
+            宿迁市水环境综合整治信息化数据平台
           </div>
+        </a-col>
+        <a-col :span="6" class="toggle-link text-right pr-4">
+          <a-button type="link" @click="isLogin = true">
+            <a-icon type="user" />用户登录
+          </a-button>
+          <a-button type="link" @click="isLogin = false">
+            <a-icon type="phone" />联系我们
+          </a-button>
+        </a-col>
+      </a-row>
+    </div>
+
+    <div v-if="isLogin" class="login-container">
+      <a-row :gutter="[24,24]" class="login-box" style="height: 80%">
+        <a-col :span="24">
+          <!-- <div class="login-logo">
+            <img height="60" width="60" :src="require('@/assets/img/login.svg')">
+            <i class="cs cs-login primary" />
+          </div> -->
           <a-card class="login-main" :bordered="false">
-            <div class="login-title">
+            <!-- <div class="login-title">
               {{ title }}
+            </div> -->
+            <div class="code-title">
+              {{ toggle ? '密码登录' : '扫码验证，安全登录' }}
             </div>
-            <div v-if="activeType === ACTIVE_TYPE.Login" class="pt-4 pb-2">
+            <div v-if="toggle" class="pt-3 pb-2">
               <a-row :gutter="[0 ,16]">
                 <a-form-model ref="loginForm" :model="loginData" :rules="loginRules">
                   <a-col :span="24">
@@ -21,7 +43,6 @@
                         autocomplete="off"
                         tabindex="1"
                         placeholder="账号"
-                        @pressEnter="login()"
                       >
                         <template slot="prefix">
                           <i class="cs cs-user primary" />
@@ -38,7 +59,6 @@
                         tabindex="2"
                         :type="see?'text':'password'"
                         placeholder="密码"
-                        @pressEnter="login()"
                       >
                         <template slot="prefix">
                           <i class="cs cs-password primary" />
@@ -53,16 +73,26 @@
                   </a-col>
                 </a-form-model>
               </a-row>
-              <a-row :gutter="[0 ,16]">
-                <a-col
-                  span="24"
-                >
+
+              <a-row>
+                <a-col :span="24" class="mt-2">
+                  <slide-verify
+                    ref="slideblock"
+                    slider-text="向右滑动验证码"
+                    :w="328"
+                    @success="login()"
+                  />
+                </a-col>
+              </a-row>
+              <!-- <a-row :gutter="[0 ,16]">
+                <a-col span="24">
                   <a-button :loading="loading" :disabled="disabled" tabindex="3" block x-large class="login-btn" @click="login()">
                     登录
                   </a-button>
                 </a-col>
-              </a-row>
-              <a-row :gutter="[0,24]" class="py-3">
+              </a-row> -->
+
+              <!-- <a-row :gutter="[0,24]" class="py-3">
                 <a-col
                   :span="12" class="text-left login-font"
                 >
@@ -73,8 +103,8 @@
                 >
                   <a class="a" @click.prevent="activeType = ACTIVE_TYPE.Forget">忘记密码</a>
                 </a-col>
-              </a-row>
-              <a-row :gutter="[0,16]" class="py-2">
+              </a-row> -->
+              <!-- <a-row :gutter="[0,16]" class="py-2">
                 <div class="login-font text-center pb-2">
                   第三方登录
                 </div>
@@ -98,9 +128,14 @@
                     </a-button>
                   </a-tooltip>
                 </a-col>
-              </a-row>
+              </a-row> -->
             </div>
-            <div v-if="activeType === ACTIVE_TYPE.Register" class="pt-4 pb-2">
+            <div v-else class="pt-3 pb-2">
+              <div class="code">
+                <img src="@/assets/img/code.png" alt="">
+              </div>
+            </div>
+            <!-- <div v-if="activeType === ACTIVE_TYPE.Register" class="pt-4 pb-2">
               <a-row :gutter="[0 ,16]">
                 <a-form-model ref="registerForm" :model="registerData" :rules="registerRules">
                   <a-col :span="24">
@@ -213,17 +248,59 @@
               <div class="login-font text-center py-2">
                 已有账号?点击 <a class="a" @click.prevent="activeType = ACTIVE_TYPE.Login">登陆</a>
               </div>
+            </div> -->
+            <div class="toggle">
+              <i v-if="toggle" class="icon-scan" @click="toggle = false" />
+              <i v-else class="icon-form" @click="toggle = true" />
             </div>
           </a-card>
         </a-col>
       </a-row>
+    </div>
+
+    <div v-else class="about">
+      <div class="contactR">
+        <img src="~@/assets/img/contactLogo.png" alt="">
+        <div>
+          <img src="~@/assets/img/address.png" alt="">
+          <span>武汉总部：</span>
+          <span>武汉市东湖高新开发区光谷大道3号未来之光3栋6楼</span>
+        </div>
+        <div>
+          <span>北京分公司：</span>
+          <span>北京市西海48文化创意园区C栋102号</span>
+        </div>
+        <div>
+          <img src="~@/assets/img/hotline.png" alt="">
+          <span>服务热线：</span>
+          <span>400-866-5837</span>
+        </div>
+        <div>
+          <img src="~@/assets/img/switchboard.png" alt="">
+          <span>总机：</span>
+          <span>027-87775236</span>
+        </div>
+        <div>
+          <img src="~@/assets/img/fax.png" alt="">
+          <span>传真：</span>
+          <span>027-87775237</span>
+        </div>
+        <div>
+          <img src="~@/assets/img/website.png" alt="">
+          <span>官网：</span>
+          <span>www.huaxindata.com.cn</span>
+        </div>
+      </div>
+      <div class="QRcode">
+        <img src="~@/assets/img/QRcode.png" alt="">
+      </div>
+      <div class="cicle" />
     </div>
   </div>
 </template>
 <script>
 import Oauth from '@/api/login/oauth'
 import { saveUserData } from '@/api/login/login.common'
-
 const ACTIVE_TYPE = {
   Login: 'login',
   Register: 'register',
@@ -275,7 +352,9 @@ export default {
       forgetRules: {
         account,
         email
-      }
+      },
+      toggle: true,
+      isLogin: true
     }
   },
   watch: {
@@ -283,7 +362,7 @@ export default {
       switch (val) {
         default:
         case ACTIVE_TYPE.Login:
-          this.title = '欢迎来到Jiopeel，请登录！'
+          this.title = '宿迁市水环境综合整治信息化数据平台'
           break
         case ACTIVE_TYPE.Register:
           this.title = '注册账号！'
@@ -293,10 +372,14 @@ export default {
           break
       }
       return this.$refs[`${oldval}Form`].resetFields()
+    },
+    loading(val) {
+      if (val) {
+        this.$message.loading('登陆中...')
+      }
     }
   },
   created: () => {
-    console.log('login')
   },
   methods: {
     isSee() {
@@ -307,7 +390,11 @@ export default {
      */
     login() {
       this.$refs.loginForm.validate(valid => {
-        if (!valid) { return } // 验证失败
+        if (!valid) {
+          // 重置验证码
+          this.$refs.slideblock.reset()
+          return
+        } // 验证失败
         this.loading = true
         this.disabled = true
         // 开始登录操作
@@ -324,11 +411,17 @@ export default {
         }).then(res => {
           const { data } = res
           saveUserData(data)
+          this.$message.destroy()
           this.$message.success('登录成功')
           this.$nextTick(() => {
             this.$router.push('/')
           })
-        }).done().finally(() => {
+        }).catch((err) => {
+          this.$message.destroy()
+          this.$message.warning(err)
+          // 重置验证码
+          this.$refs.slideblock.reset()
+        }).finally(() => {
           setTimeout(() => {
             this.loading = false
             this.disabled = false
@@ -392,6 +485,11 @@ export default {
         console.log(auth)
         window.location.href = auth.url
       }).done()
+    }
+  },
+  computed: {
+    isMobile() {
+      return this.$store.state.setting.isMobile
     }
   }
 }

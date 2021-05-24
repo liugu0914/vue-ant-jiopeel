@@ -117,6 +117,7 @@ const respCommon = {
     const DefaultMsg = '操作失败'
     const res = response.data
     if (response.status === 200) {
+      if (res.status === undefined) { return response }
       if (res.status === SUCCESS_KEY) {
         return Promise.resolve(res)
       } else {

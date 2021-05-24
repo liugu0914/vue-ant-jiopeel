@@ -1,3 +1,5 @@
+import { getAsyncDepts } from './async'
+
 /**
  * 表头
  * @date 2021-2-26 10:23:26
@@ -29,25 +31,19 @@ export const columns = [
     customRender: (text) => text
   },
   {
+    title: '部门',
+    dataIndex: 'deptName',
+    dataType: 'tree',
+    searchAble: true,
+    search: {
+      name: 'deptId',
+      async: getAsyncDepts // 异步加载数据
+    }
+  },
+  {
     title: '邮箱',
     dataIndex: 'email',
     searchAble: true
-  },
-  {
-    title: '类型',
-    dataIndex: 'type',
-    searchAble: true,
-    dataType: 'select',
-    search: {
-      name: 'typeSearch',
-      options: [
-        { label: 'gitee', value: 'gitee' },
-        { label: 'github', value: 'github' },
-        { label: 'weixin', value: 'weixin' },
-        { label: 'local', value: 'local' }
-      ],
-      multiple: true
-    }
   },
   {
     title: '操作',
@@ -65,8 +61,12 @@ export const columns = [
  */
 export const defaultForm = {
   id: undefined,
+  imgUrl: undefined,
+  phone: undefined,
+  idCard: undefined,
   account: undefined,
   email: undefined,
+  deptId: undefined,
   type: undefined,
   userName: undefined,
   enable: '1'

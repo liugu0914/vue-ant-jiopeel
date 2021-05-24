@@ -1,5 +1,5 @@
 /**
- *  系统配置模块
+ *  系统管理模块
  */
 
 // sys 路径
@@ -35,5 +35,10 @@ export default {
     path: '/permission',
     name: 'permission',
     component: () => import(`@/${path}/permission/main.vue`)
+  },
+  dept: {
+    path: '/dept',
+    name: 'dept',
+    component: () => import(`@/${path}/dept`)
   }
 }

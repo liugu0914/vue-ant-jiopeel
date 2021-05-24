@@ -18,7 +18,7 @@ module.exports = {
           fluid: '流式',
           fixed: '定宽'
         },
-        fixedHeader: '固定Header',
+        fixedHeader: '固定头部导航',
         fixedSideBar: '固定侧边栏'
       },
       other: {

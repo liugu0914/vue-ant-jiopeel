@@ -1,34 +1,40 @@
-.week-mode{
+.week-mode {
   overflow: hidden;
   filter: invert(80%);
 }
-.beauty-scroll{
+
+.beauty-scroll {
   scrollbar-color: @primary-color @primary-2;
   scrollbar-width: thin;
-  -ms-overflow-style:none;
+  -ms-overflow-style: none;
   position: relative;
-  &::-webkit-scrollbar{
+
+  &::-webkit-scrollbar {
     width: 4px;
-    height: 1px;
+    height: 8px;
   }
+
   //滚动条本身
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background: @primary-color;
   }
+
   //滚动条轨道
   &::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 1px rgba(0,0,0,0);
+    box-shadow: inset 0 0 1px rgba(0, 0, 0, 0);
     border-radius: 10px;
     background: @primary-3;
   }
 }
-.split-right{
+
+.split-right {
   &:not(:last-child) {
     border-right: 1px solid rgba(98, 98, 98, 0.2);
   }
 }
-.disabled{
+
+.disabled {
   cursor: not-allowed;
   color: @disabled-color;
   pointer-events: none;

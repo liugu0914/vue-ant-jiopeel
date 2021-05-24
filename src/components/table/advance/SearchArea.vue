@@ -2,7 +2,7 @@
   <div ref="root" class="search-area">
     <div ref="selectRoot" class="select-root" />
 
-    <a-form layout="vertical">
+    <a-form layout="vertical" class="beauty-scroll">
       <a-row :gutter="[16,0]">
         <a-col v-for="(col, index) in searchCols" :key="index" :xl="response.xl" :lg="response.lg" :md="response.md" :sm="response.sm">
           <a-form-item>
@@ -70,7 +70,8 @@
     </a-form>
     <div
       :style="{
-        textAlign: 'right'
+        textAlign: 'right',
+        marginRight: '24px'
       }"
     >
       <a-button style="marginRight: 8px" @click="onClear">
@@ -275,4 +276,11 @@ export default {
 </script>
 
 <style scoped lang="less">
+.ant-form {
+  padding: 0 24px;
+  margin-bottom: 10px;
+  max-height: 186px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 </style>

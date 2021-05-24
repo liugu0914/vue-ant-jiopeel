@@ -7,7 +7,8 @@ export default {
     organization: null,
     permissions: null,
     roles: null,
-    menus: null
+    menus: null,
+    token: null
   },
   getters: {
     user: state => {
@@ -62,6 +63,17 @@ export default {
         }
       }
       return state.menus
+    },
+    token: state => {
+      if (!state.token) {
+        try {
+          const token = Lockr.get(process.env.VUE_APP_ACCESS_TOKEN_KEY)
+          state.token = token || ''
+        } catch (e) {
+          console.error(e.message)
+        }
+      }
+      return state.token
     }
   },
   mutations: {
@@ -84,6 +96,10 @@ export default {
     setMenus(state, menus) {
       state.menus = menus
       Lockr.set(process.env.VUE_APP_MENUS_KEY, menus)
+    },
+    setToken(state, token) {
+      state.token = token
+      Lockr.set(process.env.VUE_APP_ACCESS_TOKEN_KEY, token)
     }
   }
 }

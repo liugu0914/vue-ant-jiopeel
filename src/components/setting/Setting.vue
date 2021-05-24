@@ -65,7 +65,7 @@
         </a-list-item> -->
       </a-list>
     </setting-item>
-    <!-- <a-divider />
+    <a-divider />
     <setting-item :title="$t('other.title')">
       <a-list :split="false">
         <a-list-item>
@@ -76,12 +76,12 @@
           {{ $t('other.multiPages') }}
           <a-switch slot="actions" :checked="multiPage" size="small" @change="setMultiPage" />
         </a-list-item>
-        <a-list-item>
+        <!-- <a-list-item>
           {{ $t('other.hideSetting') }}
           <a-switch slot="actions" :checked="hideSetting" size="small" @change="setHideSetting" />
-        </a-list-item>
+        </a-list-item> -->
       </a-list>
-    </setting-item> -->
+    </setting-item>
     <a-divider />
     <setting-item :title="$t('animate.title')">
       <a-list :split="false">

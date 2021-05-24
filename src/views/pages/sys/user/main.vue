@@ -57,6 +57,13 @@
       <a-form-model ref="ruleForm" :model="dataForm" layout="vertical">
         <a-row>
           <a-col :sm="24">
+            <div class="avatar">
+              <upload :before-upload="beforeUpload" :show-upload-list="false" @change="handleChange">
+                <a-avatar :size="150" :src="dataForm.imgUrl" icon="user" />
+              </upload>
+            </div>
+          </a-col>
+          <a-col :sm="24">
             <a-form-model-item
               :rules=" { required: true, message: '用户名称不能为空', trigger: 'blur' }"
               label="用户名称" prop="userName">
@@ -72,16 +79,38 @@
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: true, message: '邮箱不能为空', trigger: 'blur' }"
-              label="邮箱" prop="email">
-              <a-input v-model="dataForm.email" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              :rules=" [{ required: true, message: '手机号不能为空',trigger: 'blur' },
+                        { validator: checkPhone, trigger: 'blur' }]"
+              label="手机号" prop="phone">
+              <a-input v-model="dataForm.phone" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: true, message: '类型不能为空', trigger: 'blur' }"
-              label="类型" prop="type">
-              <a-input v-model="dataForm.type" class="w-100" disabled autocomplete="off" />
+              :rules=" [{ required: true, message: '身份证不能为空', trigger: 'blur' },
+                        { validator: checkIdCard, trigger: 'blur' }]"
+              label="身份证" prop="idCard">
+              <a-input v-model="dataForm.idCard" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+            </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              :rules=" { required: false, message: '部门不能为空', trigger: 'blur' }"
+              label="部门" prop="deptId">
+              <a-tree-select
+                v-model="dataForm.deptId"
+                class="w-100"
+                allow-clear
+                :tree-data="deptTree"
+                :replace-fields="{ children: 'children', title: 'name', key: 'id', value: 'id' }"
+              />
+            </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              :rules=" { required: false, message: '邮箱不能为空', trigger: 'blur' }"
+              label="邮箱" prop="email">
+              <a-input v-model="dataForm.email" class="w-100" :max-length="255" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
@@ -120,12 +149,16 @@
 import { BoxPage, cloneDeep } from '@/utils/tool'
 import { getListPage, getOne, save, del } from '@/api/modules/sys/user'
 import { getUserRole, getUseFulRoles, saveUserRole } from '@/api/modules/sys/role'
+import { getAsyncDepts } from './async'
+import { downloadUrl } from '@/api/common/upload'
+import { chkPhone, chkIdCard } from '@/utils/tool'
 import StandardTable from '@/components/table/StandardTable'
 import Modal from '@/components/modal/Modal'
+import Upload from '@/components/upload'
 import { columns, defaultForm } from './constant'
 
 export default {
-  components: { StandardTable, Modal },
+  components: { StandardTable, Modal, Upload },
   data() {
     return {
       title: '',
@@ -140,6 +173,7 @@ export default {
       },
       dataSource: [], // 数据行
       selectedRows: [], // 选择行
+      deptTree: [], // 部门树
 
       role: {}, // 当前角色
       roles: [], // 可选角色
@@ -198,6 +232,7 @@ export default {
       this.title = '新增'
       this.dataForm.type = 'local'
       this.visible = true
+      this.getDeptTree()
     },
     /**
      * 编辑
@@ -207,10 +242,24 @@ export default {
     edit(record) {
       this.title = '编辑'
       getOne(record.id).then(res => {
-        this.dataForm = res.data
+        const { data = {}} = res
+        data.imgUrl = data.imgUrl || undefined
+        this.dataForm = data
+        this.getDeptTree()
       }).over().finally(() => {
         this.visible = true
       })
+    },
+
+    /**
+     * 获取部门树结构
+     * @date 2021-5-21 09:19:53
+     * @author lyc
+     */
+    getDeptTree() {
+      getAsyncDepts().then(res => {
+        this.deptTree = res
+      }).over()
     },
     /**
      * 删除
@@ -269,6 +318,7 @@ export default {
     handleCancel() {
       this.visible = false
       this.confirmLoading = false
+      this.deptTree = []
       this.resetForm('ruleForm')
     },
     /**
@@ -319,6 +369,58 @@ export default {
       this.roleConfirmLoading = false
       this.roles = []
       this.role = {}
+    },
+    /**
+     * 文件上传前的回调
+     * @date 2021-5-17 09:39:22
+     * @author lyc
+     */
+    beforeUpload(file) {
+      console.log(file)
+      const typeArr = [
+        'image/png',
+        'image/jpeg'
+      ]
+      const type = typeArr.includes(file.type)
+      const size = file.size / 1024 / 1024
+      if (!type) {
+        this.$message.error('请选择图片上传！')
+        return false
+      }
+      if (size > 20) {
+        this.$message.error('上传的文件不能超过20MB!')
+        return false
+      }
+      return true
+    },
+    /**
+     * 上传文件改变时的状态
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    handleChange({ file }) {
+      if (file.status === 'done') {
+        const response = file.response
+        const { data = {}} = response
+        this.dataForm.imgUrl = downloadUrl + data.url
+        console.log(this.dataForm.imgUrl)
+      }
+    },
+    /**
+     * 检查手机号
+     * @date 2021-5-21 12:10:43
+     * @author lyc
+     */
+    checkPhone(rule, value, callback) {
+      return chkPhone(value) ? callback() : callback(new Error('手机号格式不正确'))
+    },
+    /**
+     * 检查身份证号
+     * @date 2021-5-21 12:11:06
+     * @author lyc
+     */
+    checkIdCard(rule, value, callback) {
+      return chkIdCard(value) ? callback() : callback(new Error('身份证格式不正确'))
     }
   }
 }
@@ -332,5 +434,9 @@ export default {
 }
 .pointer{
   cursor: pointer;
+}
+.avatar{
+  text-align: center;
+  margin-bottom: 16px;
 }
 </style>

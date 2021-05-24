@@ -4,20 +4,26 @@
     <a-drawer
       title="高级搜索"
       :placement="placement"
-      height="320"
+      height="auto"
       width="400"
-      :body-style="{ padding: '20px 24px'}"
+      :body-style="{ padding: '20px 0' }"
       :visible="advancedSearch"
       @close="openAdvancedSearch"
     >
-      <search-area :format-conditions="true" :is-response="placement === 'top' || placement === 'bottom'" :columns="visibleColumns" @change="onSearchChange" @search="onSearchChange">
+      <search-area
+        :format-conditions="true"
+        :is-response="placement === 'top' || placement === 'bottom'"
+        :columns="visibleColumns"
+        @change="onSearchChange"
+        @search="onSearchChange"
+      >
         <template v-for="slot in Object.keys($slots)" :slot="slot">
           <slot :name="slot" />
         </template>
       </search-area>
     </a-drawer>
     <!-- 表头 -->
-    <a-row class="mb-2" type="flex" align="middle" :gutter="[0,16]" justify="space-between">
+    <a-row v-if="isSearch" class="mb-2" type="flex" align="middle" :gutter="[0, 16]" justify="space-between">
       <a-col :md="12" :sm="24">
         <a-input
           v-if="showInput"
@@ -30,11 +36,11 @@
           @pressEnter="onInputSearch"
         >
           <a-tooltip v-cloak slot="suffix" title="点击或回车搜索">
-            <a-icon :type="loading?'loading':'search'" @click="onInputSearch" />
+            <a-icon :type="loading ? 'loading' : 'search'" @click="onInputSearch" />
           </a-tooltip>
         </a-input>
-        <a-tooltip v-if="searchCols && searchCols.length >0" v-cloak title="高级搜索">
-          <a-button type="link" :class="{filter:hasFilter}" @click="openAdvancedSearch">
+        <a-tooltip v-if="searchCols && searchCols.length > 0" v-cloak title="高级搜索">
+          <a-button type="link" :class="{ filter: hasFilter }" @click="openAdvancedSearch">
             <a-icon type="filter" />
           </a-button>
         </a-tooltip>
@@ -56,7 +62,8 @@
     <div class="alert">
       <a-alert v-if="selectedRows" type="info" :show-icon="true" banner>
         <div slot="message" class="message">
-          已选择&nbsp;<a>{{ selectedRows.length }}</a>&nbsp;项 <a class="clear" @click="onClear">清空</a>
+          已选择&nbsp;<a>{{ selectedRows.length }}</a
+          >&nbsp;项 <a class="clear" @click="onClear">清空</a>
         </div>
       </a-alert>
     </div>
@@ -71,24 +78,35 @@
       :pagination="initPagination"
       :expanded-row-keys="expandedRowKeys"
       :expanded-row-render="expandedRowRender"
-      :row-selection="selectedRows ? {selectedRowKeys: selectedRowKeys ,onChange:updateSelect} : undefined"
+      :row-selection="selectedRows ? { selectedRowKeys: selectedRowKeys, onChange: updateSelect } : undefined"
+      :scroll="scroll"
+      :row-class-name="(record, index) => (index % 2 === 1 ? 'active' : '')"
       @change="onChange"
     >
-      <template v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') " :slot="slot" slot-scope="text, record, index">
-        <slot :name="slot" v-bind="{text, record, index}" />
+      <template
+        v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender')"
+        :slot="slot"
+        slot-scope="text, record, index"
+      >
+        <slot :name="slot" v-bind="{ text, record, index }" />
       </template>
       <template v-for="slot in Object.keys($slots)" :slot="slot">
         <slot :name="slot" />
       </template>
-      <template :slot="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''" slot-scope="record, index, indent, expanded">
-        <slot v-bind="{record, index, indent, expanded}" :name="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''" />
+      <template
+        :slot="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''"
+        slot-scope="record, index, indent, expanded"
+      >
+        <slot
+          v-bind="{ record, index, indent, expanded }"
+          :name="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''"
+        />
       </template>
     </a-table>
   </div>
 </template>
 
 <script>
-
 import ActionSize from '@/components/table/advance/ActionSize'
 import ActionColumns from '@/components/table/advance/ActionColumns'
 import SearchArea from '@/components/table/advance/SearchArea'
@@ -132,7 +150,12 @@ export default {
     },
     selectedRows: Array,
     expandedRowKeys: Array,
-    expandedRowRender: Function
+    expandedRowRender: Function,
+    scroll: Object,
+    isSearch: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
@@ -149,6 +172,7 @@ export default {
       const key = this.getRowKey()
       const rows = []
       const keys = []
+      if (!this.selectedRows) return
       this.selectedRows.forEach(row => {
         const rowKey = row[key]
         const index = datas.findIndex(item => item[key] === rowKey)
@@ -174,7 +198,9 @@ export default {
       }
     },
     onInputSearch() {
-      if (this.loading) { return }
+      if (this.loading) {
+        return
+      }
       this.$emit('search', this.conditions)
     },
     onSearchChange(conditions) {
@@ -226,7 +252,7 @@ export default {
       this.$emit('selectedRowChange', selectedRowKeys, selectedRows)
     },
     getRowKey() {
-      return (typeof this.rowKey === 'function') ? this.rowKey() : this.rowKey
+      return typeof this.rowKey === 'function' ? this.rowKey() : this.rowKey
     },
     onClear() {
       this.newSelectedRows = []
@@ -244,7 +270,7 @@ export default {
       return Object.values(conditions).length === 0
     },
     visibleColumns() {
-      const visibleColumns = this.columns.filter(col => col.visible)
+      const visibleColumns = this.columns.filter(col => col.visible === true || col.visible === undefined)
       return visibleColumns
     },
     selectedRowKeys() {
@@ -270,19 +296,19 @@ export default {
 </script>
 
 <style scoped lang="less">
-.standard-table{
-  .alert{
+.standard-table {
+  .alert {
     margin-bottom: 16px;
-    .message{
-      a{
+    .message {
+      a {
         font-weight: 600;
       }
     }
-    .clear{
+    .clear {
       float: right;
     }
   }
-  .filter{
+  .filter {
     color: @gray-7;
   }
 }
