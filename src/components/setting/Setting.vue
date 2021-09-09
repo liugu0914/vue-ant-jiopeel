@@ -38,8 +38,8 @@
       </img-checkbox-group>
     </setting-item> -->
     <setting-item>
-      <a-list :split="false">
-        <!-- <a-list-item>
+      <!-- <a-list :split="false"> -->
+      <!-- <a-list-item>
           {{ $t('navigate.content.title') }}
           <a-select
             slot="actions"
@@ -55,15 +55,15 @@
             </a-select-option>
           </a-select>
         </a-list-item> -->
-        <a-list-item>
+      <!-- <a-list-item>
           {{ $t('navigate.fixedHeader') }}
           <a-switch slot="actions" :checked="fixedHeader" size="small" @change="setFixedHeader" />
-        </a-list-item>
-        <!-- <a-list-item>
+        </a-list-item> -->
+      <!-- <a-list-item>
           {{ $t('navigate.fixedSideBar') }}
           <a-switch slot="actions" :checked="fixedSideBar" size="small" @change="setFixedSideBar" />
         </a-list-item> -->
-      </a-list>
+      <!-- </a-list> -->
     </setting-item>
     <a-divider />
     <setting-item :title="$t('other.title')">
@@ -72,10 +72,10 @@
           {{ $t('other.weekMode') }}
           <a-switch slot="actions" :checked="weekMode" size="small" @change="setWeekMode" />
         </a-list-item>
-        <a-list-item>
+        <!-- <a-list-item>
           {{ $t('other.multiPages') }}
           <a-switch slot="actions" :checked="multiPage" size="small" @change="setMultiPage" />
-        </a-list-item>
+        </a-list-item> -->
         <!-- <a-list-item>
           {{ $t('other.hideSetting') }}
           <a-switch slot="actions" :checked="hideSetting" size="small" @change="setHideSetting" />

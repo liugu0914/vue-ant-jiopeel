@@ -7,13 +7,15 @@ const Echart = {
     Vue.mixin({
       data() {
         return {
-          resizeFlag: 0
+          resizeFlag: 0,
+          screenWidth: window.innerWidth
         }
       },
       methods: {
         // 监听窗口尺寸变化
         resizeChangeHandler() {
           this.resizeFlag++
+          this.screenWidth = window.innerWidth
         }
       },
       created() {

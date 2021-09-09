@@ -33,7 +33,6 @@ export default {
     value: String,
     columns: Array
   },
-  inject: ['content'],
   data() {
     return {
       fullScreen: false

@@ -17,13 +17,16 @@
     >
       <slot :name="slot" />
     </div>
-    <div v-if="footer !== null" class="drawer-btn-group">
+    <div v-if="footer !== null && !$slots.footer" class="drawer-btn-group">
       <a-button :style="{ marginRight: '8px' }" @click="cancel">
         {{ cancelText }}
       </a-button>
       <a-button type="primary" :loading="confirmLoading" @click="ok">
         {{ okText }}
       </a-button>
+    </div>
+    <div v-if="$slots.footer" class="drawer-btn-group">
+      <slot name="footer" />
     </div>
   </a-drawer>
 </template>

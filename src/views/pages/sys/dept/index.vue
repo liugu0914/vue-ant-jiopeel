@@ -3,12 +3,12 @@
     <a-spin tip="Loading..." :spinning="loading">
       <a-row :gutter="40">
         <a-col :span="6">
-          <a-input v-model="params.search" class="w-100" placeholder="请输入部门名称" @change="onChange">
+          <a-input v-model="params.search" :max-length="100" class="w-100" placeholder="请输入部门名称" @change="getSectionData">
             <a-icon slot="addonAfter" type="plus" style="cursor: pointer" @click="add" />
           </a-input>
           <a-tree
             class="draggable-tree"
-            draggable
+            :draggable="$hasp('sys-dept-drag')"
             :tree-data="treeData"
             :replace-fields="{children:'children', title:'name', key:'id' }"
             @drop="onDrop"
@@ -20,10 +20,10 @@
                   {{ dep.name }}
                 </span>
                 <a-menu slot="overlay">
-                  <a-menu-item key="1" @click="addSon(dep.id)">
+                  <a-menu-item v-if="$hasp('sys-dept-add')" key="1" @click="addSon(dep.id)">
                     新增子部门
                   </a-menu-item>
-                  <a-menu-item key="2" @click="del(dep.id)">
+                  <a-menu-item v-if="$hasp('sys-dept-del')" key="2" @click="del(dep.id)">
                     删除当前部门
                   </a-menu-item>
                 </a-menu>
@@ -40,7 +40,7 @@
                 </div>
               </a-col>
               <a-col :span="4">
-                <a-button v-if="title == '查看'" style="float: right" @click="edit">
+                <a-button v-if="$hasp('sys-dept-edit') && title == '查看'" style="float: right" @click="edit">
                   编辑
                 </a-button>
               </a-col>
@@ -50,7 +50,7 @@
                   label="部门名称"
                   prop="name"
                 >
-                  <a-input v-model="dataForm.name" :disabled="!redact" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+                  <a-input v-model="dataForm.name" :disabled="!redact" class="w-100" :max-length="100" autocomplete="off" allow-clear />
                 </a-form-model-item>
               </a-col>
               <a-col :span="8">
@@ -59,7 +59,7 @@
                   label="部门描述"
                   prop="des"
                 >
-                  <a-input v-model="dataForm.des" :disabled="!redact" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+                  <a-input v-model="dataForm.des" :disabled="!redact" class="w-100" :max-length="100" autocomplete="off" allow-clear />
                 </a-form-model-item>
               </a-col>
               <a-col :span="8">
@@ -169,38 +169,37 @@ export default {
      */
     async onDrop(info) {
       console.log(info)
-      // 当前拖动的节点id
-      const sourceId = info.dragNode.eventKey
-      // 目标节点id
-      const targetId = info.node.eventKey
-      // 节点位置
+      // 拖拽节点
+      const dragNode = info.dragNode
+      // 目标节点
+      const node = info.node
+      // 目标节点位置
       const ops = info.node.pos.split('-')
       // 拖拽后的位置
       const position = info.dropPosition == -1 ? 0 : info.dropPosition
       // 拖拽对象
-      const source = this.getSection(this.treeData, sourceId)
+      const source = dragNode.dataRef
       // 目标对象
-      let target = this.getSection(this.treeData, targetId)
-      // 如果是拖到别的节点下面进行排序，就取该节点对象
-      target = info.dropToGap && ops.length > 2 ? this.getSection(this.treeData, target.superId) : target
-      // 请求对象
-      delete source.orderNum
-      const params = [source, target]
-      // 拖拽到子集排序
-      if (info.dropToGap) source.orderNum = position || 0
-      // 拖拽到一级排序
-      if (info.dropToGap && ops.length <= 2) {
-        source.orderNum = position
-        // 获取一级部门的索引
-        const index = this.treeData.findIndex(item => item === source)
-        // 当前拖动的是一级
-        if (source.superId == '0' && index < position) source.orderNum = position ? position - 1 : position
-        // 删除target对象
-        params.pop()
+      const target = info.dropToGap && ops.length > 2 ? node.$parent.dataRef : node.dataRef
+      // 当info.dropToGap为true, 说明只是同级或者跨级排序
+      if (info.dropToGap) {
+        // 当拖拽节点位置和目标节点的父级对象相同时，表所同级排序，当拖拽节点最后一位小于拖拽后的位置时表示向下拖拽排序
+        if (dragNode.$parent.dataRef === node.$parent.dataRef && ops[ops.length - 1] < position) {
+          // 同级排序向下排序，拖拽后的位置 - 1
+          source.orderNum = position ? position - 1 : 0
+        } else {
+          // 跨级排序、或者同级向上排序, 拖动后的位置减去目标位置等于-1表示拖到目标位置的上面，等于 1 表示拖到目标位置的下面
+          source.orderNum = position - ops[ops.length - 1] === -1 ? position + 1 : position
+        }
+      } else {
+        // 当info.dropToGap为false,说明拖拽节点成为了目标节点的子节点，删除拖拽对象的 orderNum 属性
+        delete source.orderNum
       }
+      const params = [source, target]
+      // 拖拽到一级
+      if (info.dropToGap && ops.length === 2) params.pop()
       await dragSection(params).over()
       this.getSectionData()
-      console.log(params)
     },
     /**
      * 获取部门信息
@@ -225,8 +224,9 @@ export default {
       this.$refs['ruleForm'].validate(async valid => {
         if (!valid) return
         let params = cloneDeep(this.dataForm)
-        if (this.title === '编辑部门') params = { id: params.id, name: params.name, des: params.des, enable: params.enable }
-        if (this.title === '新增子部门') params = { name: params.name, des: params.des, enable: params.enable, superId: params.superId }
+        const { id, name, des, enable, superId } = params
+        if (this.title === '编辑部门') params = { id, name, des, enable }
+        if (this.title === '新增子部门') params = { name, des, enable, superId, parent: '0' }
         await saveSectionData(params)
         this.getSectionData()
         this.redact = false
@@ -257,26 +257,6 @@ export default {
       this.redact = true
       this.title = '新增子部门'
       this.dataForm = { superId: id, enable: '1' }
-    },
-    /**
-     * 根据id获取部门信息
-     * @date 2021年5月20日15:50:00
-     * @author zxp
-     */
-    getSection(data = [], id, obj = {}) {
-      // let obj = {}
-      data.find(item => {
-        obj = item.id === id ? item : this.getSection(item.children, id, obj)
-      })
-      return obj
-    },
-    /**
-     * 部门搜索
-     * @date 2021年5月21日11:21:00
-     * @author zxp
-     */
-    onChange() {
-      this.getSectionData()
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="page-layout">
-    <page-header ref="pageHeader" :style="`margin-top: ${multiPage ? 0 : -24}px`" :breadcrumb="breadcrumb" :title="pageTitle" :logo="logo" :avatar="avatar">
+    <page-header ref="pageHeader" :breadcrumb="breadcrumb" :title="pageTitle" :logo="logo" :avatar="avatar">
       <slot slot="action" name="action" />
       <slot slot="content" name="headerContent" />
       <div v-if="!$slots.headerContent && desc" slot="content">

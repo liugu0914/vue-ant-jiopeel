@@ -9,7 +9,6 @@ import 'animate.css/source/animate.css'
 import store from '@/store'
 import { initRouter } from '@/router' // 路由器
 import { initI18n } from '@/utils/i18n'
-import Viser from 'viser-vue'
 import Plugins from '@/plugins'
 import bootstrap from '@/bootstrap'
 
@@ -19,7 +18,6 @@ const router = initRouter()
 const i18n = initI18n('CN', 'US')
 
 Vue.use(Antd)
-Vue.use(Viser)
 Vue.use(Plugins)
 
 console.log('api ：' + process.env.VUE_APP_BASE_API)

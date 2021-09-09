@@ -131,21 +131,21 @@
             <a-form-model-item
               :rules=" { required: true, message: '权限名称不能为空', whitespace:true, trigger: ['change', 'blur'] }"
               label="权限名称" prop="name">
-              <a-input v-model="dataForm.name" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.name" class="w-100" :max-length="100" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
               :rules=" { required: true, message: '主地址/权限别称不能为空', whitespace:true, trigger: ['change', 'blur'] }"
               label="主地址/权限别称" prop="target">
-              <a-input v-model="dataForm.target" class="w-100" :max-length="255" autocomplete="off" allow-clear @change="mainTarget2Charm" />
+              <a-input v-model="dataForm.target" class="w-100" :max-length="100" autocomplete="off" allow-clear @change="mainTarget2Charm" />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
               :rules=" { required: true, message: '通配符不能为空', whitespace:true, trigger: ['change', 'blur'] }"
               label="通配符" prop="charm">
-              <a-input v-model="dataForm.charm" class="w-100" :max-length="255" autocomplete="off" allow-clear disabled />
+              <a-input v-model="dataForm.charm" class="w-100" :max-length="100" autocomplete="off" allow-clear disabled />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
@@ -159,7 +159,7 @@
                 <a-input
                   v-model="item.target"
                   class="w-50"
-                  :max-length="255" autocomplete="off" allow-clear
+                  :max-length="100" autocomplete="off" allow-clear
                   @blur="() => {$refs['permissions'][index].onFieldBlur()}"
                   @change="(e)=>{
                     $refs['permissions'][index].onFieldChange();

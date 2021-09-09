@@ -7,12 +7,6 @@ import { getAsyncDepts } from './async'
  */
 export const columns = [
   {
-    title: '序号',
-    dataIndex: 'index',
-    customRender: (text, record, index) => index + 1,
-    disable: true
-  },
-  {
     title: '头像',
     dataIndex: 'imgUrl',
     scopedSlots: { customRender: 'imgUrl' },

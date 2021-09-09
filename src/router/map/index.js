@@ -5,8 +5,10 @@ import contract from './modules/contract'
 import investment from './modules/investment'
 import monitoring from './modules/monitoring'
 import pm from './modules/pm'
-import projectProcess from './modules/projectProcess'
 import quality from './modules/quality'
+import work from './modules/work'
+import approval from './modules/approval'
+import overview from './modules/overview'
 
 const routeMap = {
   ...sys,
@@ -15,8 +17,10 @@ const routeMap = {
   ...investment,
   ...monitoring,
   ...pm,
-  ...projectProcess,
-  ...quality
+  ...quality,
+  ...work,
+  ...approval,
+  ...overview
 }
 
 export { common, routeMap }

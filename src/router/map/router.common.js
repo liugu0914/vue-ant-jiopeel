@@ -2,8 +2,8 @@
 const common = {
   main: {
     path: '/main',
-    name: 'main',
-    component: () => import('@/views/main/admin.vue')
+    name: 'layout',
+    component: () => import('@/views/layout')
   },
   login: {
     path: '/login',
@@ -28,7 +28,7 @@ const common = {
     name: '404',
     component: () => import('@/views/error/404.vue'),
     meta: {
-      // requiresAuth: false
+      requiresAuth: false
     }
   }
 }

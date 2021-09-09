@@ -5,11 +5,6 @@
  */
 export const columns = [
   {
-    title: '序号',
-    dataIndex: 'index',
-    customRender: (text, record, index) => index + 1
-  },
-  {
     title: '组织名称',
     dataIndex: 'name',
     searchAble: true,

@@ -34,9 +34,30 @@ export async function save(params) {
 }
 
 
+
+/**
+ * 用户修改个人信息
+
+ */
+export async function editUserInfo(params) {
+  return await request(`${prefix}/editUserInfo`, METHOD.POST, params)
+}
+
+
 /**
  * 删除数据
  */
 export async function del(ids) {
   return await request(`${prefix}/del`, METHOD.GET, { ids })
 }
+
+
+/**
+ * 获取用户列表
+ */
+export const getUsers = deptIds => request(`${prefix}/getUsers`, METHOD.GET, { deptIds })
+
+/**
+ * 更新密码
+ */
+export const updatePassword = params => request(`${prefix}/updPassword`, METHOD.POST, params)

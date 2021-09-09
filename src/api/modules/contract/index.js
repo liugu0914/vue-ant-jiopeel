@@ -15,14 +15,8 @@ export const delContractData = id => request(`${prefix}/deleteById/${id}`)
 // 导出合同信息
 export const importContractData = params => exportExcel(`${prefix}/export`, params)
 
-// 删除已上传的文件
-export const delFile = params => request('/file/del', METHOD.POST, params)
-
 // 获取合同数量
 export const getContractCount = () => request(`${prefix}/getBaseInfo`)
-
-// 查看、下载文件地址
-export const downloadurl = 'http://27.17.43.146:18002/'
 
 // excle 导入地址
 export const excleImportUrl = process.env.VUE_APP_BASE_API + `${prefix}/import`

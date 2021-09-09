@@ -1,105 +1,129 @@
 import Lockr from 'lockr'
 
+const state = {
+  user: undefined,
+  organization: null,
+  permissions: null,
+  roles: null,
+  menus: null,
+  token: null,
+  collapsed: Lockr.get(process.env.VUE_APP_COLLAPSED) || false
+}
+
+const getters = {
+  user: state => {
+    if (!state.user) {
+      try {
+        state.user = Lockr.get(process.env.VUE_APP_USER_KEY)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    return state.user
+  },
+  organization: state => {
+    if (!state.organization) {
+      try {
+        state.organization = Lockr.get(process.env.VUE_APP_ORGANIZATION_KEY)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    return state.organization
+  },
+  permissions: state => {
+    if (!state.permissions) {
+      try {
+        const permissions = Lockr.get(process.env.VUE_APP_PERMISSIONS_KEY)
+        state.permissions = permissions || []
+      } catch (e) {
+        console.error(e.message)
+      }
+    }
+    return state.permissions
+  },
+  roles: state => {
+    if (!state.roles) {
+      try {
+        const roles = Lockr.get(process.env.VUE_APP_ROLES_KEY)
+        state.roles = roles || []
+      } catch (e) {
+        console.error(e.message)
+      }
+    }
+    return state.roles
+  },
+  menus: state => {
+    if (!state.menus) {
+      try {
+        const menus = Lockr.get(process.env.VUE_APP_MENUS_KEY)
+        state.menus = menus || []
+      } catch (e) {
+        console.error(e.message)
+      }
+    }
+    return state.menus
+  },
+  token: state => {
+    if (!state.token) {
+      try {
+        const token = Lockr.get(process.env.VUE_APP_ACCESS_TOKEN_KEY)
+        state.token = token || ''
+      } catch (e) {
+        console.error(e.message)
+      }
+    }
+    return state.token
+  }
+
+}
+
+const setState = {
+  setUser(state, user) {
+    state.user = user
+    Lockr.set(process.env.VUE_APP_USER_KEY, user)
+  },
+  setOrganization(state, organization) {
+    state.organization = organization
+    Lockr.set(process.env.VUE_APP_ORGANIZATION_KEY, organization)
+  },
+  setPermissions(state, permissions) {
+    state.permissions = permissions
+    Lockr.set(process.env.VUE_APP_PERMISSIONS_KEY, permissions)
+  },
+  setRoles(state, roles) {
+    state.roles = roles
+    Lockr.set(process.env.VUE_APP_ROLES_KEY, roles)
+  },
+  setMenus(state, menus) {
+    state.menus = menus
+    Lockr.set(process.env.VUE_APP_MENUS_KEY, menus)
+  },
+  setToken(state, token) {
+    state.token = token
+    Lockr.set(process.env.VUE_APP_ACCESS_TOKEN_KEY, token)
+  },
+  setCollapsed(state) {
+    const collapsed = !state.collapsed
+    state.collapsed = collapsed
+    Lockr.set(process.env.VUE_APP_COLLAPSED, collapsed)
+  }
+}
+
+const clearState = {
+  clearUserInfo(state) {
+    state.user = null
+    state.organization = null
+    state.permissions = null
+    state.roles = null
+    state.menus = null
+    state.token = null
+  }
+}
+
 export default {
   namespaced: true,
-  state: {
-    user: undefined,
-    organization: null,
-    permissions: null,
-    roles: null,
-    menus: null,
-    token: null
-  },
-  getters: {
-    user: state => {
-      if (!state.user) {
-        try {
-          state.user = Lockr.get(process.env.VUE_APP_USER_KEY)
-        } catch (e) {
-          console.error(e)
-        }
-      }
-      return state.user
-    },
-    organization: state => {
-      if (!state.organization) {
-        try {
-          state.organization = Lockr.get(process.env.VUE_APP_ORGANIZATION_KEY)
-        } catch (e) {
-          console.error(e)
-        }
-      }
-      return state.organization
-    },
-    permissions: state => {
-      if (!state.permissions) {
-        try {
-          const permissions = Lockr.get(process.env.VUE_APP_PERMISSIONS_KEY)
-          state.permissions = permissions || []
-        } catch (e) {
-          console.error(e.message)
-        }
-      }
-      return state.permissions
-    },
-    roles: state => {
-      if (!state.roles) {
-        try {
-          const roles = Lockr.get(process.env.VUE_APP_ROLES_KEY)
-          state.roles = roles || []
-        } catch (e) {
-          console.error(e.message)
-        }
-      }
-      return state.roles
-    },
-    menus: state => {
-      if (!state.menus) {
-        try {
-          const menus = Lockr.get(process.env.VUE_APP_MENUS_KEY)
-          state.menus = menus || []
-        } catch (e) {
-          console.error(e.message)
-        }
-      }
-      return state.menus
-    },
-    token: state => {
-      if (!state.token) {
-        try {
-          const token = Lockr.get(process.env.VUE_APP_ACCESS_TOKEN_KEY)
-          state.token = token || ''
-        } catch (e) {
-          console.error(e.message)
-        }
-      }
-      return state.token
-    }
-  },
-  mutations: {
-    setUser(state, user) {
-      state.user = user
-      Lockr.set(process.env.VUE_APP_USER_KEY, user)
-    },
-    setOrganization(state, organization) {
-      state.organization = organization
-      Lockr.set(process.env.VUE_APP_ORGANIZATION_KEY, organization)
-    },
-    setPermissions(state, permissions) {
-      state.permissions = permissions
-      Lockr.set(process.env.VUE_APP_PERMISSIONS_KEY, permissions)
-    },
-    setRoles(state, roles) {
-      state.roles = roles
-      Lockr.set(process.env.VUE_APP_ROLES_KEY, roles)
-    },
-    setMenus(state, menus) {
-      state.menus = menus
-      Lockr.set(process.env.VUE_APP_MENUS_KEY, menus)
-    },
-    setToken(state, token) {
-      state.token = token
-      Lockr.set(process.env.VUE_APP_ACCESS_TOKEN_KEY, token)
-    }
-  }
+  state,
+  getters,
+  mutations: { ...setState, ...clearState }
 }

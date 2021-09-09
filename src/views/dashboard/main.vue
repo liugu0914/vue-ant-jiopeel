@@ -63,7 +63,7 @@
           </a-card>
           <a-card :loading="loading" :title="`XX ${$t('degree')}`" style="margin-bottom: 24px" :bordered="false" :body-style="{padding: 0}">
             <div style="min-height: 400px;">
-              <radar />
+              <!-- <radar /> -->
             </div>
           </a-card>
           <a-card :loading="loading" :title="$t('team')" :bordered="false">
@@ -87,12 +87,12 @@
 <script>
 import PageLayout from '@/layouts/PageLayout'
 import HeadInfo from '@/components/tool/HeadInfo'
-import Radar from '@/components/chart/Radar'
+// import Radar from '@/components/chart/Radar'
 import { mapState } from 'vuex'
 
 export default {
   name: 'WorkPlace',
-  components: { Radar, HeadInfo, PageLayout },
+  components: { HeadInfo, PageLayout },
   i18n: require('./i18n'),
   data() {
     return {

@@ -20,3 +20,6 @@ export const delSectionData = id => request(`${prefix}/deleteById/${id}`)
 
 // 拖拽部门
 export const dragSection = params => request(`${prefix}/dragTree`, METHOD.POST, params)
+
+// 获取审批人数据
+export const getApproval = () => request(`${prefix}/getDeptUsers`)

@@ -27,7 +27,9 @@
           :disabled="selectedRows && selectedRows.length === 0"
           @confirm="delSelectedRows"
         >
-          <a-button> <a-icon type="delete" />删除 </a-button>
+          <a-button type="danger">
+            <a-icon type="delete" />删除
+          </a-button>
         </a-popconfirm>
       </template>
       <template slot="enable" slot-scope="{ text }">
@@ -52,6 +54,7 @@
           </a-tooltip>
         </a-popconfirm>
       </div>
+      <my-icon slot="icon" slot-scope="{text}" :type="text" />
     </standard-table>
     <!-- 弹窗 -->
     <modal
@@ -71,16 +74,18 @@
               label="菜单名称"
               prop="name"
             >
-              <a-input v-model="dataForm.name" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.name" class="w-100" :max-length="100" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item
-              :rules="{ required: true, message: '菜单图标不能为空', trigger: 'blur' }"
+              :rules="+dataForm.parent ? { required: true, message: '菜单图标不能为空', trigger: 'blur' } : {}"
               label="菜单图标"
               prop="icon"
             >
-              <a-input v-model="dataForm.icon" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <icon-select :icon-list="icons" @search="iconSearch" @select="iconSelect">
+                <a-input v-model="dataForm.icon" class="w-100" :max-length="100" autocomplete="off" allow-clear />
+              </icon-select>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
@@ -103,7 +108,7 @@
               label="路由别称"
               prop="router"
             >
-              <a-input v-model="dataForm.router" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.router" class="w-100" :max-length="100" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
@@ -149,14 +154,15 @@
 
 <script>
 import { cloneDeep } from '@/utils/tool'
-import { getListPage, getSuperMenus, getOne, save, del } from '@/api/modules/sys/menu'
+import { getListPage, getSuperMenus, getOne, save, del, getIconfonts } from '@/api/modules/sys/menu'
 import StandardTable from '@/components/table/StandardTable'
 import Modal from '@/components/modal/Modal'
 import { columns, defaultForm } from './constant'
 import { getAsyncApps } from './async'
+import IconSelect from '@/components/icon-select'
 
 export default {
-  components: { StandardTable, Modal },
+  components: { StandardTable, Modal, IconSelect },
   data() {
     return {
       title: '',
@@ -170,7 +176,9 @@ export default {
       selectedRows: [], // 选择行
       apps: [], // 应用数据
       appId: '', // 应用Id
-      superMenus: [] // 父级菜单
+      superMenus: [], // 父级菜单
+      icons: [], // 遍历的字体图标数组
+      iconArr: [] // 请求的字体图标数组
     }
   },
   created() {
@@ -181,6 +189,7 @@ export default {
       this.apps = apps
       this.queryPage()
     })
+    this.getIconfonts()
   },
   watch: {
     visible(flag) {
@@ -191,6 +200,12 @@ export default {
       if (this.superMenus && this.superMenus.length === 0) {
         this.getMenus()
       }
+    },
+    dataForm: {
+      handler(val) {
+        if (val.parent === '1') this.$set(val, 'router', undefined)
+      },
+      deep: true
     }
   },
   methods: {
@@ -338,6 +353,33 @@ export default {
       this.visible = false
       this.confirmLoading = false
       this.resetForm('ruleForm')
+    },
+    /**
+     * 获取字体图标数据
+     * @date 2021-6-7 17:36:00
+     * @author zxp
+     */
+    async getIconfonts() {
+      const { data } = await getIconfonts()
+      const arr = data.match(/\id=".*?\"/g)
+      this.iconArr = arr.map(item => item.replace('id=\"', '').replace('\"', ''))
+      this.icons = cloneDeep(this.iconArr)
+    },
+    /**
+     * 搜索字体图标
+     * @date 2021-6-7 9:40:00
+     * @author zxp
+     */
+    iconSearch(val) {
+      this.icons = this.iconArr.filter(item => item.includes(val))
+    },
+    /**
+     * 选择字体图标
+     * @date 2021-6-7 9:41:00
+     * @author zxp
+     */
+    iconSelect(icon) {
+      this.$set(this.dataForm, 'icon', icon)
     }
   }
 }

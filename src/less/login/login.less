@@ -4,11 +4,14 @@
 @color-semidark: @primary-color;
 
 .login-app {
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background-color: @body-background;
-
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   .primary {
     color: @color-semidark;
   }
@@ -22,11 +25,18 @@
   }
 
   .login-container {
-    position: relative;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     flex: 1;
-    background: url('~@/assets/img/banner.png') no-repeat -20%;
-    background-size: 100% auto;
+    background: url('~@/assets/img/banner.png') no-repeat 20%;
+    background-size: cover;
+  }
+
+  .main {
+    position: relative;
+    flex: 1;
+    overflow-y: auto;
   }
 
   .login-main {
@@ -179,7 +189,10 @@
 
 .code {
   text-align: center;
-  margin: 30px 0 20px;
+  height: 100%;
+  img {
+    height: 100%;
+  }
 }
 
 .login-header {
@@ -187,20 +200,25 @@
   align-items: center;
   height: 15%;
   min-height: 90px;
-  background-color: rgba(255, 255, 255, 0.99);
+  color: rgba(255, 255, 255, 0.99);
   .logo {
     float: left;
-    width: 100px;
-    height: 45px;
-    background: url('~@/assets/logo.svg') no-repeat center;
+    width: 184px;
+    height: 40px;
+    background: url('~@/assets/logo.png') no-repeat center;
   }
   .header-title {
-    font-size: 30px;
-    font-weight: 700;
+    font-family: 'foundBlack';
+    font-size: 36px;
   }
   .toggle-link {
-    button {
-      font-size: 20px;
+    i {
+      margin-right: 3px;
+    }
+    a {
+      float: left;
+      padding: 0 15px;
+      font-size: 24px;
     }
   }
 }
@@ -209,19 +227,19 @@
   position: absolute;
   top: 50%;
   right: 10%;
-  transform: translateY(-50%);
+  transform: translateY(-48%);
   width: 400px;
+  .pt-3 {
+    height: 242px;
+  }
 }
 
 .about {
-  position: relative;
   flex: 1;
-  background: url('~@/assets/img/contactbg.1c30e346.png') no-repeat;
-  background-size: 100% 100%;
   .contactR {
     position: absolute;
-    top: 50%;
-    right: 19%;
+    top: 45%;
+    right: 8%;
     transform: translateY(-50%);
     > img {
       margin-bottom: 20px;
@@ -250,17 +268,23 @@
     right: 78px;
     bottom: 48px;
   }
-  .cicle {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('~@/assets/img/dingwei.da276d97.gif') 50% / cover no-repeat;
-    background-position: 30%;
-  }
 }
 
 .slide-verify-block {
-  cursor: pointer;
+  // cursor: pointer;
+}
+
+.login-container {
+  min-height: 450px;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.footer {
+  text-align: right;
+  padding: 0 20px;
+  height: 90px;
+  line-height: 90px;
+  font-size: 18px;
+  color: #fff;
 }

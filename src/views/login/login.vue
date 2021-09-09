@@ -1,306 +1,154 @@
 <template>
   <div class="login-app">
-    <div class="login-header" :class="{hidden: isMobile}">
-      <a-row class="w-100" style="display: flex; align-items: center">
-        <a-col :span="18">
-          <div class="logo" />
-          <div class="header-title primary">
-            宿迁市水环境综合整治信息化数据平台
-          </div>
-        </a-col>
-        <a-col :span="6" class="toggle-link text-right pr-4">
-          <a-button type="link" @click="isLogin = true">
-            <a-icon type="user" />用户登录
-          </a-button>
-          <a-button type="link" @click="isLogin = false">
-            <a-icon type="phone" />联系我们
-          </a-button>
-        </a-col>
-      </a-row>
-    </div>
-
-    <div v-if="isLogin" class="login-container">
-      <a-row :gutter="[24,24]" class="login-box" style="height: 80%">
-        <a-col :span="24">
-          <!-- <div class="login-logo">
-            <img height="60" width="60" :src="require('@/assets/img/login.svg')">
-            <i class="cs cs-login primary" />
-          </div> -->
-          <a-card class="login-main" :bordered="false">
-            <!-- <div class="login-title">
-              {{ title }}
-            </div> -->
-            <div class="code-title">
-              {{ toggle ? '密码登录' : '扫码验证，安全登录' }}
+    <div class="login-container">
+      <div class="login-header" :class="{hidden: isMobile}">
+        <a-row class="w-100" style="display: flex; align-items: center">
+          <a-col :span="18" style="display: flex; align-items: center">
+            <!-- <div class="logo ml-4 mr-2" /> -->
+            <div class="header-title ellipsis ml-3">
+              宿迁市中心城市西南片区项目工程管理平台
             </div>
-            <div v-if="toggle" class="pt-3 pb-2">
-              <a-row :gutter="[0 ,16]">
-                <a-form-model ref="loginForm" :model="loginData" :rules="loginRules">
-                  <a-col :span="24">
-                    <a-form-model-item prop="account">
-                      <a-input
-                        v-model="loginData.account"
-                        autocomplete="off"
-                        tabindex="1"
-                        placeholder="账号"
-                      >
-                        <template slot="prefix">
-                          <i class="cs cs-user primary" />
-                        </template>
-                      </a-input>
-                    </a-form-model-item>
+          </a-col>
+          <a-col :span="6" class="toggle-link text-right pr-4">
+            <a href="javascript:;" :style="{color: isLogin ? '#55fbfd' : '#fff'}" @click="isLogin = true">
+              <a-icon type="user" />用户登录
+            </a>
+            <a href="javascript:;" :style="{color: isLogin ? '#fff' : '#55fbfd'}" @click="isLogin = false">
+              <a-icon type="phone" />联系我们
+            </a>
+          </a-col>
+        </a-row>
+      </div>
+      <div class="main beauty-scroll">
+        <a-row v-if="isLogin" :gutter="[24,24]" class="login-box">
+          <a-col :span="24">
+            <a-card class="login-main" :bordered="false">
+              <div class="code-title">
+                {{ toggle ? '密码登录' : '扫码验证，安全登录' }}
+              </div>
+              <div v-if="toggle" class="pt-3">
+                <a-row :gutter="[0 ,16]">
+                  <a-form-model ref="loginForm" :model="loginData" :rules="loginRules" hide-required-mark>
+                    <a-col :span="24">
+                      <a-form-model-item prop="account">
+                        <a-input v-model="loginData.account" autocomplete="off" tabindex="1" placeholder="账号" @pressEnter="login">
+                          <template slot="prefix">
+                            <i class="cs cs-user primary" />
+                          </template>
+                        </a-input>
+                      </a-form-model-item>
+                    </a-col>
+
+                    <a-col :span="24">
+                      <a-form-model-item prop="password">
+                        <a-input
+                          v-model="loginData.password"
+                          autocomplete="off"
+                          tabindex="2"
+                          :type="see?'text':'password'"
+                          placeholder="密码"
+                          @pressEnter="login"
+                        >
+                          <template slot="prefix">
+                            <i class="cs cs-password primary" />
+                          </template>
+                          <template slot="suffix">
+                            <a-tooltip bottom color="#000" :title="see?'密码可见':'密码不可见'">
+                              <i :class="see?'cs-see':'cs-nosee'" class="cs is-see primary" @click="isSee()" />
+                            </a-tooltip>
+                          </template>
+                        </a-input>
+                      </a-form-model-item>
+                    </a-col>
+                  </a-form-model>
+                </a-row>
+
+                <a-row>
+                  <a-col :span="24" class="mt-3">
+                    <!-- <slide-verify
+                      ref="slideblock"
+                      :imgs="imgs"
+                      slider-text="向右滑动验证码"
+                      :w="328"
+                      @success="login()"
+                    /> -->
+                    <a-button type="primary" class="w-100" :loading="loading" @click="login">
+                      登录
+                    </a-button>
                   </a-col>
+                </a-row>
+              </div>
 
-                  <a-col :span="24">
-                    <a-form-model-item prop="password">
-                      <a-input
-                        v-model="loginData.password"
-                        autocomplete="off"
-                        tabindex="2"
-                        :type="see?'text':'password'"
-                        placeholder="密码"
-                      >
-                        <template slot="prefix">
-                          <i class="cs cs-password primary" />
-                        </template>
-                        <template slot="suffix">
-                          <a-tooltip bottom color="#000" :title="see?'密码可见':'密码不可见'">
-                            <i :class="see?'cs-see':'cs-nosee'" class="cs is-see primary" @click="isSee()" />
-                          </a-tooltip>
-                        </template>
-                      </a-input>
-                    </a-form-model-item>
-                  </a-col>
-                </a-form-model>
-              </a-row>
-
-              <a-row>
-                <a-col :span="24" class="mt-2">
-                  <slide-verify
-                    ref="slideblock"
-                    slider-text="向右滑动验证码"
-                    :w="328"
-                    @success="login()"
-                  />
-                </a-col>
-              </a-row>
-              <!-- <a-row :gutter="[0 ,16]">
-                <a-col span="24">
-                  <a-button :loading="loading" :disabled="disabled" tabindex="3" block x-large class="login-btn" @click="login()">
-                    登录
-                  </a-button>
-                </a-col>
-              </a-row> -->
-
-              <!-- <a-row :gutter="[0,24]" class="py-3">
-                <a-col
-                  :span="12" class="text-left login-font"
-                >
-                  <a class="a" @click.prevent="activeType = ACTIVE_TYPE.Register">注册账号</a>
-                </a-col>
-                <a-col
-                  :span="12" class="text-right"
-                >
-                  <a class="a" @click.prevent="activeType = ACTIVE_TYPE.Forget">忘记密码</a>
-                </a-col>
-              </a-row> -->
-              <!-- <a-row :gutter="[0,16]" class="py-2">
-                <div class="login-font text-center pb-2">
-                  第三方登录
+              <div v-else class="pt-3">
+                <div class="code">
+                  <img :src="qrCodeUrl" alt="">
                 </div>
-              </a-row>
-              <a-row>
-                <a-col :span="12" class="text-center">
-                  <a-tooltip title="Github">
-                    <a-button shape="circle" type="link" @click="OauthLogin('github')">
-                      <svg class="cs-svg" aria-hidden="true">
-                        <use xlink:href="#cs-github" />
-                      </svg>
-                    </a-button>
-                  </a-tooltip>
-                </a-col>
-                <a-col :span="12" class="text-center">
-                  <a-tooltip title="Gitee">
-                    <a-button shape="circle" type="link" @click="OauthLogin('gitee')">
-                      <svg class="cs-svg" aria-hidden="true">
-                        <use xlink:href="#cs-gitee" />
-                      </svg>
-                    </a-button>
-                  </a-tooltip>
-                </a-col>
-              </a-row> -->
-            </div>
-            <div v-else class="pt-3 pb-2">
-              <div class="code">
-                <img src="@/assets/img/code.png" alt="">
               </div>
-            </div>
-            <!-- <div v-if="activeType === ACTIVE_TYPE.Register" class="pt-4 pb-2">
-              <a-row :gutter="[0 ,16]">
-                <a-form-model ref="registerForm" :model="registerData" :rules="registerRules">
-                  <a-col :span="24">
-                    <a-form-model-item prop="account">
-                      <a-input
-                        v-model="registerData.account"
-                        autocomplete="off"
-                        tabindex="1"
-                        placeholder="账号"
-                        @pressEnter="register()"
-                      >
-                        <template slot="prefix">
-                          <i class="cs cs-user primary" />
-                        </template>
-                      </a-input>
-                    </a-form-model-item>
-                  </a-col>
-                  <a-col :span="24">
-                    <a-form-model-item prop="email">
-                      <a-input
-                        v-model="registerData.email"
-                        autocomplete="off"
-                        tabindex="2"
-                        placeholder="邮箱"
-                        @pressEnter="register()"
-                      >
-                        <template slot="prefix">
-                          <i class="cs cs-email primary" />
-                        </template>
-                      </a-input>
-                    </a-form-model-item>
-                  </a-col>
-                  <a-col :span="24">
-                    <a-form-model-item prop="password">
-                      <a-input
-                        v-model="registerData.password"
-                        autocomplete="off"
-                        tabindex="3"
-                        :type="see?'text':'password'"
-                        placeholder="密码"
-                        @pressEnter="register()"
-                      >
-                        <template slot="prefix">
-                          <i class="cs cs-password primary" />
-                        </template>
-                        <template slot="suffix">
-                          <a-tooltip bottom color="#000" :title="see?'密码可见':'密码不可见'">
-                            <i :class="see?'cs-see':'cs-nosee'" class="cs is-see primary" @click="isSee()" />
-                          </a-tooltip>
-                        </template>
-                      </a-input>
-                    </a-form-model-item>
-                  </a-col>
-                </a-form-model>
-              </a-row>
-              <a-row>
-                <a-col class="pb-4" :span="24">
-                  <a-button :loading="loading" :disabled="disabled" tabindex="4" block x-large class="login-btn" @click="register()">
-                    注册
-                  </a-button>
-                </a-col>
-              </a-row>
-              <div class="login-font text-center py-2">
-                已有账号?点击 <a class="a" @click.prevent="activeType = ACTIVE_TYPE.Login">登陆</a>
-              </div>
-            </div>
-            <div v-if="activeType === ACTIVE_TYPE.Forget" class="pt-4 pb-2">
-              <a-row :gutter="[0 ,16]">
-                <a-form-model ref="forgetForm" :model="forgetData" :rules="forgetRules">
-                  <a-col :span="24">
-                    <a-form-model-item prop="account">
-                      <a-input
-                        v-model="forgetData.account"
-                        autocomplete="off"
-                        tabindex="1"
-                        placeholder="账号"
-                        @pressEnter="forget()"
-                      >
-                        <template slot="prefix">
-                          <i class="cs cs-user primary" />
-                        </template>
-                      </a-input>
-                    </a-form-model-item>
-                  </a-col>
 
-                  <a-col :span="24">
-                    <a-form-model-item prop="email">
-                      <a-input
-                        v-model="forgetData.email"
-                        autocomplete="off"
-                        tabindex="2"
-                        placeholder="邮箱"
-                        @pressEnter="forget()"
-                      >
-                        <template slot="prefix">
-                          <i class="cs cs-email primary" />
-                        </template>
-                      </a-input>
-                    </a-form-model-item>
-                  </a-col>
-                </a-form-model>
-              </a-row>
-              <a-row>
-                <a-col :span="24" class="pb-4">
-                  <a-button :loading="loading" :disabled="disabled" tabindex="4" block x-large class="login-btn" @click="forget()">
-                    重置密码
-                  </a-button>
-                </a-col>
-              </a-row>
-              <div class="login-font text-center py-2">
-                已有账号?点击 <a class="a" @click.prevent="activeType = ACTIVE_TYPE.Login">登陆</a>
+              <div class="toggle">
+                <i v-if="toggle" class="icon-scan" @click="toggle = false" />
+                <i v-else class="icon-form" @click="toggle = true" />
               </div>
-            </div> -->
-            <div class="toggle">
-              <i v-if="toggle" class="icon-scan" @click="toggle = false" />
-              <i v-else class="icon-form" @click="toggle = true" />
+            </a-card>
+          </a-col>
+        </a-row>
+        <div v-else class="about">
+          <div class="contactR">
+            <img src="~@/assets/img/contactLogo.png" alt="">
+            <div>
+              <img src="~@/assets/img/address.png" alt="">
+              <span>武汉总部：</span>
+              <span>武汉市东湖高新开发区光谷大道3号未来之光3栋6楼</span>
             </div>
-          </a-card>
-        </a-col>
-      </a-row>
-    </div>
-
-    <div v-else class="about">
-      <div class="contactR">
-        <img src="~@/assets/img/contactLogo.png" alt="">
-        <div>
-          <img src="~@/assets/img/address.png" alt="">
-          <span>武汉总部：</span>
-          <span>武汉市东湖高新开发区光谷大道3号未来之光3栋6楼</span>
-        </div>
-        <div>
-          <span>北京分公司：</span>
-          <span>北京市西海48文化创意园区C栋102号</span>
-        </div>
-        <div>
-          <img src="~@/assets/img/hotline.png" alt="">
-          <span>服务热线：</span>
-          <span>400-866-5837</span>
-        </div>
-        <div>
-          <img src="~@/assets/img/switchboard.png" alt="">
-          <span>总机：</span>
-          <span>027-87775236</span>
-        </div>
-        <div>
-          <img src="~@/assets/img/fax.png" alt="">
-          <span>传真：</span>
-          <span>027-87775237</span>
-        </div>
-        <div>
-          <img src="~@/assets/img/website.png" alt="">
-          <span>官网：</span>
-          <span>www.huaxindata.com.cn</span>
+            <div>
+              <span>北京分公司：</span>
+              <span>北京市西海48文化创意园区C栋102号</span>
+            </div>
+            <div>
+              <img src="~@/assets/img/hotline.png" alt="">
+              <span>服务热线：</span>
+              <span>400-886-5237</span>
+            </div>
+            <div>
+              <img src="~@/assets/img/switchboard.png" alt="">
+              <span>总机：</span>
+              <span>027-87775236</span>
+            </div>
+            <div>
+              <img src="~@/assets/img/fax.png" alt="">
+              <span>传真：</span>
+              <span>027-87775237</span>
+            </div>
+            <div>
+              <img src="~@/assets/img/website.png" alt="">
+              <span>官网：</span>
+              <span>www.huaxindata.com.cn</span>
+            </div>
+          </div>
+          <div class="QRcode">
+            <img src="~@/assets/img/QRcode.png" alt="">
+          </div>
         </div>
       </div>
-      <div class="QRcode">
-        <img src="~@/assets/img/QRcode.png" alt="">
+      <div class="footer">
+        <span class="mr-2">武汉华信数据系统有限公司</span>
+        <span class="mr-3">技术支持服务热线：400-886-5237</span>
+        <span class="mr-4">最佳分辨率1920*1080，<a href="https://union.huaxindata.com.cn/uploads/ChromeSetup.exe">请使用谷歌浏览器访问</a></span>
       </div>
-      <div class="cicle" />
     </div>
   </div>
 </template>
 <script>
 import Oauth from '@/api/login/oauth'
+import { updCode } from '@/api/login/scanCode'
 import { saveUserData } from '@/api/login/login.common'
+import { mapMutations } from 'vuex'
+import { isJSON } from '@/utils/tool'
+import { wsUrl } from '@/api/common/ws'
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
+import { checkAuthorization } from '@/utils/request'
+
 const ACTIVE_TYPE = {
   Login: 'login',
   Register: 'register',
@@ -354,8 +202,15 @@ export default {
         email
       },
       toggle: true,
-      isLogin: true
+      isLogin: true,
+      // 二维码登录信息
+      code: undefined,
+      qrCodeUrl: undefined,
+      stompClient: undefined
     }
+  },
+  created() {
+
   },
   watch: {
     activeType(val, oldval) {
@@ -377,11 +232,20 @@ export default {
       if (val) {
         this.$message.loading('登陆中...')
       }
+    },
+    toggle(val) {
+      if (this.code && this.stompClient) {
+        return
+      }
+      if (!val) { // 二维码
+        this.qrCode()
+      } else {
+        this.disconnect()
+      }
     }
   },
-  created: () => {
-  },
   methods: {
+    ...mapMutations('setting', ['setsTompClient']),
     isSee() {
       this.see = !this.see
     },
@@ -392,7 +256,7 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (!valid) {
           // 重置验证码
-          this.$refs.slideblock.reset()
+          // this.$refs.slideblock.reset()
           return
         } // 验证失败
         this.loading = true
@@ -414,13 +278,15 @@ export default {
           this.$message.destroy()
           this.$message.success('登录成功')
           this.$nextTick(() => {
+            this.disconnect() // 关闭二维码ws
+            this.setsTompClient()
             this.$router.push('/')
           })
         }).catch((err) => {
           this.$message.destroy()
           this.$message.warning(err)
           // 重置验证码
-          this.$refs.slideblock.reset()
+          // this.$refs.slideblock.reset()
         }).finally(() => {
           setTimeout(() => {
             this.loading = false
@@ -485,6 +351,69 @@ export default {
         console.log(auth)
         window.location.href = auth.url
       }).done()
+    },
+
+    /**
+     * 刷新code
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    qrCode() {
+      Oauth.getCode().then(res => {
+        console.log(res)
+        const data = res.data
+        this.code = data.code
+        this.qrCodeUrl = `${process.env.VUE_APP_BASE_API}/sys/oauth/getLoginQrCode?code=${this.code}`
+        this.disconnect()
+        if (!checkAuthorization()) {
+          try {
+            const socket = new SockJS(`${wsUrl}/stomp?userId=${this.code}`)
+            this.stompClient = Stomp.over(socket)
+            this.headers = {
+              code: this.code
+            }
+            this.stompClient.connect(this.headers, () => {
+              // 开始建立连接
+              this.stompClient.subscribe('/user/queue/login', (msg) => {
+                if (!isJSON(msg)) {
+                  return
+                }
+                const data = JSON.parse(msg.body)
+                Promise.resolve(saveUserData(data)).then(() => updCode({ // 更新二维码状态
+                  code: data.code,
+                  state: '2' // 已登录
+                })).then(() => {
+                  this.$message.success('登录成功')
+                  setTimeout(() => {
+                    this.$nextTick(() => {
+                      this.disconnect() // 关闭二维码ws
+                      this.setsTompClient()
+                      this.$router.push('/')
+                    })
+                  }, 500)
+                }).over()
+              })
+            }, (error) => console.error(error))
+            window.onbeforeunload = () => {
+              // 窗口关闭前
+              this.disconnect()
+            }
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      }).over()
+    },
+    /**
+     * 关闭信息
+     * @date 2021-2-26 10:23:26
+     * @author lyc
+     */
+    disconnect() {
+      if (this.stompClient) {
+        this.stompClient.disconnect()
+        this.stompClient = null
+      }
     }
   },
   computed: {
@@ -496,4 +425,7 @@ export default {
 </script>
 <style lang="less">
  @import "@/less/login/login.less";
+ .ant-card-body {
+   padding: 30px !important;
+ }
 </style>

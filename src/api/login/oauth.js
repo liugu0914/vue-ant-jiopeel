@@ -57,6 +57,20 @@ class Oauth {
   static async logout() {
     return await request('/sys/logout', METHOD.GET)
   }
+
+  /**
+   * 获取二维码code
+   */
+  static async getCode() {
+    return await request('/sys/oauth/getCode', METHOD.GET)
+  }
+
+  /**
+   * 获取登录二维码
+   */
+  static async getLoginQrCode(code) {
+    return await request('/sys/oauth/getLoginQrCode', METHOD.GET, { code })
+  }
 }
 
 export default Oauth

@@ -3,7 +3,9 @@ import routerMap from '@/router/map'
 import VueRouter from 'vue-router'
 import deepMerge from 'deepmerge'
 import dashboard from '@/router/map/dashboard'
+import single from '@/router/map/single'
 import baseRouter from '@/router/config/config.base'
+import { cloneDeep } from '@/utils/tool'
 
 // 应用配置
 const appOptions = {
@@ -43,7 +45,7 @@ function parseRoutes(routesConfig, routerMap, routes = []) {
       router = typeof item === 'string' ? { path: item, name: item } : item
     }
     // 从 router 和 routeCfg 解析路由
-    const { meta = {}} = router
+    const { meta = {}, parent } = router
     const route = {
       ...router,
       path: routeCfg.path || router.path || routeCfg.router,
@@ -57,7 +59,7 @@ function parseRoutes(routesConfig, routerMap, routes = []) {
     if (routeCfg.children && routeCfg.children.length > 0) {
       route.children = parseRoutes(routeCfg.children, routerMap, routes)
     }
-    if (route.path) {
+    if (parent !== '1' && route.path) {
       routes.push(route)
     }
   })
@@ -82,6 +84,7 @@ function loadRoutes(menus) {
     menus = boxMeta(menus, routerTmpMap)
     const routes = parseRoutes(menus, routerTmpMap)
     const finalRoutes = addMainRoutes(baseRouter, routes)
+    finalRoutes.push(...single) // 单独页面展示
     router.options = { ...router.options, routes: finalRoutes }
     router.matcher = new VueRouter({ ...router.options, routes: [] }).matcher
     router.addRoutes(finalRoutes)
@@ -102,22 +105,24 @@ function loadRoutes(menus) {
  */
 function addMainRoutes(target, source) {
   const childrenRouter = []
-  childrenRouter.push(dashboard) // 默认的工作台
-  source.forEach(item => {
+  const tmpSource = cloneDeep(source)
+  childrenRouter.push(...dashboard) // 默认的工作台
+  tmpSource.forEach(item => {
     const { path, meta = {}} = item
     if (item.children && item.children.length > 0) {
       item.children.forEach(san => {
+        const tmpMeta = cloneDeep(meta)
         san.path = path + san.path
-        meta.breadcrumb.push({ id: san.path, name: san.name })
-        meta.key = san.path
-        meta.name = san.name
-        san.meta = meta
+        tmpMeta.breadcrumb.push({ id: san.path, name: san.name })
+        tmpMeta.key = san.key
+        tmpMeta.name = san.name
+        san.meta = tmpMeta
       })
       childrenRouter.push(...item.children)
       item.children = undefined
     }
   })
-  childrenRouter.push(...source)
+  childrenRouter.push(...tmpSource)
   console.log(childrenRouter)
   const routesMap = {}
   target.forEach(item => {

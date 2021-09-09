@@ -2,7 +2,7 @@
 module.exports = {
   theme: {
     color: '#1492ff',
-    mode: 'light',
+    mode: 'dark',
   },
   multiPage: false,
   asyncRoutes: true,       //异步加载路由，true:开启，false:不开启

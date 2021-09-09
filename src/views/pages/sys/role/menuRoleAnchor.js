@@ -3,7 +3,6 @@ import AnchorLink from 'ant-design-vue/es/anchor/AnchorLink'
 
 export default {
   name: 'menuRoleAnchor',
-  inject: ['content'],
   props: {
     menus: {
       type: Array,
@@ -54,21 +53,13 @@ export default {
         menuArr.push(this_.renderItem(h, menu))
       })
       return menuArr
-    },
-    /**
-     * 指定滚动的容器
-     * @date 2021-2-26 10:23:26
-     * @author lyc
-     */
-    getAnchorContainer() {
-      return this.content.$refs.contentView
     }
   },
 
   render(h) {
     return h(
       Anchor,
-      { ref: 'anchor', props: { offsetTop: 16, getContainer: this.getAnchorContainer }},
+      { ref: 'anchor', props: { offsetTop: 16 }},
       [
         h(AnchorLink, { props: { href: '#sys-per', title: '系统权限' }}),
         h(AnchorLink, { props: { href: '#menu-per', title: '菜单权限' }}, this.renderMenu(h, this.menus))

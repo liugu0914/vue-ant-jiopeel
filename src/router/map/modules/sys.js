@@ -40,5 +40,10 @@ export default {
     path: '/dept',
     name: 'dept',
     component: () => import(`@/${path}/dept`)
+  },
+  dictionary: {
+    path: '/dictionary',
+    name: 'dictionary',
+    component: () => import(`@/${path}/dictionary`)
   }
 }

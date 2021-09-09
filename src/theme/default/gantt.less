@@ -1,0 +1,70 @@
+.gantt_tooltip {
+  z-index: 1200 !important;
+}
+
+.gantt_data_area .gantt_task_row:last-child,
+.gantt_grid_data .gantt_row:last-child {
+  border: none !important;
+}
+
+.gantt_grid_scale .gantt_grid_head_cell,
+.gantt_task .gantt_task_scale .gantt_scale_cell {
+  font-weight: bold !important;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.gantt_grid_data {
+  border-right: 1px solid #d7d7d7;
+}
+
+
+/* move task lines upper */
+.gantt_task_line,
+.gantt_line_wrapper {
+  margin-top: -9px;
+}
+
+.gantt_side_content {
+  margin-bottom: 7px;
+}
+
+.gantt_task_link .gantt_link_arrow {
+  margin-top: -12px
+}
+
+.gantt_side_content.gantt_right {
+  bottom: 0;
+}
+
+.baseline {
+  position: absolute;
+  border-radius: 8px;
+  opacity: 0.6;
+  margin-top: -7px;
+  height: 14px;
+  background: #ff9900;
+  border: 1px solid #ff9900;
+}
+
+.gantt-finish {
+  border: 1px solid #3eaf7c;
+  color: #3eaf7c;
+  background: #3eaf7c;
+}
+
+
+.gantt_task_line {
+
+  &.gantt_project.gantt-finish {
+    .gantt-finish;
+
+    .gantt_task_content {
+      color: #fff
+    }
+  }
+
+  &.gantt-finish {
+    .gantt-finish;
+  }
+}

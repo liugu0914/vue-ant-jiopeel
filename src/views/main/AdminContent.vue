@@ -26,7 +26,7 @@
 import AKeepAlive from '@/components/cache/AKeepAlive'
 import PageToggleTransition from '@/components/transition/PageToggleTransition'
 import TabsWice from '@/views/main/TabsWice'
-import dashboard from '@/router/map/dashboard'
+// import dashboard from '@/router/map/dashboard'
 import { mapState } from 'vuex'
 
 export default {
@@ -46,9 +46,9 @@ export default {
   },
   created() {
     this.loadCachedTabs()
-    if (!this.pageList || this.pageList.length === 0 || this.pageList.findIndex(item => item.keyPath === dashboard.path) === -1) {
-      this.pageList.push(this.createPage(dashboard))
-    }
+    // if (!this.pageList || this.pageList.length === 0 || this.pageList.findIndex(item => item.keyPath === dashboard.path) === -1) {
+    //   this.pageList.push(this.createPage(dashboard))
+    // }
     const route = this.$route
     const { meta = {}} = route
     const key = meta.key || route.fullPath

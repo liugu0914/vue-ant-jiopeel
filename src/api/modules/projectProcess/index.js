@@ -62,6 +62,14 @@ export async function saveCurrent(param) {
   return await request(`${prefix}/saveCurrent`, METHOD.POST, param)
 }
 
+/**
+ * 删除当前文件
+ * @param { Object} param
+ */
+export async function delCurrent(param) {
+  return await request(`${prefix}/delCurrent`, METHOD.POST, param)
+}
+
 
 
 /**

@@ -43,3 +43,12 @@ export async function save(params) {
 export async function del(ids, appId) {
   return await request(`/sys/admin/menu/del`, METHOD.GET, { ids, appId })
 }
+
+/**
+ * 获取阿里字体图表
+ */
+export const getIconfonts = () => request({
+  method: 'get',
+  baseURL: '',
+  url: `${process.env.BASE_URL}js/iconfont.js`
+})

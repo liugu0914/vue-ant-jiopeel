@@ -254,7 +254,7 @@ export function chkIdCard(idcode) {
     十五，十六，十七都是数字0-9
     十八位可能是数字0-9，也可能是X
     */
-  const idcardPatter = /^[1-9][0-9]{5}([1][9][0-9]{2}|[2][0][0|1][0-9])([0][1-9]|[1][0|1|2])([0][1-9]|[1|2][0-9]|[3][0|1])[0-9]{3}([0-9]|[X])$/
+  const idcardPatter = /^[1-9][0-9]{5}([1][0-9]{3}|[2][0-9]{3})([0][1-9]|[1][0|1|2])([0][1-9]|[1|2][0-9]|[3][0|1])[0-9]{3}([0-9]|[X])$/
   // 判断格式是否正确
   const format = idcardPatter.test(idcode)
   // 返回验证结果，校验码和格式同时正确才算是合法的身份证号码
@@ -309,3 +309,59 @@ export function toTree(datas, replaceFields = {}) {
     return item
   })
 }
+
+// ----------------------------------------------------------------------
+// url转blob
+// ----------------------------------------------------------------------
+export function urlTransition(url, type, callback) {
+  // 创建XMLHttpRequest对象
+  const xhr = new XMLHttpRequest()
+  // 前两个参数固定，第三个参数true时是异步，false时是同步
+  xhr.open('get', url, true)
+  // 选定输出格式
+  xhr.responseType = type
+  // onload后回调this本身  onload本身不携带参数
+  xhr.onload = function() {
+    callback(xhr.response)
+  }
+  // 关闭xhr  一定要加
+  xhr.send()
+}
+
+// ----------------------------------------------------------------------
+// 日期格式化
+// ----------------------------------------------------------------------
+export function dateFormat(date, fmt = 'YYYY-mm-dd') {
+  if (!date) { return '' }
+  let ret
+  const weekArr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+  const opt = {
+    'Y+': date.getFullYear().toString(), // 年
+    'm+': (date.getMonth() + 1).toString(), // 月
+    'd+': date.getDate().toString(), // 日
+    'H+': date.getHours().toString(), // 时
+    'M+': date.getMinutes().toString(), // 分
+    'S+': date.getSeconds().toString(), // 秒
+    'W+': weekArr[date.getDay()] // 星期
+    // 有其他格式化字符需求可以继续添加，必须转化成字符串
+  }
+  for (const k in opt) {
+    ret = new RegExp('(' + k + ')').exec(fmt)
+    if (ret) {
+      fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, '0')))
+    }
+  }
+  return fmt
+}
+
+// ----------------------------------------------------------------------
+// 给所有对象设置 label 和 value
+// ----------------------------------------------------------------------
+export function formatObj(data, { name = 'name', value = 'value' } = {}) {
+  data.forEach(item => {
+    item.label = item[name]
+    item.value = item[value]
+    if (item.children && item.children.length) formatObj(item.children, { name, value })
+  })
+}
+

@@ -21,7 +21,7 @@
           <a-icon type="plus" />新建
         </a-button>
         <a-popconfirm v-if="$hasp('sys-user-del')" title="是否确认删除选中的数据?" :disabled="selectedRows && selectedRows.length===0" @confirm="delSelectedRows">
-          <a-button>
+          <a-button type="danger">
             <a-icon type="delete" />删除
           </a-button>
         </a-popconfirm>
@@ -36,6 +36,11 @@
         <a-tooltip v-if="$hasp('sys-user-edit')" title="编辑">
           <a class="mr-1" @click="edit(record)">
             <a-icon type="edit" />
+          </a>
+        </a-tooltip>
+        <a-tooltip v-if="$hasp('sys-user-password')" title="修改密码">
+          <a class="mr-1" @click="setPassword(record)">
+            <a-icon type="swap" />
           </a>
         </a-tooltip>
         <a-popconfirm v-if="$hasp('sys-user-del')" title="是否确认删除?" @confirm="()=>deleteRecord(record.id)">
@@ -58,7 +63,7 @@
         <a-row>
           <a-col :sm="24">
             <div class="avatar">
-              <upload :before-upload="beforeUpload" :show-upload-list="false" @change="handleChange">
+              <upload file-type="img" :show-upload-list="false" @change="handleChange">
                 <a-avatar :size="150" :src="dataForm.imgUrl" icon="user" />
               </upload>
             </div>
@@ -67,14 +72,30 @@
             <a-form-model-item
               :rules=" { required: true, message: '用户名称不能为空', trigger: 'blur' }"
               label="用户名称" prop="userName">
-              <a-input v-model="dataForm.userName" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.userName" class="w-100" :max-length="50" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
               :rules=" { required: true, message: '账号不能为空', trigger: 'blur' }"
               label="账号" prop="account">
-              <a-input v-model="dataForm.account" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.account" class="w-100" :max-length="50" autocomplete="off" allow-clear />
+            </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              v-if="title === '新增'"
+              :rules="[{ required: true, message: '密码不能为空', trigger: 'blur' }, { min: 6, message: '密码长度不能小于6位数', trigger: 'blur' }]"
+              label="密码" prop="password">
+              <a-input v-model="dataForm.password" type="password" class="w-100" :max-length="50" autocomplete="off" allow-clear />
+            </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              v-if="title === '新增'"
+              :rules=" [{ required: true, message: '确认密码不能为空', trigger: 'blur' }, { validator: checkPassword, trigger: 'blur'}]"
+              label="确认密码" prop="confirm">
+              <a-input v-model="dataForm.confirm" type="password" class="w-100" :max-length="50" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
@@ -82,7 +103,7 @@
               :rules=" [{ required: true, message: '手机号不能为空',trigger: 'blur' },
                         { validator: checkPhone, trigger: 'blur' }]"
               label="手机号" prop="phone">
-              <a-input v-model="dataForm.phone" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.phone" class="w-100" :max-length="50" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
@@ -90,12 +111,12 @@
               :rules=" [{ required: true, message: '身份证不能为空', trigger: 'blur' },
                         { validator: checkIdCard, trigger: 'blur' }]"
               label="身份证" prop="idCard">
-              <a-input v-model="dataForm.idCard" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.idCard" class="w-100" :max-length="50" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
             <a-form-model-item
-              :rules=" { required: false, message: '部门不能为空', trigger: 'blur' }"
+              :rules=" { required: true, message: '部门不能为空' }"
               label="部门" prop="deptId">
               <a-tree-select
                 v-model="dataForm.deptId"
@@ -110,7 +131,7 @@
             <a-form-model-item
               :rules=" { required: false, message: '邮箱不能为空', trigger: 'blur' }"
               label="邮箱" prop="email">
-              <a-input v-model="dataForm.email" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.email" class="w-100" :max-length="90" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :sm="24">
@@ -142,12 +163,33 @@
         </a-list-item>
       </a-list>
     </modal>
+    <!-- 修改密码弹窗 -->
+    <modal v-if="$hasp('sys-user-password')" v-model="passwordVisible" title="修改密码" @ok="passwordOk" @cancel="passwordVisible = false">
+      <a-form-model ref="passwordForm" :model="passwordForm" layout="vertical">
+        <a-row>
+          <a-col :sm="24">
+            <a-form-model-item
+              :rules="[{ required: true, message: '密码不能为空', trigger: 'blur' }, { min: 6, message: '密码长度不能小于6位数', trigger: 'blur' }]"
+              label="密码" prop="password">
+              <a-input v-model="passwordForm.password" type="password" class="w-100" :max-length="100" autocomplete="off" allow-clear />
+            </a-form-model-item>
+          </a-col>
+          <a-col :sm="24">
+            <a-form-model-item
+              :rules=" [{ required: true, message: '确认密码不能为空', trigger: 'blur' }, { validator: checkPassword, trigger: 'blur'}]"
+              label="确认密码" prop="confirm">
+              <a-input v-model="passwordForm.confirm" type="password" class="w-100" :max-length="100" autocomplete="off" allow-clear />
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+      </a-form-model>
+    </modal>
   </a-card>
 </template>
 
 <script>
 import { BoxPage, cloneDeep } from '@/utils/tool'
-import { getListPage, getOne, save, del } from '@/api/modules/sys/user'
+import { getListPage, getOne, save, del, updatePassword } from '@/api/modules/sys/user'
 import { getUserRole, getUseFulRoles, saveUserRole } from '@/api/modules/sys/role'
 import { getAsyncDepts } from './async'
 import { downloadUrl } from '@/api/common/upload'
@@ -178,7 +220,9 @@ export default {
       role: {}, // 当前角色
       roles: [], // 可选角色
       roleVisible: false, // 分配角色弹窗控制
-      roleConfirmLoading: false //  分配角色确认按钮控制
+      roleConfirmLoading: false, //  分配角色确认按钮控制
+      passwordVisible: false, // 修改密码弹窗开关
+      passwordForm: {} // 修改密码表单数据
     }
   },
   created() {
@@ -245,6 +289,7 @@ export default {
         const { data = {}} = res
         data.imgUrl = data.imgUrl || undefined
         this.dataForm = data
+        this.dataForm.password = undefined
         this.getDeptTree()
       }).over().finally(() => {
         this.visible = true
@@ -300,6 +345,7 @@ export default {
       this.$refs['ruleForm'].validate(valid => {
         if (!valid) return
         this.confirmLoading = true
+        delete this.dataForm.confirm
         save(this.dataForm).then(res => {
           this.$message.success('保存成功!')
           this.queryPage()
@@ -371,29 +417,6 @@ export default {
       this.role = {}
     },
     /**
-     * 文件上传前的回调
-     * @date 2021-5-17 09:39:22
-     * @author lyc
-     */
-    beforeUpload(file) {
-      console.log(file)
-      const typeArr = [
-        'image/png',
-        'image/jpeg'
-      ]
-      const type = typeArr.includes(file.type)
-      const size = file.size / 1024 / 1024
-      if (!type) {
-        this.$message.error('请选择图片上传！')
-        return false
-      }
-      if (size > 20) {
-        this.$message.error('上传的文件不能超过20MB!')
-        return false
-      }
-      return true
-    },
-    /**
      * 上传文件改变时的状态
      * @date 2021-2-26 10:23:26
      * @author lyc
@@ -421,6 +444,37 @@ export default {
      */
     checkIdCard(rule, value, callback) {
       return chkIdCard(value) ? callback() : callback(new Error('身份证格式不正确'))
+    },
+    /**
+     * 确认密码
+     * @date 2021-5-31 9:31:00
+     * @author zxp
+     */
+    checkPassword(rule, value, callback) {
+      if (this.visible) return value !== this.dataForm.password ? callback(new Error('两次输入密码不一致')) : callback()
+      if (this.passwordVisible) return value !== this.passwordForm.password ? callback(new Error('两次输入密码不一致')) : callback()
+    },
+    /**
+     * 修改密码
+     * @date 2021-5-31 9:47:00
+     * @author zxp
+     */
+    setPassword(row) {
+      this.passwordVisible = true
+      this.passwordForm.id = row.id
+    },
+    /**
+     * 确认修改密码
+     * @date 2021-5-31 10:06:00
+     * @author zxp
+     */
+    passwordOk() {
+      this.$refs.passwordForm.validate(val => {
+        if (!val) return
+        delete this.passwordForm.confirm
+        updatePassword(this.passwordForm).over()
+        this.passwordVisible = false
+      })
     }
   }
 }

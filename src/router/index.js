@@ -5,6 +5,8 @@
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import baseRoutes from '@/router/config/config.base'
+import single from '@/router/map/single'
 
 Vue.use(VueRouter)
 
@@ -12,7 +14,7 @@ Vue.use(VueRouter)
 // 不需要登录拦截的路由配置
 const whiteList = {
   names: [], // 根据路由名称匹配
-  paths: ['/login'], // 根据路由Path匹配
+  paths: ['/login', '/bigScreen'], // 根据路由Path匹配
   /**
    * 判断路由是否包含在该配置中
    * @param route vue-router 的 route 对象
@@ -32,7 +34,7 @@ function initRouter() {
   const options = {
     base: process.env.VUE_APP_PUBLICPATH,
     mode: 'history',
-    routes: require('./config/config.base').default
+    routes: [...baseRoutes, ...single]
   }
   return new VueRouter(options)
 }

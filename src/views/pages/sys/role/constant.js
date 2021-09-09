@@ -5,18 +5,9 @@
  */
 export const columns = [
   {
-    title: '序号',
-    dataIndex: 'index',
-    customRender: (text, record, index) => index + 1
-  },
-  {
     title: '角色名称',
     dataIndex: 'name',
     disable: true
-  },
-  {
-    title: '角色权重',
-    dataIndex: 'weight'
   },
   {
     title: '角色描述',

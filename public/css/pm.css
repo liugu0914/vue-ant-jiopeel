@@ -2265,3 +2265,13 @@
 .hidden {
     display: none !important;
 }
+
+.float-right {
+    float: right;
+}
+
+.clearfix::before {
+    display: block;
+    content: '';
+    clear: both;
+}

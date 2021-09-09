@@ -7,9 +7,10 @@ const AuthorityPlugin = {
          * @param check 需要校验的操作名
          * @returns {boolean} 是否校验通过
          */
-        $hasp(check) {
+        $hasp(check, method = 'every') {
           const permissions = this.$store.getters['account/permissions']
-          return permissions.includes('*') || permissions.includes(check)
+          const isRight = Array.isArray(check) ? check[method](rights => permissions.includes(rights)) : permissions.includes(check)
+          return permissions.includes('*') || isRight
         }
       }
     })

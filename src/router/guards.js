@@ -1,7 +1,8 @@
 // import { hasAuthority } from '@/utils/authority-utils'
-import { checkAuthorization } from '@/utils/request'
+import { checkAuthorization, removeAuthorization } from '@/utils/request'
 import { whiteList } from '@/router'
 import NProgress from 'nprogress'
+import store from '@/store'
 
 NProgress.configure({ showSpinner: false })
 
@@ -13,9 +14,16 @@ NProgress.configure({ showSpinner: false })
  * @param next
  */
 const progressStart = (to, from, next) => {
+  document.title = to.meta.name
   // start progress bar
   if (!NProgress.isStarted()) {
     NProgress.start()
+  }
+  const { menus = [] } = store.state.account
+  if (to.name == '404' && !menus.length) return next('/login')
+  if (to.name == 'dashboard' && menus.length) {
+    const router = menus[0].router ? menus[0].router : menus[0].children[0].router
+    next(router)
   }
   console.log('from: ', from)
   console.log('to  : ', to)
@@ -37,6 +45,7 @@ const loginGuard = (to, from, next, options) => {
   }
   if (!whiteList.includes(to) && !checkAuthorization()) {
     message.warning('登录已失效，请重新登录')
+    removeAuthorization()
     next('/login')
     NProgress.done()
   } else {

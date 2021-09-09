@@ -1,6 +1,7 @@
 import axios from 'axios'
 import Lockr from 'lockr'
 import Cookie from 'js-cookie'
+import store from '@/store'
 
 /**
  * 请求类型
@@ -80,6 +81,8 @@ function removeAuthorization() {
   removeRoles()
   removePermissions()
   removeMenus()
+  removeScoket()
+  clearUserInfo()
 }
 
 /**
@@ -117,6 +120,27 @@ function removeMenus() {
   Lockr.rm(process.env.VUE_APP_MENUS_KEY)
 }
 
+/**
+ * 关闭 socket 链接
+ */
+function removeScoket() {
+  const stompClient = store.state.setting.stompClient
+  if (stompClient) {
+    Promise.resolve(stompClient.send(`/app/onClose`)).then(() => {
+      console.log('关闭stomp')
+      stompClient.disconnect()
+      store.commit('setting/clearSocket')
+    })
+  }
+}
+
+/**
+ *
+ * @returns 清除 vuex 中存储的用户数据
+ */
+function clearUserInfo() {
+  store.commit('account/clearUserInfo')
+}
 
 /**
  * 检查认证信息

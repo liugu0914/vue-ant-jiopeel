@@ -9,7 +9,6 @@ const isDev = process.env.NODE_ENV === 'development'
 const productionGzipExtensions = ['js', 'css']
 
 module.exports = {
-
   pluginOptions: {
     'style-resources-loader': {
       preProcessor: 'less',
@@ -33,7 +32,7 @@ module.exports = {
       })
     )
     // Ignore all locale files of moment.js
-    config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
+    config.plugins.push(new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-cn/))
     // 生产环境下将资源压缩成gzip格式
     if (!isDev) {
       // 压缩

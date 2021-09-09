@@ -1,8 +1,12 @@
+import store from '@/store'
 import config from '@/config'
 import { ADMIN } from '@/config/default'
 // import { formatFullPath } from '@/utils/i18n'
 // import { filterMenu } from '@/utils/authority-utils'
 import { getLocalSetting } from '@/utils/themeUtil'
+import { wsUrl } from '@/api/common/ws'
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
 
 const localSetting = getLocalSetting(true)
 
@@ -16,7 +20,8 @@ export default {
     menuData: [],
     activatedFirst: undefined,
     ...config,
-    ...localSetting
+    ...localSetting,
+    stompClient: null
   },
   getters: {
     // menuData(state, getters, rootState) {
@@ -45,6 +50,17 @@ export default {
     //   const current = menuData.find(menu => menu.fullPath === activatedFirst)
     //   return current && current.children || []
     // }
+    stompClient: state => {
+      if (state.stompClient || !store.state.account.user) return state.stompClient
+      try {
+        const socket = new SockJS(`${wsUrl}/stomp?userId=${store.state.account.user.id}`)
+        const stompClient = Stomp.over(socket)
+        state.stompClient = stompClient
+        return state.stompClient
+      } catch (err) {
+        console.log(err)
+      }
+    }
   },
   mutations: {
     setDevice(state, isMobile) {
@@ -95,6 +111,14 @@ export default {
     },
     setFixedTabs(state, fixedTabs) {
       state.fixedTabs = fixedTabs
+    },
+    clearSocket(state) {
+      state.stompClient = null
+    },
+    setsTompClient: state => {
+      const socket = new SockJS(`${wsUrl}/stomp?userId=${store.state.account.user.id}`)
+      const stompClient = Stomp.over(socket)
+      state.stompClient = stompClient
     }
   }
 }

@@ -1,6 +1,7 @@
 // import Cookie from 'js-cookie'
 import Lockr from 'lockr'
 import qs from 'qs'
+import { removeAuthorization } from './request'
 // import { whiteList } from '@/router'
 
 
@@ -63,18 +64,15 @@ const resp401 = {
    * @returns {*}
    */
   onRejected(error, options) {
-    const { response, config } = error
-    const { Authorization } = config
+    const { response } = error
     const { router, message } = options
     if (response.status == 401) {
       let msg = '登录超时,请重新登录'
       if (response.data && response.data.message) {
         msg = response.data.message
       }
-      if (Lockr.get(Authorization)) {
-        Lockr.rm(Authorization)
-      }
       router.push('/login')
+      removeAuthorization()
       message.warn(msg)
       return error
     }

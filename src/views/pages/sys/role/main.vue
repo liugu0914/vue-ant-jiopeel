@@ -24,7 +24,7 @@
           <a-icon type="plus" />新建
         </a-button>
         <a-popconfirm title="是否确认删除选中的数据?" :disabled="selectedRows && selectedRows.length===0" @confirm="delSelectedRows">
-          <a-button>
+          <a-button type="danger">
             <a-icon type="delete" />删除
           </a-button>
         </a-popconfirm>
@@ -91,14 +91,14 @@
             <a-form-model-item
               :rules=" { required: true, message: '角色名称不能为空', trigger: 'blur' }"
               label="角色名称" prop="name">
-              <a-input v-model="dataForm.name" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.name" class="w-100" :max-length="100" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item
-              :rules=" { required: true, message: '角色权重不能为空', trigger: 'blur' }"
+              :rules=" { required: false, message: '角色权重不能为空', trigger: 'blur' }"
               label="角色权重" prop="weight">
-              <a-input v-model="dataForm.weight" class="w-100" :max-length="255" autocomplete="off" allow-clear />
+              <a-input v-model="dataForm.weight" class="w-100" :max-length="100" autocomplete="off" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">

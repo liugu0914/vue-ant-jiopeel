@@ -2,13 +2,13 @@
   <div ref="root" class="search-area">
     <div ref="selectRoot" class="select-root" />
 
-    <a-form layout="vertical" class="beauty-scroll">
+    <a-form class="beauty-scroll" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
       <a-row :gutter="[16,0]">
         <a-col v-for="(col, index) in searchCols" :key="index" :xl="response.xl" :lg="response.lg" :md="response.md" :sm="response.sm">
-          <a-form-item>
+          <a-form-item class="w-100" :colon="false" style="margin-bottom: 10px">
             <template slot="label">
               <template v-if="col.title">
-                {{ col.title }}
+                {{ col.search.title || col.title }}
               </template>
               <slot v-else-if="col.slots && col.slots.title" :name="col.slots.title" />
             </template>
@@ -34,9 +34,11 @@
               <a-tree-select
                 v-model="col.search.value"
                 class="w-100"
+                show-search
                 allow-clear
                 :tree-data="col.search.options"
                 :multiple="col.search && col.search.multiple"
+                :filter-tree-node="treeFilterOption"
                 placeholder="请选择"
                 @focus="focus(col)"
                 @change="onSelectChange(col)"
@@ -44,7 +46,7 @@
             </template>
             <template v-else-if="col.dataType === 'select'">
               <a-select
-                v-model="col.search.value" class="w-100" allow-clear :mode="col.search && col.search.multiple?'multiple':'default' "
+                v-model="col.search.value" :filter-option="filterOption" show-search class="w-100" allow-clear :mode="col.search && col.search.multiple?'multiple':'default' "
                 placeholder="请选择" @change="onSelectChange(col)" @focus="focus(col)">
                 <a-select-option v-for="(item,selectIndex) in col.search.options" :key="selectIndex" :value="item.value" :disabled="item.disabled">
                   {{ item.label || item.title }}
@@ -52,7 +54,15 @@
               </a-select>
             </template>
             <template v-else-if="col.dataType === 'checkbox'">
-              <a-checkbox-group v-model="col.search.value" :options="col.search.options" @change="onSelectChange(col)" />
+              <a-checkbox-group v-model="col.search.value" class="w-100" @change="onSelectChange(col)">
+                <a-row :gutter="[0, 8]" class="w-100" :class="{center: col.search.options && col.search.options.length <= 3}">
+                  <a-col v-for="item in col.search.options" :key="item.value" :span="8">
+                    <a-checkbox :value="item.value">
+                      {{ item.label || item.title }}
+                    </a-checkbox>
+                  </a-col>
+                </a-row>
+              </a-checkbox-group>
             </template>
             <template v-else-if="col.dataType === 'radio'">
               <a-radio-group v-model="col.search.value" @change="()=>onSelectChange(col)">
@@ -61,8 +71,15 @@
                 </a-radio>
               </a-radio-group>
             </template>
+            <template v-else-if="col.dataType === 'twiceNumber'">
+              <a-input-group compact class="w-100">
+                <a-input v-model.number="col.search.value.minVal" :min="0" type="number" style=" width: 45%; text-align: center" placeholder="最小值" @change="onTwiceChange(col)" />
+                <a-input class="disabled-placeholder" placeholder="~" disabled />
+                <a-input v-model.number="col.search.value.maxVal" :min="col.search.value.minVal || 0" type="number" style="width: 45%; text-align: center; border-left: 0" placeholder="最大值" @change="onTwiceChange(col)" />
+              </a-input-group>
+            </template>
             <template v-else>
-              <a-input v-model="col.search.value" placeholder="请输入" :max-length="255" class="w-100" allow-clear @change="onConfirm(col)" />
+              <a-input v-model="col.search.value" :placeholder="`请输入${col.title}`" :max-length="255" class="w-100" allow-clear @change="onConfirm(col)" />
             </template>
           </a-form-item>
         </a-col>
@@ -75,11 +92,11 @@
       }"
     >
       <a-button style="marginRight: 8px" @click="onClear">
-        <a-icon type="undo" />
+        <!-- <a-icon type="undo" /> -->
         重置
       </a-button>
       <a-button type="primary" @click="onSearch">
-        <a-icon type="search" />
+        <!-- <a-icon type="search" /> -->
         查询
       </a-button>
     </div>
@@ -88,6 +105,7 @@
 
 <script>
 import fastEqual from 'fast-deep-equal'
+import { cloneDeep } from '@/utils/tool'
 import moment from 'moment'
 
 export default {
@@ -97,7 +115,9 @@ export default {
     this.columns.forEach(item => {
       item.search = item.search || {}
       item.search.options = item.search.options || []
-      this.$set(item, 'search', { ...item.search, value: undefined, format: this.getFormat(item) })
+      const searchValue = item.search.value
+      const value = searchValue !== undefined ? searchValue : item.dataType === 'twiceNumber' ? { minVal: undefined, maxVal: undefined } : undefined
+      this.$set(item, 'search', { ...item.search, value, format: this.getFormat(item) })
     })
   },
   watch: {
@@ -128,6 +148,20 @@ export default {
     }
   },
   methods: {
+    /**
+     *tree select搜索
+     */
+    treeFilterOption(searchVal, treeNode) {
+      return treeNode.data.props.name.includes(searchVal)
+    },
+    /**
+     * select搜索
+     */
+    filterOption(input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      )
+    },
     onCloseClick(e, col) {
       e.preventDefault()
       e.stopPropagation()
@@ -137,19 +171,32 @@ export default {
         this.backupAndEmitChange(col)
       }
     },
+    onTwiceChange(col) {
+      const { backup, value } = col.search
+      const { minVal, maxVal } = value
+      if (minVal > maxVal) col.search.value.maxVal = minVal
+      col.filtered = Boolean(minVal || maxVal)
+      if (!fastEqual(backup, value)) {
+        this.backupAndEmitChange(col)
+      }
+    },
     onConfirm(col) {
       const { backup, value } = col.search
+      col.filtered = Boolean(Array.isArray(value) ? value.length : value)
       if (backup !== value) {
         this.backupAndEmitChange(col)
       }
     },
     onSwitchChange(col) {
       const { backup, value } = col.search
+      col.filtered = Boolean(Array.isArray(value) ? value.length : value)
       if (backup !== value) {
         this.backupAndEmitChange(col)
       }
     },
     onSelectChange(col) {
+      const { value } = col.search
+      col.filtered = Boolean(Array.isArray(value) ? value.length : value !== undefined)
       this.backupAndEmitChange(col)
     },
     focus(col) {
@@ -164,21 +211,53 @@ export default {
       const { momentEqual, backupAndEmitChange } = this
       const { value, backup, format } = col.search
       if (!open && !momentEqual(value, backup, format)) {
-        backupAndEmitChange(col, moment(value))
+        let monentVal
+        if (Array.isArray(value)) {
+          if (value.length !== 0) {
+            monentVal = moment(value)
+          } else {
+            col.search.value = undefined
+          }
+        } else {
+          monentVal = moment(value)
+        }
+        backupAndEmitChange(col, monentVal)
       }
     },
     onCalendarChange(date, dateStr, col) {
       const { momentEqual, backupAndEmitChange } = this
       const { value, backup, format } = col.search
+      col.filtered = Boolean(Array.isArray(value) ? value.length : value)
       if (!momentEqual(value, backup, format)) {
-        backupAndEmitChange(col, moment(value))
+        let monentVal
+        if (Array.isArray(value)) {
+          if (value.length !== 0) {
+            monentVal = moment(value)
+          } else {
+            col.search.value = undefined
+          }
+        } else {
+          monentVal = moment(value)
+        }
+        backupAndEmitChange(col, monentVal)
       }
     },
     onDateChange(col) {
       const { momentEqual, backupAndEmitChange } = this
       const { value, backup, format } = col.search
+      col.filtered = Boolean(Array.isArray(value) ? value.length : value)
       if (!momentEqual(value, backup, format)) {
-        backupAndEmitChange(col, moment(value))
+        let monentVal
+        if (Array.isArray(value)) {
+          if (value.length !== 0) {
+            monentVal = moment(value)
+          } else {
+            col.search.value = undefined
+          }
+        } else {
+          monentVal = moment(value)
+        }
+        backupAndEmitChange(col, monentVal)
       }
     },
     getFormat(col) {
@@ -198,7 +277,7 @@ export default {
     },
     backupAndEmitChange(col, backValue = col.search.value) {
       const { getConditions, getSearchOptions } = this
-      col.search.backup = backValue
+      col.search.backup = cloneDeep(backValue)
       this.conditions = getConditions(this.searchCols)
       this.searchOptions = getSearchOptions(this.searchCols)
       this.$emit('change', this.conditions, this.searchOptions)
@@ -207,7 +286,7 @@ export default {
       const conditions = {}
       columns.filter(item => item.search.value !== undefined && item.search.value !== '' && item.search.value !== null)
         .forEach(col => {
-          const { value, format, name } = col.search
+          const { value, format, name, twice = {}} = col.search
           const dataIndex = name || col.dataIndex
           let searchVal
           if (this.formatConditions && format) {
@@ -229,8 +308,18 @@ export default {
           } else {
             searchVal = value
           }
+          if (col.dataType === 'twiceNumber') { // 双input框
+            const { minVal, maxVal } = value
+            if (minVal !== null && minVal !== undefined && minVal !== '') {
+              conditions[twice.minName] = minVal
+            }
+            if (maxVal !== null && maxVal !== undefined && maxVal !== '') {
+              conditions[twice.maxName] = maxVal
+            }
+            return
+          }
           const isArr = Array.isArray(searchVal)
-          if ((!isArr && searchVal) || (isArr && searchVal.length > 0)) {
+          if ((!isArr && searchVal !== undefined) || (isArr && searchVal.length > 0)) {
             conditions[dataIndex] = searchVal
           }
         })
@@ -244,7 +333,15 @@ export default {
     onClear() {
       this.searchCols.filter(item => item.search.value !== undefined && item.search.value !== '' && item.search.value !== null)
         .forEach(col => {
-          col.search.value = undefined
+          col.filtered = false
+          if (col.dataType === 'twiceNumber') { // 双input框
+            col.search.value = {
+              minVal: undefined,
+              maxVal: undefined
+            }
+          } else {
+            col.search.value = undefined
+          }
         })
       // this.$emit('clear', {})
       this.$emit('search', {})
@@ -256,9 +353,9 @@ export default {
       const isArr = Array.isArray(target)
       if (isArr) {
         if (target && source) {
-          let flag = false
+          let flag = true
           target.forEach((moment, index) => {
-            flag = target[index].format(format) === source._i[index].format(format)
+            flag = flag && target[index].format(format) === source._i[index].format(format)
           })
           return flag
         }
@@ -279,8 +376,24 @@ export default {
 .ant-form {
   padding: 0 24px;
   margin-bottom: 10px;
-  max-height: 186px;
+  // max-height: 186px;
+  height: calc(100vh - 137px);
   overflow-y: auto;
   overflow-x: hidden;
+}
+.disabled-placeholder{
+  width: 10%;
+  border-left: 0;
+  text-align: center;
+  pointer-events: none;
+  background-color: @component-background;
+}
+.ant-checkbox-wrapper {
+  margin: 0;
+}
+.center {
+  display:flex;
+  align-items: baseline;
+  flex-wrap: wrap;
 }
 </style>
